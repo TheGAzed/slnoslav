@@ -11,3 +11,5 @@
 [submodule "external/unity"]
 	path = external/unity
 	url = git@github.com:ThrowTheSwitch/Unity.git
+[submodule "external/greatest"]
+	path = external/greatest
