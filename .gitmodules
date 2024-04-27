@@ -1,15 +1,2 @@
-[submodule "external/Unity"]
-	path = external/Unity
-	url = git@github.com:ThrowTheSwitch/Unity.git
-[submodule "prog/exter/Unity"]
-	path = prog/exter/Unity
-[submodule "test/exter/Unity"]
-	path = test/exter/Unity
-[submodule "prog/exter/raygui"]
-	path = prog/exter/raygui
-	url = git@github.com:raysan5/raygui.git
-[submodule "external/unity"]
-	path = external/unity
-	url = git@github.com:ThrowTheSwitch/Unity.git
 [submodule "external/greatest"]
 	path = external/greatest
