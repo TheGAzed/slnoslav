@@ -59,12 +59,13 @@ Kakuro init_kakuro(FILE * kakuro_file);
 void   free_kakuro(Kakuro * board);
 bool   is_wall_hit(Kakuro board, ksize_t row, ksize_t col);
 
-IStack  init_istack();
+IStack  init_istack(void);
 bool    is_empty_istack(IStack stack);
 void    push_istack(IStack * stack, ksize_t index);
 ksize_t peek_istack(IStack stack);
 ksize_t pop_istack(IStack * stack);
 void    free_istack(IStack * stack);
+void    print_board(Kakuro board);
 
 #ifdef EXPOSE_PRIVATE_FUNCTIONS
 

@@ -175,10 +175,89 @@ TEST push_max_array_list_size_plus_one_then_pop_all_top_is_null(void) {
     PASS();
 }
 
+TEST push_one_index_and_free_index_stack_top_is_null(void) {
+    IStack stack = init_istack();
+    push_istack(&stack, 42);
+    ASSERTm(
+        "EXPECTED TOP TO NOT BE NULL",
+        stack.top
+    );
+
+    free_istack(&stack);
+    ASSERT_FALSEm(
+        "EXPECTED TOP TO BE NULL",
+        stack.top
+    );
+    PASS();
+}
+
+TEST push_max_array_indexes_and_free_index_stack_top_is_null(void) {
+    IStack stack = init_istack();
+    for (size_t i = 0; i < IA_SIZE; i++) push_istack(&stack, 42);
+
+    ASSERTm(
+        "EXPECTED TOP TO NOT BE NULL",
+        stack.top
+    );
+
+    free_istack(&stack);
+    ASSERT_FALSEm(
+        "EXPECTED TOP TO BE NULL",
+        stack.top
+    );
+    PASS();
+}
+
+TEST push_max_array_plus_one_indexes_and_free_index_stack_top_is_null(void) {
+    IStack stack = init_istack();
+    for (size_t i = 0; i < IA_SIZE + 1; i++) push_istack(&stack, 42);
+
+    ASSERTm(
+        "EXPECTED TOP TO NOT BE NULL",
+        stack.top
+    );
+
+    free_istack(&stack);
+    ASSERT_FALSEm(
+        "EXPECTED TOP TO BE NULL",
+        stack.top
+    );
+    PASS();
+}
+
+TEST push_max_array_with_1_plus_one_42_and_pop_back_42(void) {
+    IStack stack = init_istack();
+    for (size_t i = 0; i < IA_SIZE; i++) push_istack(&stack, 1);
+    ksize_t expected = 42, actual;
+    push_istack(&stack, 42);
+    actual = pop_istack(&stack);
+
+    ASSERT_EQm(
+        "EXPECTED VALUE TO BE EQUAL TO 42",
+        expected, actual
+    );
+    free_istack(&stack);
+    PASS();
+}
+
+TEST push_max_array_minus_one_with_1_plus_one_42_and_pop_back_42(void) {
+    IStack stack = init_istack();
+    for (size_t i = 0; i < IA_SIZE - 1; i++) push_istack(&stack, 1);
+    ksize_t expected = 42, actual;
+    push_istack(&stack, 42);
+    actual = pop_istack(&stack);
+
+    ASSERT_EQm(
+        "EXPECTED VALUE TO BE EQUAL TO 42",
+        expected, actual
+    );
+    free_istack(&stack);
+    PASS();
+}
+
 SUITE (test_board_istack) {
     RUN_TEST(init_stack_is_empty);
     RUN_TEST(init_stack_top_array_pointer_null);
-
     RUN_TEST(push_one_index_to_empty_stack_expected_count_one);
     RUN_TEST(push_one_index_to_stack_is_empty_false);
     RUN_TEST(push_one_index_to_stack_top_array_not_null);
@@ -190,4 +269,10 @@ SUITE (test_board_istack) {
     RUN_TEST(push_until_max_array_list_size_plus_one_bottom_is_not_null);
     RUN_TEST(push_max_array_list_size_plus_one_then_pop_one_bottom_is_null);
     RUN_TEST(push_max_array_list_size_plus_one_then_pop_all_top_is_null);
+    RUN_TEST(push_max_array_list_size_plus_one_then_pop_all_top_is_null);
+    RUN_TEST(push_one_index_and_free_index_stack_top_is_null);
+    RUN_TEST(push_max_array_indexes_and_free_index_stack_top_is_null);
+    RUN_TEST(push_max_array_plus_one_indexes_and_free_index_stack_top_is_null);
+    RUN_TEST(push_max_array_with_1_plus_one_42_and_pop_back_42);
+    RUN_TEST(push_max_array_minus_one_with_1_plus_one_42_and_pop_back_42);
 }

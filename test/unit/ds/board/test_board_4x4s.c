@@ -6,31 +6,31 @@
 
 #include <ds/board.h>
 
-#define FILEPATH "data/test/4x4.kkr"
+#define FILEPATH "data/test/4x4s.kkr"
 #define GAME_GRID_ROW_SIZE 4
 #define GAME_GRID_COL_SIZE 4
 #define GAME_GRID_COUNT (GAME_GRID_ROW_SIZE * GAME_GRID_COL_SIZE)
 #define GAME_GRID_EMPTY_COUNT 7
 
-Kakuro b4x4;
+Kakuro b4x4s;
 
-void construct_4x4() {
+void construct_4x4s() {
     FILE * fp =  fopen(FILEPATH, "rb");
-    b4x4 = init_kakuro(fp);
+    b4x4s = init_kakuro(fp);
     fclose(fp);
 }
 
-void destruct_4x4() {
-    free_kakuro(&b4x4);
+void destruct_4x4s() {
+    free_kakuro(&b4x4s);
 }
 
-void __attribute__((constructor)) construct_4x4();
-void __attribute__((destructor)) destruct_4x4();
+void __attribute__((constructor)) construct_4x4s();
+void __attribute__((destructor)) destruct_4x4s();
 
 TEST game_grid_row_size(void) {
     ASSERT_EQ_FMTm(
         "GAME GRID ROW SIZE DOESN'T MATCH", 
-        GAME_GRID_ROW_SIZE, b4x4.game.size[ROW],
+        GAME_GRID_ROW_SIZE, b4x4s.game.size[ROW],
         "%hhu"
     );
     
@@ -40,7 +40,7 @@ TEST game_grid_row_size(void) {
 TEST game_grid_column_size(void) {
     ASSERT_EQ_FMTm(
         "GAME GRID COLUMN SIZE DOESN'T MATCH",
-        GAME_GRID_COL_SIZE, b4x4.game.size[COLUMN],
+        GAME_GRID_COL_SIZE, b4x4s.game.size[COLUMN],
         "%hhu"
     );
     PASS();
@@ -49,7 +49,7 @@ TEST game_grid_column_size(void) {
 TEST game_grid_count(void) {
     ASSERT_EQ_FMTm(
         "GAME GRID CELL COLUMN DOESN'T MATCH",
-        GAME_GRID_COUNT, b4x4.game.count,
+        GAME_GRID_COUNT, b4x4s.game.count,
         "%hhu"
     );
     PASS();
@@ -58,7 +58,7 @@ TEST game_grid_count(void) {
 TEST game_grid_empty_count(void) {
     ASSERT_EQ_FMTm(
         "GAME GRID EMPTY CELL COLUMN DOESN'T MATCH",
-        GAME_GRID_EMPTY_COUNT, b4x4.game.empty_count,
+        GAME_GRID_EMPTY_COUNT, b4x4s.game.empty_count,
         "%hhu"
     );
     PASS();
@@ -84,12 +84,12 @@ TEST game_grid(void) {
         for (size_t j = 0; j < GAME_GRID_COL_SIZE; j++) {
             ASSERT_EQ_FMTm(
                 "GAME GRID ROW ELEMENTS DON'T MATCH",
-                expected_grid[ROW][i][j], b4x4.game.grids[ROW][i][j],
+                expected_grid[ROW][i][j], b4x4s.game.grids[ROW][i][j],
                 "%hhd"
             );
             ASSERT_EQ_FMTm(
                 "GAME GRID COLUMN ELEMENTS DON'T MATCH",
-                expected_grid[COLUMN][i][j], b4x4.game.grids[COLUMN][i][j],
+                expected_grid[COLUMN][i][j], b4x4s.game.grids[COLUMN][i][j],
                 "%hhd"
             );
         }
@@ -110,7 +110,7 @@ TEST grid_lookup(void) {
         for (size_t j = 0; j < GAME_GRID_COL_SIZE; j++) {
             ASSERT_EQ_FMTm(
                 "BOARD LOOKUP GRID ELEMENTS DON'T MATCH",
-                expected_grid[i][j], b4x4.grid[i][j],
+                expected_grid[i][j], b4x4s.grid[i][j],
                 "%hhd"
             );
         }
@@ -127,12 +127,12 @@ TEST lookup_blocks(void) {
     for (size_t i = 0; i < GAME_GRID_EMPTY_COUNT; i++) {
         ASSERT_EQ_FMTm(
             "BOARD LOOKUP ROW BLOCKS DON'T MATCH",
-            expected_blocks[ROW][i], b4x4.blocks[ROW][i],
+            expected_blocks[ROW][i], b4x4s.blocks[ROW][i],
             "%hhd"
         );
         ASSERT_EQ_FMTm(
             "BOARD LOOKUP COLUMN BLOCKS DON'T MATCH",
-            expected_blocks[COLUMN][i], b4x4.blocks[COLUMN][i],
+            expected_blocks[COLUMN][i], b4x4s.blocks[COLUMN][i],
             "%hhd"
         );
     }
@@ -148,12 +148,12 @@ TEST lookup_sums(void) {
     for (size_t i = 0; i < GAME_GRID_EMPTY_COUNT; i++) {
         ASSERT_EQ_FMTm(
             "BOARD LOOKUP ROW SUMS DON'T MATCH",
-             expected_sums[ROW][i], b4x4.sums[ROW][i],
+             expected_sums[ROW][i], b4x4s.sums[ROW][i],
             "%hhd"
         );
         ASSERT_EQ_FMTm(
             "BOARD LOOKUP COLUMN SUMS DON'T MATCH",
-            expected_sums[COLUMN][i], b4x4.sums[COLUMN][i],
+            expected_sums[COLUMN][i], b4x4s.sums[COLUMN][i],
             "%hhd"
         );
     }
@@ -169,12 +169,12 @@ TEST lookup_coordinates(void) {
     for (size_t i = 0; i < GAME_GRID_EMPTY_COUNT; i++) {
         ASSERT_EQ_FMTm(
             "BOARD LOOKUP ROW COORDINATES DON'T MATCH",
-            expected_coords[ROW][i], b4x4.coords[ROW][i],
+            expected_coords[ROW][i], b4x4s.coords[ROW][i],
             "%hhd"
         );
         ASSERT_EQ_FMTm(
             "BOARD LOOKUP COLUMN COORDINATES DON'T MATCH",
-            expected_coords[COLUMN][i], b4x4.coords[COLUMN][i],
+            expected_coords[COLUMN][i], b4x4s.coords[COLUMN][i],
             "%hhd"
         );
     }
@@ -185,7 +185,7 @@ TEST is_wall_hit_at_row_sub_zero_col_sub_zero_true(void) {
     ksize_t row = 0, col = 0;
     ASSERTm(
         "EXPECTED NO WALL HIT",
-        is_wall_hit(b4x4, --row, --col)
+        is_wall_hit(b4x4s, --row, --col)
     );
     PASS();
 }
@@ -194,7 +194,7 @@ TEST is_wall_hit_at_row_sub_zero_true(void) {
     ksize_t row = 0;
     ASSERTm(
         "EXPECTED NO WALL HIT",
-        is_wall_hit(b4x4, --row, 0)
+        is_wall_hit(b4x4s, --row, 0)
     );
     PASS();
 }
@@ -203,7 +203,7 @@ TEST is_wall_hit_at_col_sub_zero_true(void) {
     ksize_t col = 0;
     ASSERTm(
         "EXPECTED NO WALL HIT",
-        is_wall_hit(b4x4, 0, --col)
+        is_wall_hit(b4x4s, 0, --col)
     );
     PASS();
 }
@@ -212,7 +212,7 @@ TEST is_wall_hit_at_row_outer_edge_col_outer_edge_true(void) {
     ksize_t row = GAME_GRID_ROW_SIZE, col = GAME_GRID_COL_SIZE;
     ASSERTm(
         "EXPECTED WALL HIT",
-        is_wall_hit(b4x4, row, col)
+        is_wall_hit(b4x4s, row, col)
     );
     PASS();
 }
@@ -221,7 +221,7 @@ TEST is_wall_hit_at_row_outer_edge_true(void) {
     ksize_t row = GAME_GRID_ROW_SIZE;
     ASSERTm(
         "EXPECTED WALL HIT",
-        is_wall_hit(b4x4, row, 0)
+        is_wall_hit(b4x4s, row, 0)
     );
     PASS();
 }
@@ -230,7 +230,7 @@ TEST is_wall_hit_at_col_outer_edge_true(void) {
     ksize_t col = GAME_GRID_COL_SIZE;
     ASSERTm(
         "EXPECTED WALL HIT",
-        is_wall_hit(b4x4, 0, col)
+        is_wall_hit(b4x4s, 0, col)
     );
     PASS();
 }
@@ -247,14 +247,14 @@ TEST is_wall_hit_compare_board(void) {
         for (size_t j = 0; j < GAME_GRID_COL_SIZE; j++) {
             ASSERT_EQm(
                 "WALL HIT DON'T MATCH",
-                expected_walls[i][j], is_wall_hit(b4x4, i, j)
+                expected_walls[i][j], is_wall_hit(b4x4s, i, j)
             );
         }
     }
     PASS();
 }
 
-SUITE (test_board_4x4) {
+SUITE (test_board_4x4s) {
     // TESTS IF KAKURO STRUCTURE WAS LOADED CORRECTLY
     RUN_TEST(game_grid_row_size);
     RUN_TEST(game_grid_column_size);

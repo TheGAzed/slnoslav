@@ -203,7 +203,7 @@ bool is_wall_hit(Kakuro board, ksize_t row, ksize_t col) {
         board.grid[row][col] == -1;
 }
 
-IStack init_istack() {
+IStack init_istack(void) {
     return (IStack) { 0 };
 }
 
@@ -258,4 +258,16 @@ void free_istack(IStack * stack) {
 ksize_t _get_index_istack(IStack from, IPosition type) {
     assert((!is_empty_istack(from) || type != I_CURRENT) && "CAN'T GET CURRENT INDEX IF EMPTY STACK");
     return (from.count - type) & (IA_SIZE - 1);
+}
+
+void print_board(Kakuro board) {
+    for (size_t i = 0; i < GRID_DIMENTIONS; i++) {
+        for (size_t j = 0; j < board.game.size[ROW]; j++) {
+            for (size_t k = 0; k < board.game.size[COLUMN]; k++) {
+                printf("%02hhd ", board.game.grids[i][j][k]);
+            }
+            putchar('\n');
+        }
+        putchar('\n');
+    }
 }
