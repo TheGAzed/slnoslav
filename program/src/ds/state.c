@@ -5,6 +5,17 @@
 
 #include <ds/state.h>
 
+#ifndef EXPOSE_PRIVATE_FUNCTIONS
+
+typedef enum state_position {
+    S_CURRENT = 1,
+    S_NEXT = 0,
+} SPosition;
+
+ksize_t _get_index_sstack(SStack from, SPosition type);
+
+#endif /* EXPOSE_PRIVATE_FUNCTIONS */
+
 SArray init_state(ksize_t state_length) {
     SArray state = { .elements = malloc(state_length * sizeof(State)) };
     memset(state.elements, FULL_STATE, state_length);

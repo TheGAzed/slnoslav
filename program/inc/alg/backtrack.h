@@ -8,13 +8,12 @@
 
 bool backtrack(Kakuro board, SArray current_state);
 
-#ifdef SHOW_HIDDEN_FUNCTIONS
+#ifdef EXPOSE_PRIVATE_FUNCTIONS
 
-typedef enum check { UNCHECKED = 3, ROWCHECK = 1, COLCHECK = 2, CHEKCED = 0, } Check;
 bool _backtrack_sum(Kakuro board, SArray current_state, Check * checks, size_t index, Check type);
 bool _backtrack_row_sum(Kakuro board, SArray current_state, Check * checks, size_t index);
 bool _backtrack_col_sum(Kakuro board, SArray current_state, Check * checks, size_t index);
 
-#endif
+#endif /* EXPOSE_PRIVATE_FUNCTIONS */
 
 #endif /* KAKURO_ALGO_BACKTRACK_H */

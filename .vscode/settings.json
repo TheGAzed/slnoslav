@@ -1,0 +1,17 @@
+{
+    "C_Cpp.default.compilerPath": "C:\\msys64\\ucrt64\\bin\\gcc.exe",
+    "cmake.sourceDirectory": "${workspaceFolder}",
+    "files.associations": {
+        "stdbool.h": "c",
+        "state.h": "c",
+        "backtrack.h": "c",
+        "stdlib.h": "c",
+        "assert.h": "c",
+        "forward_check.h": "c",
+        "stack.h": "c",
+        "depth_first_search.h": "c",
+        "algorithm": "c",
+        "random": "c",
+        "board.h": "c"
+    }
+}

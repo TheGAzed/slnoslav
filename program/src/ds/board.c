@@ -5,6 +5,25 @@
 
 #include <ds/board.h>
 
+#ifndef EXPOSE_PRIVATE_FUNCTIONS
+
+typedef enum index_position {
+    I_CURRENT = 1,
+    I_NEXT = 0,
+} IPosition;
+
+KGrid   _init_grid(FILE * kakuro_file);
+void    _free_grid(KGrid * grid);
+void    _kakuro_alloc(Kakuro * board, FILE * kakuro_file);
+void    _kakuro_setup(Kakuro * board);
+void    _setup_coords(Kakuro * board, ksize_t row, ksize_t col, ksize_t index);
+void    _setup_blocks(Kakuro * board, ksize_t row, ksize_t col, ksize_t index);
+void    _setup_sums(Kakuro * board, ksize_t row, ksize_t col, ksize_t index);
+ksize_t _empty_cell_count(KGrid from);
+ksize_t _get_index_istack(IStack from, IPosition type);
+
+#endif /* EXPOSE_PRIVATE_FUNCTIONS */
+
 Kakuro init_kakuro(FILE * kakuro_file) {
     assert(kakuro_file && "KAKURO FILE POINTER IS NULL");
 

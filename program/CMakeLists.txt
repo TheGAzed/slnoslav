@@ -8,6 +8,7 @@ target_sources(prog
         src/alg/backtrack.c
         src/alg/forward_check.c
 
+        src/ds/argument.c
         src/ds/board.c
         src/ds/state.c
 
@@ -17,6 +18,7 @@ target_sources(prog
         inc/alg/backtrack.h
         inc/alg/forward_check.h
 
+        inc/ds/argument.h
         inc/ds/board.h
         inc/ds/state.h
 

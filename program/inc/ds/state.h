@@ -44,11 +44,6 @@ typedef struct state_stack {
     SAList * top;
 } SStack;
 
-typedef enum state_position {
-    S_CURRENT = 1,
-    S_NEXT = 0,
-} SPosition;
-
 SArray  init_state(ksize_t state_length);
 void    free_state(SArray * state);
 SArray  copy_state(SArray to_copy);
@@ -73,6 +68,17 @@ bool    is_empty_sstack(SStack stack);
 void    push_sstack(SStack * stack, SArray state);
 SArray  pop_sstack(SStack * stack);
 void    free_sstack(SStack * stack);
+
+#ifdef EXPOSE_PRIVATE_FUNCTIONS
+
+typedef enum state_position {
+    S_CURRENT = 1,
+    S_NEXT = 0,
+} SPosition;
+
 ksize_t _get_index_sstack(SStack from, SPosition type);
+
+#endif /* EXPOSE_PRIVATE_FUNCTIONS */
+
 
 #endif

@@ -6,15 +6,6 @@
 
 #include <ds/board.h>
 
-void construct_istack() {
-}
-
-void destruct_istack() {
-}
-
-void __attribute__((constructor)) construct_6x4();
-void __attribute__((destructor)) destruct_6x4();
-
 TEST init_stack_is_empty(void) {
     IStack stack = init_istack();
     ASSERTm(
@@ -128,9 +119,66 @@ TEST push_42_and_0_and_pop_from_stack_to_get_0(void) {
     PASS();
 }
 
+TEST push_until_max_array_list_size_bottom_is_null(void) {
+    IStack stack = init_istack();
+
+    for (size_t i = 0; i < IA_SIZE; i++) push_istack(&stack, 42);
+    ASSERT_FALSEm(
+        "EXPECTED BOTTOM TO BE NULL",
+        stack.top->bottom
+    );
+    free_istack(&stack);
+
+    PASS();
+}
+
+TEST push_until_max_array_list_size_plus_one_bottom_is_not_null(void) {
+    IStack stack = init_istack();
+
+    for (size_t i = 0; i < IA_SIZE + 1; i++) push_istack(&stack, 42);
+    ASSERTm(
+        "EXPECTED BOTTOM TO NOT BE NULL",
+        stack.top->bottom
+    );
+    free_istack(&stack);
+
+    PASS();
+}
+
+TEST push_max_array_list_size_plus_one_then_pop_one_bottom_is_null(void) {
+    IStack stack = init_istack();
+
+    for (size_t i = 0; i < IA_SIZE + 1; i++) push_istack(&stack, 42);
+    pop_istack(&stack);
+
+    ASSERT_FALSEm(
+        "EXPECTED BOTTOM TO BE NULL",
+        stack.top->bottom
+    );
+    free_istack(&stack);
+
+    PASS();
+}
+
+TEST push_max_array_list_size_plus_one_then_pop_all_top_is_null(void) {
+    IStack stack = init_istack();
+
+    for (size_t i = 0; i < IA_SIZE + 1; i++) push_istack(&stack, 42);
+    for (size_t i = 0; i < IA_SIZE + 1; i++) pop_istack(&stack);
+
+    ASSERT_FALSEm(
+        "EXPECTED TOP TO BE NULL",
+        stack.top
+    );
+    free_istack(&stack);
+
+    PASS();
+}
+
 SUITE (test_board_istack) {
     RUN_TEST(init_stack_is_empty);
     RUN_TEST(init_stack_top_array_pointer_null);
+
     RUN_TEST(push_one_index_to_empty_stack_expected_count_one);
     RUN_TEST(push_one_index_to_stack_is_empty_false);
     RUN_TEST(push_one_index_to_stack_top_array_not_null);
@@ -138,4 +186,8 @@ SUITE (test_board_istack) {
     RUN_TEST(push_and_pop_one_index_to_empty_stack_expected_value_42);
     RUN_TEST(push_and_pop_one_index_from_stack_expect_top_null);
     RUN_TEST(push_42_and_0_and_pop_from_stack_to_get_0);
+    RUN_TEST(push_until_max_array_list_size_bottom_is_null);
+    RUN_TEST(push_until_max_array_list_size_plus_one_bottom_is_not_null);
+    RUN_TEST(push_max_array_list_size_plus_one_then_pop_one_bottom_is_null);
+    RUN_TEST(push_max_array_list_size_plus_one_then_pop_all_top_is_null);
 }

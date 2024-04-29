@@ -8,6 +8,8 @@
 
 bool forward_check(Kakuro board, SArray * current_state);
 
+#ifdef EXPOSE_PRIVATE_FUNCTIONS
+
 #define MAGIC_TABLE_LENGTH 7
 #define BLOCK_LENGTH_REST  4
 #define BLOCK_LENGTH_EIGHT 9
@@ -34,5 +36,6 @@ void _reduce_one_values(Kakuro board, SArray * current_state);
 void _reduce_row_one_values(Kakuro board, IStack * ones, SArray * current_state, ksize_t index);
 void _reduce_col_one_values(Kakuro board, IStack * ones, SArray * current_state, ksize_t index);
 
+#endif /* EXPOSE_PRIVATE_FUNCTIONS */
 
 #endif /* ALG_FORWARD_CHECK_H */

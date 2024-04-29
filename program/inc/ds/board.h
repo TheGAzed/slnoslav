@@ -1,6 +1,6 @@
-#ifndef KAKURO_BOARD_H
+#ifndef DATA_STRUCTURES_BOARD_H
 
-#define KAKURO_BOARD_H
+#define DATA_STRUCTURES_BOARD_H
 
 #include <stdint.h>
 #include <stdio.h>
@@ -55,14 +55,23 @@ typedef enum check {
     CHEKCED   = 0,
 } Check;
 
+Kakuro init_kakuro(FILE * kakuro_file);
+void   free_kakuro(Kakuro * board);
+bool   is_wall_hit(Kakuro board, ksize_t row, ksize_t col);
+
+IStack  init_istack();
+bool    is_empty_istack(IStack stack);
+void    push_istack(IStack * stack, ksize_t index);
+ksize_t peek_istack(IStack stack);
+ksize_t pop_istack(IStack * stack);
+void    free_istack(IStack * stack);
+
+#ifdef EXPOSE_PRIVATE_FUNCTIONS
+
 typedef enum index_position {
     I_CURRENT = 1,
     I_NEXT = 0,
 } IPosition;
-
-Kakuro init_kakuro(FILE * kakuro_file);
-void   free_kakuro(Kakuro * board);
-bool   is_wall_hit(Kakuro board, ksize_t row, ksize_t col);
 
 KGrid   _init_grid(FILE * kakuro_file);
 void    _free_grid(KGrid * grid);
@@ -72,13 +81,8 @@ void    _setup_coords(Kakuro * board, ksize_t row, ksize_t col, ksize_t index);
 void    _setup_blocks(Kakuro * board, ksize_t row, ksize_t col, ksize_t index);
 void    _setup_sums(Kakuro * board, ksize_t row, ksize_t col, ksize_t index);
 ksize_t _empty_cell_count(KGrid from);
-
-IStack  init_istack();
-bool    is_empty_istack(IStack stack);
-void    push_istack(IStack * stack, ksize_t index);
-ksize_t peek_istack(IStack stack);
-ksize_t pop_istack(IStack * stack);
-void    free_istack(IStack * stack);
 ksize_t _get_index_istack(IStack from, IPosition type);
 
-#endif
+#endif /* EXPOSE_PRIVATE_FUNCTIONS */
+
+#endif /* DATA_STRUCTURES_BOARD_H */

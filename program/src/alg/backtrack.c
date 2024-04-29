@@ -4,13 +4,13 @@
 
 #include <alg/backtrack.h>
 
-#ifndef SHOW_HIDDEN_FUNCTIONS
+#ifndef EXPOSE_PRIVATE_FUNCTIONS
 
 bool _backtrack_sum(Kakuro board, SArray current_state, Check * checks, size_t index, Check type);
 bool _backtrack_row_sum(Kakuro board, SArray current_state, Check * checks, size_t index);
 bool _backtrack_col_sum(Kakuro board, SArray current_state, Check * checks, size_t index);
 
-#endif
+#endif /* EXPOSE_PRIVATE_FUNCTIONS */
 
 bool backtrack(Kakuro board, SArray current_state) {
     Check * checks = malloc(board.game.empty_count * sizeof(Check));

@@ -7,7 +7,11 @@
 #include <alg/backtrack.h>
 #include <alg/forward_check.h>
 
-void    _push_neighbors(SStack * stack, SArray current);
+#ifndef EXPOSE_PRIVATE_FUNCTIONS
+
+void   _push_neighbors(SStack * stack, SArray current);
+
+#endif /* EXPOSE_PRIVATE_FUNCTIONS */
 
 SArray depth_first_search(Kakuro board) {
     SStack stack = init_sstack();

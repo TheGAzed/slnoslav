@@ -6,7 +6,7 @@
 
 #include <ds/board.h>
 
-#define FILEPATH "../../data/test/6x4.kkr"
+#define FILEPATH "data/test/6x4.kkr"
 #define GAME_GRID_ROW_SIZE 6
 #define GAME_GRID_COL_SIZE 4
 #define GAME_GRID_COUNT (GAME_GRID_ROW_SIZE * GAME_GRID_COL_SIZE)

@@ -1,6 +1,6 @@
 #include <slnoslav.h>
 
-int main(void) {
-    run();
+int main(int argc, char ** argv) {
+    run(init_settings(argc, argv));
     return 0;
 }
