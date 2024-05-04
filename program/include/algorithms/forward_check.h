@@ -1,14 +1,12 @@
-#ifndef ALG_FORWARD_CHECK_H
-#define ALG_FORWARD_CHECK_H
+#ifndef ALGORITHMS_FORWARD_CHECK_H
+#define ALGORITHMS_FORWARD_CHECK_H
 
 #include <stdbool.h>
 
-#include <ds/state.h>
-#include <ds/board.h>
+#include <structures/state.h>
+#include <structures/board.h>
 
 bool forward_check(Kakuro board, SArray * current_state);
-
-#ifdef EXPOSE_PRIVATE_FUNCTIONS
 
 #define MAGIC_TABLE_LENGTH 7
 #define BLOCK_LENGTH_REST  4
@@ -27,7 +25,8 @@ typedef struct magic_table {
 
 State _check_magic_table(ksize_t blocks, ksize_t sum);
 State _check_even_two_blocks(ksize_t block, ksize_t sum);
-State _check_end(ksize_t block, ksize_t sum, SType type);
+State _check_high_end(ksize_t block, ksize_t sum);
+State _check_low_end(ksize_t block, ksize_t sum);
 
 void _reduce_multi_values(Kakuro board, SArray * current_state);
 void _reduce_row_multi_values(Kakuro board, SArray * current_state, Check * checks, ksize_t index);
@@ -36,6 +35,4 @@ void _reduce_one_values(Kakuro board, SArray * current_state);
 void _reduce_row_one_values(Kakuro board, IStack * ones, SArray * current_state, ksize_t index);
 void _reduce_col_one_values(Kakuro board, IStack * ones, SArray * current_state, ksize_t index);
 
-#endif /* EXPOSE_PRIVATE_FUNCTIONS */
-
-#endif /* ALG_FORWARD_CHECK_H */
+#endif /* ALGORITHMS_FORWARD_CHECK_H */

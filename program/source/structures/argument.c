@@ -1,80 +1,25 @@
 #include <assert.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
-#include <ds/argument.h>
-
-#ifndef EXPOSE_PRIVATE_FUNCTIONS
-
-typedef struct argument_queue {
-    int count;
-    int current;
-    char   **values;
-} AQueue;
-
-typedef union hash {
-    uint32_t id;
-    uint8_t  part[sizeof(uint32_t)];
-} Hash;
-
-typedef enum console_argument_flags {
-    INVALID_F  = 0,
-    FILEPATH_F = 0b0010 | 0b0001,
-} Flag;
-
-typedef struct argument {
-    Flag   type;
-    char * value;
-} Argument;
-
-typedef enum flag_index {
-    SHORT = 0,
-    LONG = 1,
-} FIndex;
-
-typedef struct flag_hashtable_element {
-    uint32_t value[2];
-    char     string[2][LONGEST_FLAG_S];
-    Flag     type;
-} FHElement;
-
-typedef struct flag_hashtable {
-    FHElement element[CONSOLE_ARGUMENT_COUNT];
-} FlagHashtable;
-
-typedef struct settings_hashtable_element {
-    void (*function)(Settings *, char *);
-    Flag type;
-} SHElement;
-
-typedef struct function_hashtable {
-    SHElement element[CONSOLE_ARGUMENT_COUNT];
-} FunctionHashtable;
-
-Hash   _get_hash(char * string);
-Flag   _get_flag(char * flag_string);
-void   _setup_filepath(Settings * settings, char * value);
-void   _setup_settings(Settings * settings, Argument argument);
-AQueue _init_aqueue(size_t argc, char **argv);
-bool   _is_empty_aqueue(AQueue queue);
-char * _dequeue_aqueue(AQueue * queue);
-
-#endif /* EXPOSE_PRIVATE_FUNCTIONS */
+#include <structures/argument.h>
 
 Settings init_settings(int argc, char **argv) {
     Settings s = { .is_default = true, 0 };
-    AQueue q = _init_aqueue(argc, argv);
+    AQueue q = create_argument_queue(argc, argv);
+    dequeue_argument(&q);
 
-    while (!_is_empty_aqueue(q)) {
+    while (!is_empty_argument_queue(q)) {
         Argument a = { 0 };
-        char * flag_string = _dequeue_aqueue(&q);
+        char * flag_string = dequeue_argument(&q);
         a.type = _get_flag(flag_string);
         assert(a.type != INVALID_F && "FLAG IS INVALID");
         s.is_default = false;
 
         if (a.type & 1) {
-            assert(!_is_empty_aqueue(q) && "EXPECTED VALUE AFTER FLAG");
-            a.value = _dequeue_aqueue(&q);
+            assert(!is_empty_argument_queue(q) && "EXPECTED VALUE AFTER FLAG");
+            a.value = dequeue_argument(&q);
         }
 
         _setup_settings(&s, a);
@@ -142,16 +87,53 @@ void _setup_settings(Settings * settings, Argument argument) {
     }
 }
 
-AQueue _init_aqueue(size_t argc, char **argv) {
-    AQueue q = { .count = argc, .current = 0, .values = argv, };
-    return q;
+AQueue create_argument_queue(int argc, char **argv) {
+    return (AQueue) { .current = 0, .elements = argv, .max = argc, .size = argc, };
 }
 
-bool _is_empty_aqueue(AQueue queue) {
-    return queue.current >= queue.count;
+void destroy_argument_queue (AQueue * queue) {
+    return;
 }
 
-char * _dequeue_aqueue(AQueue * queue) {
-    assert(_is_empty_aqueue(*queue) && "CAN'T DEQUEUE FROM EMPTY QUEUE");
-    return queue->values[queue->count++];
+bool is_empty_argument_queue(AQueue queue) {
+    return queue.size == 0;
+}
+
+bool is_full_argument_queue(AQueue queue) {
+    return queue.size == queue.max;
+}
+
+void enqueue_argument(AQueue * queue, char * element) {
+    assert(queue && "QUEUE POINTER IS NULL");
+    assert(!is_full_argument_queue(*queue) && "CAN'T PUSH FULL QUEUE");
+
+    size_t idx = _get_index_argument_queue(*queue, AQI_POSITION_NEXT);
+
+    queue->elements[idx] = element;
+    queue->size++;
+}
+
+char * dequeue_argument(AQueue * queue) {
+    assert(queue && "QUEUE POINTER IS NULL");
+    assert(!is_empty_argument_queue(*queue) && "CAN'T POP EMPTY QUEUE");
+
+    char * e = peek_argument_queue(*queue);
+    if (queue->size == 0) queue->elements = NULL;
+    queue->current = (queue->current + 1) % queue->max;
+    
+    queue->size--;
+    return e;
+}
+
+char * peek_argument_queue(AQueue queue) {
+    assert(!is_empty_argument_queue(queue) && "CAN'T PEEK EMPTY QUEUE");
+    size_t idx = _get_index_argument_queue(queue, AQI_POSITION_CURRENT);
+
+    return queue.elements[idx];
+}
+
+size_t _get_index_argument_queue(AQueue queue, AQIPosition type) {
+    assert((!is_empty_argument_queue(queue) || type != AQI_POSITION_CURRENT) && "CAN'T GET CURRENT INDEX IF EMPTY QUEUE");
+    if (type == AQI_POSITION_CURRENT) return queue.current;
+    return (queue.current + queue.size) % queue.max;
 }

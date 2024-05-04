@@ -35,44 +35,42 @@ typedef struct kakuro {
     };
 } Kakuro;
 
-#define IA_SHIFT 4
-#define IA_SIZE (1 << IA_SHIFT)
-typedef struct index_array_list IAList;
-struct index_array_list {
-    ksize_t  indexes[IA_SIZE];
-    IAList * bottom;
-};
-
-typedef struct index_stack {
-    size_t count;
-    IAList * top;
-} IStack;
-
 typedef enum check {
-    UNCHECKED = 3,
+    UNCHECKED = 0,
     ROWCHECK  = 1,
     COLCHECK  = 2,
-    CHEKCED   = 0,
+    CHEKCED   = 3,
 } Check;
+
+#define STACK_LIST_ARRAY_SIZE (1 << 8)
+
+typedef struct index_stack_list_array {
+    ksize_t                         elements[STACK_LIST_ARRAY_SIZE];
+    struct index_stack_list_array * next;
+} ISLArray;
+
+typedef struct index_stack {
+    size_t     size;
+    ISLArray * head;
+} IStack;
+
+typedef enum index_stack_index_position {
+    ISI_POSITION_CURRENT = 1,
+    ISI_POSITION_NEXT    = 0,
+} ISIPosition;
+
+IStack   create_index_stack    (void);
+void     destroy_index_stack   (IStack * stack);
+bool     is_empty_index_stack  (IStack   stack);
+void     push_index_stack      (IStack * stack, ksize_t array);
+ksize_t  pop_index_stack       (IStack * stack);
+ksize_t  peek_index_stack      (IStack   stack);
+size_t   _get_index_index_stack(IStack   stack, ISIPosition type);
 
 Kakuro init_kakuro(FILE * kakuro_file);
 void   free_kakuro(Kakuro * board);
 bool   is_wall_hit(Kakuro board, ksize_t row, ksize_t col);
-
-IStack  init_istack(void);
-bool    is_empty_istack(IStack stack);
-void    push_istack(IStack * stack, ksize_t index);
-ksize_t peek_istack(IStack stack);
-ksize_t pop_istack(IStack * stack);
-void    free_istack(IStack * stack);
-void    print_board(Kakuro board);
-
-#ifdef EXPOSE_PRIVATE_FUNCTIONS
-
-typedef enum index_position {
-    I_CURRENT = 1,
-    I_NEXT = 0,
-} IPosition;
+void   print_board(Kakuro board);
 
 KGrid   _init_grid(FILE * kakuro_file);
 void    _free_grid(KGrid * grid);
@@ -82,8 +80,5 @@ void    _setup_coords(Kakuro * board, ksize_t row, ksize_t col, ksize_t index);
 void    _setup_blocks(Kakuro * board, ksize_t row, ksize_t col, ksize_t index);
 void    _setup_sums(Kakuro * board, ksize_t row, ksize_t col, ksize_t index);
 ksize_t _empty_cell_count(KGrid from);
-ksize_t _get_index_istack(IStack from, IPosition type);
-
-#endif /* EXPOSE_PRIVATE_FUNCTIONS */
 
 #endif /* DATA_STRUCTURES_BOARD_H */

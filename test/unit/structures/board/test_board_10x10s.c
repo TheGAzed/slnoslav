@@ -4,7 +4,7 @@
 
 #include <greatest.h>
 
-#include <ds/board.h>
+#include <structures/board.h>
 
 #define FILEPATH "data/test/10x10s.kkr"
 #define GAME_GRID_ROW_SIZE 10
@@ -17,7 +17,6 @@ Kakuro b10x10s;
 void construct_10x10s() {
     FILE * fp =  fopen(FILEPATH, "rb");
     b10x10s = init_kakuro(fp);
-    print_board(b10x10s);
     fclose(fp);
 }
 

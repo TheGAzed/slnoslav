@@ -4,7 +4,7 @@
 
 #include <greatest.h>
 
-#include <ds/board.h>
+#include <structures/board.h>
 
 #define FILEPATH "data/test/4x4s.kkr"
 #define GAME_GRID_ROW_SIZE 4
@@ -255,7 +255,6 @@ TEST is_wall_hit_compare_board(void) {
 }
 
 SUITE (test_board_4x4s) {
-    // TESTS IF KAKURO STRUCTURE WAS LOADED CORRECTLY
     RUN_TEST(game_grid_row_size);
     RUN_TEST(game_grid_column_size);
     RUN_TEST(game_grid_count);
@@ -265,8 +264,6 @@ SUITE (test_board_4x4s) {
     RUN_TEST(lookup_blocks);
     RUN_TEST(lookup_sums);
     RUN_TEST(lookup_coordinates);
-
-    // TESTS IF FUNCTION is_wall_hit() WORKS CORRECTLY
     RUN_TEST(is_wall_hit_at_row_sub_zero_col_sub_zero_true);
     RUN_TEST(is_wall_hit_at_row_sub_zero_true);
     RUN_TEST(is_wall_hit_at_col_sub_zero_true);

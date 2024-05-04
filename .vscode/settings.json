@@ -12,6 +12,23 @@
         "depth_first_search.h": "c",
         "algorithm": "c",
         "random": "c",
-        "board.h": "c"
+        "board.h": "c",
+        "array": "c",
+        "compare": "c",
+        "functional": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c",
+        "string.h": "c",
+        "stddef.h": "c",
+        "stdio.h": "c",
+        "limits": "c",
+        "queue.h": "c",
+        "*.tcc": "c",
+        "system_error": "c",
+        "argument.h": "c",
+        "state-array-stack.h": "c",
+        "string_view": "c",
+        "initializer_list": "c"
     }
 }

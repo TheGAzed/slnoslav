@@ -8,14 +8,9 @@
 
 #include <slnoslav.h>
 
-#include <alg/depth_first_search.h>
+#include <algorithms/depth_first_search.h>
 
-#ifndef EXPOSE_PRIVATE_FUNCTIONS
-
-void _print_state(SArray s);
 bool _is_valid_file(char * filepath);
-
-#endif /* EXPOSE_PRIVATE_FUNCTIONS */
 
 void run(Settings settings) {
     assert(settings.filepath && "NO FILEPATH FOUND");
@@ -23,22 +18,23 @@ void run(Settings settings) {
 
     FILE * fp = fopen(settings.filepath, "rb");
     assert(fp && "COULDN'T OPEN FILE");
+    Kakuro board = init_kakuro(fp);
+    fclose(fp);
+    
+    SArray solution = depth_first_search(board);
+    free_kakuro(&board);
 
-    SArray solution = depth_first_search(init_kakuro(fp));
     assert(solution.elements && "NO SOLUTION FOUND");
-    _print_state(solution);
+    print_state_array(solution);
 
-    free_state(&solution);
-}
-
-void _print_state(SArray s) {
-    for (size_t i = 0; i < s.count; i++) {
-        printf("%d ", get_one_value(s.elements[i]));
-    }
+    destroy_state_array(&solution);
 }
 
 bool _is_valid_file(char * filename) {
     regex_t rx;
-    assert(regcomp( &rx, "(.*)\\.(kkr)", 0) == 0 && "REGEX PARSER FAILED");
-    return regexec(&rx, filename, 0, NULL, 0) == 0;
+    assert(regcomp( &rx, "(.*)\\.(kkr)", REG_EXTENDED) == 0 && "REGEX PARSER FAILED");
+    bool is_valid = regexec(&rx, filename, 0, NULL, 0) == 0;
+    regfree(&rx);
+
+    return is_valid;
 }

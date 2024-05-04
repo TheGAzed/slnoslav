@@ -20,16 +20,6 @@ typedef struct settings {
     char * filepath;
 } Settings;
 
-Settings init_settings(int argc, char **argv);
-
-#ifdef EXPOSE_PRIVATE_FUNCTIONS
-
-typedef struct argument_queue {
-    int count;
-    int current;
-    char   **values;
-} AQueue;
-
 typedef union hash {
     uint32_t id;
     uint8_t  part[sizeof(uint32_t)];
@@ -69,14 +59,39 @@ typedef struct function_hashtable {
     SHElement element[CONSOLE_ARGUMENT_COUNT];
 } FunctionHashtable;
 
+#define QUEUE_LIST_ARRAY_SIZE (1 << 8)
+
+typedef struct queue_list_array {
+    char **                   elements[QUEUE_LIST_ARRAY_SIZE];
+    struct queue_list_array * next;
+} QLArray;
+
+typedef struct argument_queue {
+    size_t  size;
+    size_t  current;
+    size_t  max;
+    char ** elements;
+} AQueue;
+
+typedef enum argument_queue_index_position {
+    AQI_POSITION_CURRENT = 1,
+    AQI_POSITION_NEXT    = 0,
+} AQIPosition;
+
+Settings init_settings(int argc, char **argv);
+
 Hash   _get_hash(char * string);
 Flag   _get_flag(char * flag_string);
 void   _setup_filepath(Settings * settings, char * value);
 void   _setup_settings(Settings * settings, Argument argument);
-AQueue _init_aqueue(size_t argc, char **argv);
-bool   _is_empty_aqueue(AQueue queue);
-char * _dequeue_aqueue(AQueue * queue);
 
-#endif /* EXPOSE_PRIVATE_FUNCTIONS */
+AQueue create_argument_queue    (int argc,        char **argv);
+void   destroy_argument_queue   (AQueue * queue);
+bool   is_empty_argument_queue  (AQueue   queue);
+bool   is_full_argument_queue(AQueue queue);
+void   enqueue_argument         (AQueue * queue,  char * element);
+char * dequeue_argument         (AQueue * queue);
+char * peek_argument_queue      (AQueue   queue);
+size_t _get_index_argument_queue(AQueue queue,    AQIPosition type);
 
 #endif /* DATA_STRUCTURES_ARGUMENT_H */
