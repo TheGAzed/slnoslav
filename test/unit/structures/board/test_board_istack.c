@@ -4,7 +4,7 @@
 
 #include <greatest.h>
 
-#include <structures/board.h>
+#include <structures/concrete/board.h>
 
 TEST init_stack_is_empty(void) {
     IStack stack = create_index_stack();

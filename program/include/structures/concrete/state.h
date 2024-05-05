@@ -33,31 +33,6 @@ typedef enum sum_type {
     LOW = 1
 } SType;
 
-#define STACK_LIST_ARRAY_SIZE (1 << 8)
-
-typedef struct state_stack_list_array {
-    SArray                          elements[STACK_LIST_ARRAY_SIZE];
-    struct state_stack_list_array * next;
-} SSLArray;
-
-typedef struct state_stack {
-    size_t     size;
-    SSLArray * head;
-} SStack;
-
-typedef enum state_stack_index_position {
-    SSI_POSITION_CURRENT = 1,
-    SSI_POSITION_NEXT    = 0,
-} SSIPosition;
-
-SStack   create_state_stack    (void);
-void     destroy_state_stack   (SStack * stack);
-bool     is_empty_state_stack  (SStack   stack);
-void     push_state_stack      (SStack * stack, SArray array);
-SArray   pop_state_stack       (SStack * stack);
-SArray   peek_state_stack      (SStack   stack);
-size_t   _get_index_state_stack(SStack   stack, SSIPosition type);
-
 SArray   create_state_array (size_t size);
 void     destroy_state_array(SArray * array);
 
@@ -79,7 +54,7 @@ kssize_t shortest_multi_index(SArray array);
 SMatrix generate_neighbor(SArray array, size_t index);
 void    free_state_matrix(SMatrix * matrix);
 
-void print_state(State s);
-void print_state_array(SArray s);
+void    print_state(State s);
+void    print_state_array(SArray s);
 
 #endif

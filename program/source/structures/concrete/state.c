@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <stdio.h>
 
-#include <structures/state.h>
+#include <structures/concrete/state.h>
 
 #define POPCOUNT(value) (__builtin_popcount((unsigned int)value))
 
@@ -113,68 +113,6 @@ kssize_t shortest_multi_index(SArray array) {
     }
     
     return index;
-}
-
-SStack create_state_stack(void) {
-    return (SStack) { 0 };
-}
-
-void destroy_state_stack(SStack * stack) {
-    while (!is_empty_state_stack(*stack)) { 
-        SArray sa = pop_state_stack(stack);
-        destroy_state_array(&sa);
-    }
-}
-
-bool is_empty_state_stack(SStack stack) {
-    return stack.size == 0;
-}
-
-void push_state_stack(SStack * stack, SArray array) {
-    assert(stack && "STACK POINTER IS NULL");
-    size_t idx = _get_index_state_stack(*stack, SSI_POSITION_NEXT);
-
-    if (!idx) {
-        SSLArray * temp = malloc(sizeof(SSLArray));
-        temp->next = NULL;
-        assert(temp && "MEMORY ALLOCATION FAILED");
-        temp->next = stack->head;
-        stack->head = temp;
-    }
-    stack->head->elements[idx] = array;
-
-    stack->size++;
-}
-
-SArray pop_state_stack(SStack * stack) {
-    assert(stack && "STACK POINTER IS NULL");
-    assert(!is_empty_state_stack(*stack) && "CAN'T POP EMPTY STACK");
-
-    SArray e = peek_state_stack(*stack);
-
-    size_t idx = _get_index_state_stack(*stack, SSI_POSITION_CURRENT);
-    stack->size--;
-
-    if (!idx) {
-        SSLArray * temp = stack->head->next;
-        free(stack->head);
-        stack->head = temp;
-    }
-
-    return e;
-}
-
-SArray peek_state_stack(SStack stack) {
-    assert(!is_empty_state_stack(stack) && "CAN'T PEEK EMPTY STACK");
-    size_t idx = _get_index_state_stack(stack, SSI_POSITION_CURRENT);
-
-    return stack.head->elements[idx];
-}
-
-size_t _get_index_state_stack(SStack stack, SSIPosition type) {
-    assert((!is_empty_state_stack(stack) || type != SSI_POSITION_CURRENT) && "CAN'T GET CURRENT INDEX IF EMPTY STACK");
-
-    return (stack.size - type) % (STACK_LIST_ARRAY_SIZE - 1);
 }
 
 SMatrix generate_neighbor(SArray array, size_t index) {

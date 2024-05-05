@@ -1,8 +1,8 @@
 #ifndef KAKURO_SLNOSLAV_H
 #define KAKURO_SLNOSLAV_H
 
-#include <structures/argument.h>
-#include <structures/state.h>
+#include <structures/concrete/argument.h>
+#include <structures/concrete/state.h>
 
 void run(Settings settings);
 

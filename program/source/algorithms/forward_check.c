@@ -3,7 +3,37 @@
 #include <string.h>
 
 #include <algorithms/forward_check.h>
-#include <structures/board.h>
+#include <structures/concrete/board.h>
+
+#define STACK_DATA_TYPE ksize_t
+#include <structures/abstract/stack.h>
+
+#define MAGIC_TABLE_LENGTH 7
+#define BLOCK_LENGTH_REST  4
+#define BLOCK_LENGTH_EIGHT 9
+typedef struct magic_table {
+    size_t blocks[MAGIC_TABLE_LENGTH];
+    size_t lengths[MAGIC_TABLE_LENGTH];
+
+    State B[BLOCK_LENGTH_REST]; State C[BLOCK_LENGTH_REST];
+    State D[BLOCK_LENGTH_REST]; State E[BLOCK_LENGTH_REST];
+    State F[BLOCK_LENGTH_REST]; State G[BLOCK_LENGTH_REST];
+    State H[BLOCK_LENGTH_EIGHT];
+
+    State * united[MAGIC_TABLE_LENGTH];
+} MTable;
+
+State _check_magic_table(ksize_t blocks, ksize_t sum);
+State _check_even_two_blocks(ksize_t block, ksize_t sum);
+State _check_high_end(ksize_t block, ksize_t sum);
+State _check_low_end(ksize_t block, ksize_t sum);
+
+void _reduce_multi_values(Kakuro board, SArray * current_state);
+void _reduce_row_multi_values(Kakuro board, SArray * current_state, Check * checks, ksize_t index);
+void _reduce_col_multi_values(Kakuro board, SArray * current_state, Check * checks, ksize_t index);
+void _reduce_one_values(Kakuro board, SArray * current_state);
+void _reduce_row_one_values(Kakuro board, Stack * ones, SArray * current_state, ksize_t index);
+void _reduce_col_one_values(Kakuro board, Stack * ones, SArray * current_state, ksize_t index);
 
 bool forward_check(Kakuro board, SArray * current_state) {  
     SArray copy = copy_state(*current_state);
@@ -104,17 +134,17 @@ void _reduce_row_multi_values(Kakuro board, SArray * current_state, Check * chec
     ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
     ksize_t block = board.blocks[ROW][index], sums = board.sums[ROW][index];
     ksize_t empty_blocks = block, empty_sums = sums;
-    IStack multi = create_index_stack();
+    Stack multi = create_stack();
 
     for (size_t i = 0; i < block; i++) {
         checks[board.grid[row][col + i]] |= ROWCHECK;
         State s = current_state->elements[board.grid[row][col + i]];
         if (is_one_value(s)) { empty_blocks--; empty_sums -= state_to_sums(s); }
-        else push_index_stack(&multi, (ksize_t)board.grid[row][col + i]);
+        else push_stack(&multi, (ksize_t)board.grid[row][col + i]);
     }
     
-    while (!is_empty_index_stack(multi)) {
-        ksize_t i = pop_index_stack(&multi);
+    while (!is_empty_stack(multi)) {
+        ksize_t i = pop_stack(&multi);
         State magic = { .mask = _check_magic_table(empty_blocks, empty_sums).mask, };
         if (magic.mask != FULL_STATE) { current_state->elements[i].mask &= magic.mask; continue; }
         current_state->elements[i].mask &= 
@@ -122,24 +152,24 @@ void _reduce_row_multi_values(Kakuro board, SArray * current_state, Check * chec
             _check_high_end(empty_blocks, empty_sums).mask   & _check_low_end(empty_blocks, empty_sums).mask;
     }
 
-    destroy_index_stack(&multi);
+    destroy_stack(&multi, NULL);
 }
 
 void _reduce_col_multi_values(Kakuro board, SArray * current_state, Check * checks, ksize_t index) {
     ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
     ksize_t block = board.blocks[COLUMN][index], sums = board.sums[COLUMN][index];
     ksize_t empty_blocks = block, empty_sums = sums;
-    IStack multi = create_index_stack();
+    Stack multi = create_stack();
 
     for (size_t i = 0; i < block; i++) {
         checks[board.grid[row + i][col]] |= COLCHECK;
         State s = current_state->elements[board.grid[row + i][col]];
         if (is_one_value(s)) { empty_blocks--; empty_sums -= state_to_sums(s); }
-        else push_index_stack(&multi, (ksize_t)board.grid[row + i][col]);
+        else push_stack(&multi, (ksize_t)board.grid[row + i][col]);
     }
     
-    while (!is_empty_index_stack(multi)) {
-        ksize_t i = pop_index_stack(&multi);
+    while (!is_empty_stack(multi)) {
+        ksize_t i = pop_stack(&multi);
         State magic = { .mask = _check_magic_table(empty_blocks, empty_sums).mask, };
         if (magic.mask != FULL_STATE) { current_state->elements[i].mask &= magic.mask; continue; }
         current_state->elements[i].mask &= 
@@ -147,25 +177,25 @@ void _reduce_col_multi_values(Kakuro board, SArray * current_state, Check * chec
             _check_high_end(empty_blocks, empty_sums).mask   & _check_low_end(empty_blocks, empty_sums).mask;
     }
 
-    destroy_index_stack(&multi);
+    destroy_stack(&multi, NULL);
 }
 
 void _reduce_one_values(Kakuro board, SArray * current_state) {
-    IStack ones = create_index_stack();
+    Stack ones = create_stack();
 
     for (ksize_t i = 0; i < board.game.empty_count; i++) {
-        if (is_one_value(current_state->elements[i])) push_index_stack(&ones, i);
+        if (is_one_value(current_state->elements[i])) push_stack(&ones, i);
     }
 
-    while (!is_empty_index_stack(ones)) {
-        ksize_t index = pop_index_stack(&ones);
+    while (!is_empty_stack(ones)) {
+        ksize_t index = pop_stack(&ones);
         _reduce_row_one_values(board, &ones, current_state, index);
         _reduce_col_one_values(board, &ones, current_state, index);
     }
-    destroy_index_stack(&ones);
+    destroy_stack(&ones, NULL);
 }
 
-void _reduce_row_one_values(Kakuro board, IStack * ones, SArray * current_state, ksize_t index) {
+void _reduce_row_one_values(Kakuro board, Stack * ones, SArray * current_state, ksize_t index) {
     assert(is_one_value(current_state->elements[index]) && "EXPECTED ONE VALUE STATE");
 
     ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
@@ -173,18 +203,18 @@ void _reduce_row_one_values(Kakuro board, IStack * ones, SArray * current_state,
         State * s = &(current_state->elements[board.grid[row][c]]);
         if (is_one_value(*s)) continue;
         (*s).mask &= ~(current_state->elements[index].mask);
-        if (is_one_value(*s)) push_index_stack(ones, (ksize_t)board.grid[row][c]);
+        if (is_one_value(*s)) push_stack(ones, (ksize_t)board.grid[row][c]);
     }
 
     for (size_t c = col + 1; !is_wall_hit(board, row, c); c++) {
         State * s = &(current_state->elements[board.grid[row][c]]);
         if (is_one_value(*s)) continue;
         (*s).mask &= ~(current_state->elements[index].mask);
-        if (is_one_value(*s)) push_index_stack(ones, (ksize_t)board.grid[row][c]);
+        if (is_one_value(*s)) push_stack(ones, (ksize_t)board.grid[row][c]);
     }
 }
 
-void _reduce_col_one_values(Kakuro board, IStack * ones, SArray * current_state, ksize_t index) {
+void _reduce_col_one_values(Kakuro board, Stack * ones, SArray * current_state, ksize_t index) {
     assert(is_one_value(current_state->elements[index]) && "EXPECTED ONE VALUE STATE");
 
     ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
@@ -192,13 +222,13 @@ void _reduce_col_one_values(Kakuro board, IStack * ones, SArray * current_state,
         State * s = &(current_state->elements[board.grid[r][col]]);
         if (is_one_value(*s)) continue;
         (*s).mask &= ~current_state->elements[index].mask;
-        if (is_one_value(*s)) push_index_stack(ones, (ksize_t)board.grid[r][col]);
+        if (is_one_value(*s)) push_stack(ones, (ksize_t)board.grid[r][col]);
     }
 
     for (size_t r = row + 1; !is_wall_hit(board, r, col); r++) {
         State * s = &(current_state->elements[board.grid[r][col]]);
         if (is_one_value(*s)) continue;
         (*s).mask &= ~current_state->elements[index].mask;
-        if (is_one_value(*s)) push_index_stack(ones, (ksize_t)board.grid[r][col]);
+        if (is_one_value(*s)) push_stack(ones, (ksize_t)board.grid[r][col]);
     }
 }

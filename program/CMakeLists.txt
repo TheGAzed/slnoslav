@@ -8,9 +8,9 @@ target_sources(program
         source/algorithms/backtrack.c
         source/algorithms/forward_check.c
 
-        source/structures/argument.c
-        source/structures/board.c
-        source/structures/state.c
+        source/structures/concrete/argument.c
+        source/structures/concrete/board.c
+        source/structures/concrete/state.c
 
         source/slnoslav.c
 )
