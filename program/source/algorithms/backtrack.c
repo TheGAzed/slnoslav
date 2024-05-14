@@ -31,8 +31,8 @@ bool _backtrack_row_sum(Kakuro board, SArray current_state, Check * checks, size
     return
         (filled_blocks == blocks) ? filled_sums != sums                                            : false || 
         (filled_sums > sums)                                                                               || 
-        (blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, HIGH) < (sums - filled_sums) : false  || 
-        (blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, LOW)  > (sums - filled_sums) : false;
+        (blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, UPPER_EDGE) < (sums - filled_sums) : false  || 
+        (blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, LOWER_EDGE)  > (sums - filled_sums) : false;
 }
 
 bool _backtrack_col_sum(Kakuro board, SArray current_state, Check * checks, size_t index) {
@@ -49,6 +49,6 @@ bool _backtrack_col_sum(Kakuro board, SArray current_state, Check * checks, size
     return 
         (blocks == filled_blocks) ? filled_sums != sums                                            : false || 
         (filled_sums > sums)                                                                               || 
-        (blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, HIGH) < (sums - filled_sums) : false  || 
-        (blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, LOW)  > (sums - filled_sums) : false;
+        (blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, UPPER_EDGE) < (sums - filled_sums) : false  || 
+        (blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, LOWER_EDGE)  > (sums - filled_sums) : false;
 }

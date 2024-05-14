@@ -60,21 +60,21 @@ kssize_t get_multi_index(SArray array) {
     return -1;
 }
 
-ksize_t get_sums(ksize_t start, SType type) {
+ksize_t get_sums(ksize_t start, EType type) {
     assert(start <= MAX_BLOCK_VALUES && "VALUE IS TOO HIGH");
 
     ksize_t sums = 0;
-    if (type == LOW) for (ksize_t i = 1; i <= start; i++) sums += i;
+    if (type == LOWER_EDGE) for (ksize_t i = 1; i <= start; i++) sums += i;
     else for (ksize_t i = MAX_BLOCK_VALUES; i > MAX_BLOCK_VALUES - start; i--) sums += i;
 
     return sums;
 }
 
-State get_bound_state(ksize_t start, SType type) {
-    assert(start <= MAX_BLOCK_VALUES && "VALUE IS TOO HIGH");
+State get_edge_state(ksize_t count, EType type) {
+    assert(count <= MAX_BLOCK_VALUES && "VALUE IS TOO HIGH");
 
     return (State) {
-        .mask = (type == LOW) ? (FULL_STATE >> (MAX_BLOCK_VALUES - start)) : ((FULL_STATE << (MAX_BLOCK_VALUES - start)) & FULL_STATE),
+        .mask = (type == LOWER_EDGE) ? (FULL_STATE >> (MAX_BLOCK_VALUES - count)) : ((FULL_STATE << (MAX_BLOCK_VALUES - count)) & FULL_STATE),
     };
 }
 
@@ -82,7 +82,7 @@ bool is_one_value(State state) {
     return state.mask && !(state.mask & (state.mask - 1));
 }
 
-int get_one_value(State state) {
+ksize_t get_one_value(State state) {
     assert(is_one_value(state) && "EXPECTED ONE VALUE STATE");
     return __builtin_ctz(state.mask) + 1;
 }
@@ -93,9 +93,9 @@ ksize_t state_to_sums(State state) {
     return s;
 }
 
-State one_sum_to_state(ksize_t sum) {
-    assert(sum >= LOW && sum <= HIGH && "CAN'T TURN INTO MULTI VALUE STATE");
-    return (State) { .mask = 1 << (sum - 1), };
+State get_one_state(ksize_t value) {
+    assert(value >= LOWER_EDGE && value <= UPPER_EDGE && "CAN'T TURN INTO MULTI VALUE STATE");
+    return (State) { .mask = 1 << (value - 1), };
 }
 
 kssize_t shortest_multi_index(SArray array) {

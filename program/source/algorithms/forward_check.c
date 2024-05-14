@@ -98,7 +98,7 @@ State _check_magic_table(ksize_t blocks, ksize_t sum) {
 }
 
 State _check_one_blocks(ksize_t blocks, ksize_t sum) {
-    State s = blocks == 1 ? one_sum_to_state(sum) : (State) { .mask = FULL_STATE };
+    State s = blocks == 1 ? get_one_state(sum) : (State) { .mask = FULL_STATE };
     return s;
 }
 
@@ -108,14 +108,14 @@ State _check_even_two_blocks(ksize_t block, ksize_t sum) {
 }
 
 State _check_high_end(ksize_t block, ksize_t sum) {
-    ksize_t block_sum = get_sums(block - 1, HIGH);
-    State s = (LOW + block_sum < sum) ? get_bound_state((MAX_BLOCK_VALUES + 1) - (sum - block_sum), HIGH) : (State) { .mask = FULL_STATE };
+    ksize_t block_sum = get_sums(block - 1, UPPER_EDGE);
+    State s = (LOWER_EDGE + block_sum < sum) ? get_edge_state((MAX_BLOCK_VALUES + 1) - (sum - block_sum), UPPER_EDGE) : (State) { .mask = FULL_STATE };
     return s;
 }
 
 State _check_low_end(ksize_t block, ksize_t sum) {
-    ksize_t block_sum = get_sums(block - 1, LOW);
-    State s = (HIGH + block_sum > sum) ? get_bound_state(sum - block_sum, LOW) : (State) { .mask = FULL_STATE };
+    ksize_t block_sum = get_sums(block - 1, LOWER_EDGE);
+    State s = (UPPER_EDGE + block_sum > sum) ? get_edge_state(sum - block_sum, LOWER_EDGE) : (State) { .mask = FULL_STATE };
     return s;
 }
 

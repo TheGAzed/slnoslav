@@ -28,10 +28,10 @@ typedef struct state_array_array {
     SArray * elements;
 } SMatrix;
 
-typedef enum sum_type {
-    HIGH = 9,
-    LOW = 1
-} SType;
+typedef enum edge_type {
+    UPPER_EDGE = 9,
+    LOWER_EDGE = 1
+} EType;
 
 SArray   create_state_array (size_t size);
 void     destroy_state_array(SArray * array);
@@ -42,13 +42,13 @@ bool     valid_states   (SArray array);
 bool     is_end_state   (SArray array);
 kssize_t get_multi_index(SArray array);
 
-bool     is_one_value (State state);
-ksize_t  get_sums     (ksize_t start, SType type);
-State    get_bound_state    (ksize_t start, SType type);
-int      get_one_value(State state);
+bool     is_one_value  (State state);
+ksize_t  get_sums      (ksize_t start, EType type);
+State    get_edge_state(ksize_t count, EType type);
+ksize_t  get_one_value (State state);
 
 ksize_t  state_to_sums       (State state);
-State    one_sum_to_state    (ksize_t sum);
+State    get_one_state       (ksize_t value);
 kssize_t shortest_multi_index(SArray array);
 
 SMatrix generate_neighbor(SArray array, size_t index);
