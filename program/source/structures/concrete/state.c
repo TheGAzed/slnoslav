@@ -1,7 +1,5 @@
 #include <assert.h>
 #include <stdlib.h>
-#include <string.h>
-#include <stddef.h>
 #include <stdio.h>
 
 #include <structures/concrete/state.h>
@@ -72,14 +70,12 @@ ksize_t get_sums(ksize_t start, SType type) {
     return sums;
 }
 
-State get_state(ksize_t start, SType type) {
+State get_bound_state(ksize_t start, SType type) {
     assert(start <= MAX_BLOCK_VALUES && "VALUE IS TOO HIGH");
 
-    State state = { 0 };
-    if (type == LOW) for (uint8_t i = 0; i < start; i++) state.mask |= 1 << i;
-    else for (uint8_t i = MAX_BLOCK_VALUES - 1; i >= MAX_BLOCK_VALUES - start; i--) state.mask |= 1 << i;
-    
-    return state;
+    return (State) {
+        .mask = (type == LOW) ? (FULL_STATE >> (MAX_BLOCK_VALUES - start)) : ((FULL_STATE << (MAX_BLOCK_VALUES - start)) & FULL_STATE),
+    };
 }
 
 bool is_one_value(State state) {

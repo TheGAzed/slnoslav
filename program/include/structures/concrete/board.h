@@ -42,43 +42,9 @@ typedef enum check {
     CHEKCED   = 3,
 } Check;
 
-#define STACK_LIST_ARRAY_SIZE (1 << 8)
-
-typedef struct index_stack_list_array {
-    ksize_t                         elements[STACK_LIST_ARRAY_SIZE];
-    struct index_stack_list_array * next;
-} ISLArray;
-
-typedef struct index_stack {
-    size_t     size;
-    ISLArray * head;
-} IStack;
-
-typedef enum index_stack_index_position {
-    ISI_POSITION_CURRENT = 1,
-    ISI_POSITION_NEXT    = 0,
-} ISIPosition;
-
-IStack   create_index_stack    (void);
-void     destroy_index_stack   (IStack * stack);
-bool     is_empty_index_stack  (IStack   stack);
-void     push_index_stack      (IStack * stack, ksize_t array);
-ksize_t  pop_index_stack       (IStack * stack);
-ksize_t  peek_index_stack      (IStack   stack);
-size_t   _get_index_index_stack(IStack   stack, ISIPosition type);
-
 Kakuro init_kakuro(FILE * kakuro_file);
 void   free_kakuro(Kakuro * board);
 bool   is_wall_hit(Kakuro board, ksize_t row, ksize_t col);
 void   print_board(Kakuro board);
-
-KGrid   _init_grid(FILE * kakuro_file);
-void    _free_grid(KGrid * grid);
-void    _kakuro_alloc(Kakuro * board, FILE * kakuro_file);
-void    _kakuro_setup(Kakuro * board);
-void    _setup_coords(Kakuro * board, ksize_t row, ksize_t col, ksize_t index);
-void    _setup_blocks(Kakuro * board, ksize_t row, ksize_t col, ksize_t index);
-void    _setup_sums(Kakuro * board, ksize_t row, ksize_t col, ksize_t index);
-ksize_t _empty_cell_count(KGrid from);
 
 #endif /* DATA_STRUCTURES_BOARD_H */

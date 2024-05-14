@@ -44,7 +44,7 @@ kssize_t get_multi_index(SArray array);
 
 bool     is_one_value (State state);
 ksize_t  get_sums     (ksize_t start, SType type);
-State    get_state    (ksize_t start, SType type);
+State    get_bound_state    (ksize_t start, SType type);
 int      get_one_value(State state);
 
 ksize_t  state_to_sums       (State state);

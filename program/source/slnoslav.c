@@ -1,9 +1,5 @@
 #include <assert.h>
-#include <stdlib.h>
-#include <string.h>
 #include <stdio.h>
-#include <dirent.h>
-#include <sys/stat.h>
 #include <regex.h>
 
 #include <slnoslav.h>

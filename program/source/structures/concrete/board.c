@@ -5,6 +5,15 @@
 
 #include <structures/concrete/board.h>
 
+KGrid   _init_grid       (FILE * kakuro_file);
+void    _free_grid       (KGrid * grid);
+void    _kakuro_alloc    (Kakuro * board, FILE * kakuro_file);
+void    _kakuro_setup    (Kakuro * board);
+void    _setup_coords    (Kakuro * board, ksize_t row, ksize_t col, ksize_t index);
+void    _setup_blocks    (Kakuro * board, ksize_t row, ksize_t col, ksize_t index);
+void    _setup_sums      (Kakuro * board, ksize_t row, ksize_t col, ksize_t index);
+ksize_t _empty_cell_count(KGrid from);
+
 Kakuro init_kakuro(FILE * kakuro_file) {
     assert(kakuro_file && "KAKURO FILE POINTER IS NULL");
 
@@ -194,62 +203,4 @@ void print_board(Kakuro board) {
         }
         putchar('\n');
     }
-}
-
-IStack create_index_stack(void) {
-    return (IStack) { 0 };
-}
-
-void destroy_index_stack(IStack * stack) {
-    while (!is_empty_index_stack(*stack)) pop_index_stack(stack);
-}
-
-bool is_empty_index_stack(IStack stack) {
-    return stack.size == 0;
-}
-
-void push_index_stack(IStack * stack, ksize_t array) {
-    assert(stack && "STACK POINTER IS NULL");
-    size_t idx = _get_index_index_stack(*stack, ISI_POSITION_NEXT);
-
-    if (!idx) {
-        ISLArray * temp = malloc(sizeof(ISLArray));
-        temp->next = NULL;
-        assert(temp && "MEMORY ALLOCATION FAILED");
-        temp->next = stack->head;
-        stack->head = temp;
-    }
-    stack->head->elements[idx] = array;
-
-    stack->size++;
-}
-
-ksize_t pop_index_stack(IStack * stack) {
-    assert(stack && "STACK POINTER IS NULL");
-    assert(!is_empty_index_stack(*stack) && "CAN'T POP EMPTY STACK");
-
-    ksize_t e = peek_index_stack(*stack);
-
-    size_t idx = _get_index_index_stack(*stack, ISI_POSITION_CURRENT);
-    stack->size--;
-
-    if (!idx) {
-        ISLArray * temp = stack->head->next;
-        free(stack->head);
-        stack->head = temp;
-    }
-
-    return e;
-}
-
-ksize_t peek_index_stack(IStack stack) {
-    assert(!is_empty_index_stack(stack) && "CAN'T PEEK EMPTY STACK");
-    size_t idx = _get_index_index_stack(stack, ISI_POSITION_CURRENT);
-
-    return stack.head->elements[idx];
-}
-
-size_t _get_index_index_stack(IStack stack, ISIPosition type) {
-    assert((!is_empty_index_stack(stack) || type != ISI_POSITION_CURRENT) && "CAN'T GET CURRENT INDEX IF EMPTY STACK");
-    return (stack.size - type) % (STACK_LIST_ARRAY_SIZE - 1);
 }
