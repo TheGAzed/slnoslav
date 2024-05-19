@@ -34,13 +34,16 @@ typedef enum edge_type {
 } EType;
 
 SArray   create_state_array (size_t size);
+void     set_full_state_array(SArray * array);
 void     destroy_state_array(SArray * array);
 
-SArray   copy_state     (SArray array);
-bool     compare_states (SArray array_a, SArray array_b);
-bool     valid_states   (SArray array);
-bool     is_end_state   (SArray array);
-kssize_t get_multi_index(SArray array);
+SArray   copy_state_array       (SArray array);
+bool     compare_states   (SArray array_a, SArray array_b);
+bool     valid_states     (SArray array);
+bool     is_end_state     (SArray array);
+kssize_t get_multi_index  (SArray array);
+SArray   split_state      (State state);
+State    merge_state_array(SArray array);
 
 bool     is_one_value  (State state);
 ksize_t  get_sums      (ksize_t start, EType type);
@@ -50,6 +53,7 @@ ksize_t  get_one_value (State state);
 ksize_t  state_to_sums       (State state);
 State    get_one_state       (ksize_t value);
 kssize_t shortest_multi_index(SArray array);
+ksize_t  state_count(State state);
 
 SMatrix generate_neighbor(SArray array, size_t index);
 void    free_state_matrix(SMatrix * matrix);

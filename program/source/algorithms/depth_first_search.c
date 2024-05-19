@@ -5,7 +5,7 @@
 
 #include <algorithms/depth_first_search.h>
 #include <algorithms/backtrack.h>
-#include <algorithms/forward_check.h>
+#include <algorithms/arc_consistency.h>
 
 #define STACK_DATA_TYPE SArray
 #include <structures/abstract/stack.h>
@@ -14,7 +14,12 @@ void _push_neighbors(Stack * stack, SArray current);
 
 SArray depth_first_search(Kakuro board) {
     Stack stack = create_stack();
-    push_stack(&stack, create_state_array(board.game.empty_count));
+
+    {
+        SArray initial = create_state_array(board.game.empty_count);
+        set_full_state_array(&initial);
+        push_stack(&stack, initial);
+    }
 
     SArray solution = { 0 };
     size_t look_count = 0;
@@ -22,12 +27,12 @@ SArray depth_first_search(Kakuro board) {
         look_count++;
         SArray guess = pop_stack(&stack);
 
-        if (!forward_check(board, &guess) || backtrack(board, guess)) {
+        if (!arc_consistency(board, &guess) || backtrack(board, guess)) {
             destroy_state_array(&guess);
             continue;
         }
         if (is_end_state(guess)) {
-            solution = copy_state(guess);
+            solution = copy_state_array(guess);
             destroy_state_array(&guess);
             break;
         }

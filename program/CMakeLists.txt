@@ -6,7 +6,7 @@ target_sources(program
     PRIVATE
         source/algorithms/depth_first_search.c
         source/algorithms/backtrack.c
-        source/algorithms/forward_check.c
+        source/algorithms/arc_consistency.c
 
         source/structures/concrete/argument.c
         source/structures/concrete/board.c

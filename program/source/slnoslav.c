@@ -20,8 +20,8 @@ void run(Settings settings) {
     SArray solution = depth_first_search(board);
     free_kakuro(&board);
 
-    assert(solution.elements && "NO SOLUTION FOUND");
-    print_state_array(solution);
+    if (solution.elements) print_state_array(solution);
+    else printf("NO SOLUTION FOUND\n");
 
     destroy_state_array(&solution);
 }

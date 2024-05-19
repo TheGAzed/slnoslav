@@ -4,16 +4,40 @@
 
 #include <structures/concrete/state.h>
 
-#define POPCOUNT(value) (__builtin_popcount((unsigned int)value))
-
 SArray create_state_array(size_t size) {
     assert(size != 0 && "SIZE OF ARRAY CAN'T BE ZERO");
 
     SArray sa = { .elements = malloc(sizeof(State) * size), .size = size, };
     assert(sa.elements && "MEMORY ALLOCATION FAILED");
 
-    for (size_t i = 0; i < size; i++) sa.elements[i].mask = FULL_STATE;
+    //for (size_t i = 0; i < size; i++) sa.elements[i].mask = FULL_STATE;
     return sa;
+}
+
+void set_full_state_array(SArray * array) {
+    for (size_t i = 0; i < array->size; i++) array->elements[i].mask = FULL_STATE;
+}
+
+SArray split_state(State state) {
+    State copy = state;
+    SArray sub = create_state_array(state_count(copy));
+    
+    for (size_t i = 0; i < sub.size; i++) {
+        sub.elements[i].mask = copy.mask & ~(copy.mask - 1);
+        copy.mask ^= copy.mask & ~(copy.mask - 1);
+    }
+
+    return sub;
+}
+
+State merge_state_array(SArray array) {
+    State merge = { 0 };
+
+    for (size_t i = 0; i < array.size; i++) {
+        merge.mask |= array.elements[i].mask;
+    }
+    
+    return merge;
 }
 
 void destroy_state_array(SArray * array) {
@@ -22,7 +46,7 @@ void destroy_state_array(SArray * array) {
     array->size = 0;
 }
 
-SArray copy_state(SArray array) {
+SArray copy_state_array(SArray array) {
     SArray sa = { .elements = malloc(sizeof(State) * array.size), .size = array.size };
     assert(sa.elements && "MEMORY ALLOCATION FAILED");
 
@@ -104,18 +128,22 @@ kssize_t shortest_multi_index(SArray array) {
     for (kssize_t i = 0; i < array.size; i++) {
         if (
             !is_one_value(array.elements[i]) && 
-            (index == -1 || POPCOUNT(array.elements[index].mask) > POPCOUNT(array.elements[i].mask))
+            (index == -1 || state_count(array.elements[index]) > state_count(array.elements[i]))
         ) index = i;
     }
     
     return index;
 }
 
+ksize_t state_count(State state) {
+    return (ksize_t)__builtin_popcount(state.mask);
+}
+
 SMatrix generate_neighbor(SArray array, size_t index) {
     assert(array.size > index && "INVALID INDEX");
 
     SMatrix sm = { 
-        .size     = POPCOUNT(array.elements[index].mask),
+        .size     = state_count(array.elements[index]),
         .elements = malloc(array.size * sizeof(SArray))
     };
     
@@ -125,7 +153,7 @@ SMatrix generate_neighbor(SArray array, size_t index) {
     for (size_t i = 0; i < MAX_BLOCK_VALUES; i++) {
         if (!(array.elements[index].mask & (1 << i))) continue;
 
-        SArray next_state = copy_state(array);
+        SArray next_state = copy_state_array(array);
         next_state.elements[index].mask &= (1 << i);
 
         sm.elements[idx++] = next_state;
