@@ -143,7 +143,7 @@ static inline STACK_DATA_TYPE peek_stack(Stack stack) {
 static inline void destroy_stack(Stack * stack, void (*free_element)(STACK_DATA_TYPE *)) {
     while (!is_empty_stack(*stack)) {
         STACK_DATA_TYPE e = pop_stack(stack);
-        free_element(&e);
+        if (free_element) free_element(&e);
     }
 
 #ifdef FINITE_STACK

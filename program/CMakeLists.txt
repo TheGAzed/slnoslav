@@ -7,8 +7,11 @@ target_sources(program
         source/algorithms/depth_first_search.c
         source/algorithms/backtrack.c
         source/algorithms/arc_consistency.c
+        source/algorithms/forward_checking.c
 
-        source/structures/concrete/argument.c
+        source/program/argument.c
+        source/program/settings.c
+        
         source/structures/concrete/board.c
         source/structures/concrete/state.c
 

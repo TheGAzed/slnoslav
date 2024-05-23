@@ -154,7 +154,7 @@ static inline QUEUE_DATA_TYPE peek_queue(Queue queue) {
 static inline void destroy_queue(Queue * queue, void (*free_element)(QUEUE_DATA_TYPE *)) {
     while (!is_empty_queue(*queue)) {
         QUEUE_DATA_TYPE e = dequeue(queue);
-        free_element(&e);
+        if (free_element) free_element(&e);
     }
 
 #ifdef FINITE_QUEUE

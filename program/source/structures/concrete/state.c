@@ -4,25 +4,24 @@
 
 #include <structures/concrete/state.h>
 
-SArray create_state_array(size_t size) {
+SArray create_state_array(ksize_t size) {
     assert(size != 0 && "SIZE OF ARRAY CAN'T BE ZERO");
 
     SArray sa = { .elements = malloc(sizeof(State) * size), .size = size, };
     assert(sa.elements && "MEMORY ALLOCATION FAILED");
 
-    //for (size_t i = 0; i < size; i++) sa.elements[i].mask = FULL_STATE;
     return sa;
 }
 
 void set_full_state_array(SArray * array) {
-    for (size_t i = 0; i < array->size; i++) array->elements[i].mask = FULL_STATE;
+    for (ksize_t i = 0; i < array->size; i++) array->elements[i].mask = FULL_STATE;
 }
 
 SArray split_state(State state) {
     State copy = state;
     SArray sub = create_state_array(state_count(copy));
     
-    for (size_t i = 0; i < sub.size; i++) {
+    for (ksize_t i = 0; i < sub.size; i++) {
         sub.elements[i].mask = copy.mask & ~(copy.mask - 1);
         copy.mask ^= copy.mask & ~(copy.mask - 1);
     }
@@ -33,7 +32,7 @@ SArray split_state(State state) {
 State merge_state_array(SArray array) {
     State merge = { 0 };
 
-    for (size_t i = 0; i < array.size; i++) {
+    for (ksize_t i = 0; i < array.size; i++) {
         merge.mask |= array.elements[i].mask;
     }
     
@@ -50,7 +49,7 @@ SArray copy_state_array(SArray array) {
     SArray sa = { .elements = malloc(sizeof(State) * array.size), .size = array.size };
     assert(sa.elements && "MEMORY ALLOCATION FAILED");
 
-    for (size_t i = 0; i < array.size; i++) sa.elements[i].mask = array.elements[i].mask;
+    for (ksize_t i = 0; i < array.size; i++) sa.elements[i].mask = array.elements[i].mask;
 
     return sa;
 }
@@ -75,13 +74,6 @@ bool is_end_state(SArray array) {
         if (!is_one_value(array.elements[i])) return false;
     }
     return true;
-}
-
-kssize_t get_multi_index(SArray array) {
-    for (ksize_t i = 0; i < array.size; i++) {
-        if (!is_one_value(array.elements[i])) return i;
-    }
-    return -1;
 }
 
 ksize_t get_sums(ksize_t start, EType type) {
@@ -122,15 +114,16 @@ State get_one_state(ksize_t value) {
     return (State) { .mask = 1 << (value - 1), };
 }
 
-kssize_t shortest_multi_index(SArray array) {
-    kssize_t index = -1;
+ksize_t shortest_multi_index(SArray array) {
+    int16_t index = -1;
 
-    for (kssize_t i = 0; i < array.size; i++) {
+    for (ksize_t i = 0; i < array.size; i++) {
         if (
             !is_one_value(array.elements[i]) && 
             (index == -1 || state_count(array.elements[index]) > state_count(array.elements[i]))
         ) index = i;
     }
+    assert(index != -1 && "NO MULTI STATE FOUND");
     
     return index;
 }
@@ -139,18 +132,15 @@ ksize_t state_count(State state) {
     return (ksize_t)__builtin_popcount(state.mask);
 }
 
-SMatrix generate_neighbor(SArray array, size_t index) {
+SMatrix generate_neighbor(SArray array, ksize_t index) {
     assert(array.size > index && "INVALID INDEX");
 
     SMatrix sm = { 
         .size     = state_count(array.elements[index]),
-        .elements = malloc(array.size * sizeof(SArray))
     };
     
-    assert(sm.elements && "MEMORY ALLOCATION FAILED");
-
-    size_t idx = 0;
-    for (size_t i = 0; i < MAX_BLOCK_VALUES; i++) {
+    ksize_t idx = 0;
+    for (ksize_t i = 0; i < MAX_BLOCK_VALUES; i++) {
         if (!(array.elements[index].mask & (1 << i))) continue;
 
         SArray next_state = copy_state_array(array);
@@ -161,17 +151,11 @@ SMatrix generate_neighbor(SArray array, size_t index) {
     return sm;
 }
 
-void free_state_matrix(SMatrix * matrix) {
-    assert(matrix && "MATRIX POINTER IS NULL");
-    assert(matrix->elements && "ELEMENST POINTER IS NULL");
-    free(matrix->elements);
-}
-
 void print_state(State s) {
     if (is_one_value(s)) printf("%*d ", 2 * get_one_value(s) - 1, get_one_value(s));
     else {
-        for (size_t j = 0; j < MAX_BLOCK_VALUES; j++) {
-            if (s.mask & (1 << j)) printf("%lu ", j + 1);
+        for (ksize_t j = 0; j < MAX_BLOCK_VALUES; j++) {
+            if (s.mask & (1 << j)) printf("%u ", j + 1);
             else printf("  ");
         }
     }
@@ -179,8 +163,8 @@ void print_state(State s) {
 }
 
 void print_state_array(SArray s) {
-    for (size_t i = 0; i < s.size; i++) {
-        printf("[ %3lu ] : ", i);
+    for (ksize_t i = 0; i < s.size; i++) {
+        printf("[ %3u ] : ", i);
         print_state(s.elements[i]);
     }
     putchar('\n');

@@ -29,6 +29,7 @@
         "argument.h": "c",
         "state-array-stack.h": "c",
         "string_view": "c",
-        "initializer_list": "c"
+        "initializer_list": "c",
+        "slnoslav.h": "c"
     }
 }
