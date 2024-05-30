@@ -1,7 +1,7 @@
 #include <slnoslav.h>
 
 int main(int argc, char ** argv) {
-    init_program(argc, argv);
-    run();
+    setup_program(argc, argv);
+    run_program();
     return 0;
 }

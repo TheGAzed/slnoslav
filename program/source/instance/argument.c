@@ -52,9 +52,11 @@
 
 #define LONGEST_FLAG_S  sizeof(ARC_CONSISTENCY_FLAG_STRING_LONG)
 
+typedef uint16_t full_hash_t;
+typedef uint8_t  part_hash_t;
 typedef union hash {
-    uint16_t id;
-    uint8_t  part[sizeof(uint16_t)];
+    full_hash_t whole;
+    part_hash_t slice[sizeof(full_hash_t)];
 } Hash;
 
 typedef enum console_argument_flags {
@@ -74,16 +76,16 @@ typedef struct argument {
     char * value;
 } Argument;
 
-#define FLAG_INDEX_COUND 2
-typedef enum flag_index {
+#define FLAG_SIZE_TYPES 2
+typedef enum flag_size_types {
     SHORT = 0,
-    LONG = 1,
-} FIndex;
+    LONG  = 1,
+} FSType;
 
 typedef struct flag_hashtable_element {
-    uint32_t value[FLAG_INDEX_COUND];
-    char     string[FLAG_INDEX_COUND][LONGEST_FLAG_S];
-    Flag     type;
+    full_hash_t hash_key[FLAG_SIZE_TYPES];
+    char        string_key[FLAG_SIZE_TYPES][LONGEST_FLAG_S];
+    Flag        value;
 } FHElement;
 
 typedef struct flag_hashtable {
@@ -91,50 +93,133 @@ typedef struct flag_hashtable {
 } FlagHashtable;
 
 typedef struct settings_hashtable_element {
-    void (*function)(char *);
-    Flag type;
+    void (*value)(char *);
+    Flag key;
 } SHElement;
 
 typedef struct function_hashtable {
     SHElement element[HASHTABLE_SIZE];
 } FunctionHashtable;
 
+/**
+ * @brief
+ * Generates Hash union with hashed numerical value based on string input.
+ * 
+ * @note
+ * Funtion uses a zeroed Hash union with one 16 bit integer and array of two 8 bit integers.
+ * The string is iterated using a for loop where the for loop index 'i' is moduled 
+ * by the array size (in this case 2) and the character value is XOR-ed into the Hash's 8 bit 
+ * array at 'i' modulo (array size).
+ * 
+ * @param string to hash.
+ * @return Hash union with numerical hash value.
+ */
 Hash   _get_hash(char * string);
+/**
+ * @brief
+ * Checks if string is a valid argument and returns enum value of argument.
+ * @note
+ * Function uses a hashtable to lookup the hashed string value and if matched compare it with the 
+ * original string to make sure the string was found.
+ * 
+ * @param flag_string of argument.
+ * @return Flag enum of valid program argument.
+ */
 Flag   _get_flag(char * flag_string);
-bool   _is_valid_file(char * filename);
+/**
+ * @brief 
+ * Valides if filename in filepath is a .kkr file.
+ * @note
+ * Function uses the regex library to check if filepath ends in .kkr.  
+ * 
+ * @param filepath to file.
+ * @return true if filepath contains a .kkr file.
+ * @return false otherwise.
+ */
+bool   _is_valid_file(char * filepath);
 
+/**
+ * @brief 
+ * Sets the filepath string for settings.
+ * 
+ * @param value filepath string.
+ */
 void   _setup_filepath(char * value);
+/**
+ * @brief 
+ * Sets backtrackig to true/false for settings. True by default.
+ * 
+ * @param value boolean string - "true"/"false".
+ */
 void   _setup_backtrack(char * value);
+/**
+ * @brief 
+ * Sets forward-checking to true/false for settings. False by default.
+ * 
+ * @param value boolean string - "true"/"false".
+ */
 void   _setup_forward_check(char * value);
+/**
+ * @brief 
+ * Sets arc consistency to true/false for settings. True by default.
+ * 
+ * @param value boolean string - "true"/"false".
+ */
 void   _setup_arc_consistency(char * value);
+/**
+ * @brief Prints information about program.
+ * 
+ * @param value unused.
+ */
 void   _setup_information(char * value);
+/**
+ * @brief 
+ * Prints helper information about what arguments can be use.
+ * 
+ * @param value unused.
+ */
 void   _setup_help(char * value);
 
+/**
+ * @brief 
+ * Main setup function that sets the setting based on specified argument.
+ * 
+ * @note
+ * Function uses a hashtable to lookup the pointer to function that is needed 
+ * for program settings.
+ * 
+ * @param argument structure containing argument flag enum and string value.
+ */
 void   _setup_settings(Argument argument);
 
-void init_program(int argc, char **argv) {
+void setup_program(int argc, char **argv) {
+    // argument queue to torn arguemnt value access like a queue (first-in-first-out).
     Queue arg_queue = { .elements = argv, .max = argc, .size = argc, .current = 0 };
-    dequeue(&arg_queue);
+    dequeue(&arg_queue); // remove invocation name from queue 
 
     while (!is_empty_queue(arg_queue)) {
         Argument argument = { 0 };
-        char * flag_string = dequeue(&arg_queue);
+        char * flag_string = dequeue(&arg_queue); // dequeue expected flag element
         argument.type = _get_flag(flag_string);
-        assert(argument.type != INVALID_F && "FLAG IS INVALID");
+        assert(argument.type != INVALID_F && "FLAG IS INVALID"); // assert that flag is valid 
 
-        if (argument.type & 1) {
+        if (argument.type & 1) { // flag enums with followup values are odd (rightmost bit is always one)
             assert(!is_empty_queue(arg_queue) && "EXPECTED VALUE AFTER FLAG");
-            argument.value = dequeue(&arg_queue);
+            argument.value = dequeue(&arg_queue); // sets the value for argument
         }
 
-        _setup_settings(argument);
+        // call to settings setup to set program settings
+        _setup_settings(argument); 
     }
 }
 
 Hash _get_hash(char * string) {
     assert(string && "STRING PARAMETER IS NULL");
     Hash hash = { 0 };
-    for (size_t i = 0; string[i]; i++) hash.part[i & 1] ^= string[i];
+    for (size_t i = 0; string[i]; i++) {
+        // XOR of char at i position with hash byte at i mod (hash byte size).
+        hash.slice[i & 1] ^= string[i]; 
+    }
 
     return hash;
 }
@@ -143,59 +228,64 @@ Flag _get_flag(char * flag_string) {
     assert(flag_string && "FLAG STRING PARAMETER IS NULL");
     assert(flag_string[0] == '-' && "EXPECTED FLAG TO START WITH '-'");
 
+    // hashtable to lookup flag using the hashed flag_string plus comparing 
+    // it to its long and short form.
     static FlagHashtable ht = {
         .element[1] = { 
-            .value[SHORT]  = BACKTRACK_FLAG_HASH_SHORT,   .value[LONG]   = BACKTRACK_FLAG_HASH_LONG, 
-            .string[SHORT] = BACKTRACK_FLAG_STRING_SHORT, .string[LONG]  = BACKTRACK_FLAG_STRING_LONG,
-            .type          = BACKTRACK_F,
+            .hash_key[SHORT]   = BACKTRACK_FLAG_HASH_SHORT,   .hash_key[LONG]    = BACKTRACK_FLAG_HASH_LONG, 
+            .string_key[SHORT] = BACKTRACK_FLAG_STRING_SHORT, .string_key[LONG]  = BACKTRACK_FLAG_STRING_LONG,
+            .value             = BACKTRACK_F,
         },
         .element[3] = { 
-            .value[SHORT]  = HELP_FLAG_HASH_SHORT,   .value[LONG]   = HELP_FLAG_HASH_LONG, 
-            .string[SHORT] = HELP_FLAG_STRING_SHORT, .string[LONG]  = HELP_FLAG_STRING_LONG,
-            .type          = HELP_F,
+            .hash_key[SHORT]   = HELP_FLAG_HASH_SHORT,   .hash_key[LONG]    = HELP_FLAG_HASH_LONG, 
+            .string_key[SHORT] = HELP_FLAG_STRING_SHORT, .string_key[LONG]  = HELP_FLAG_STRING_LONG,
+            .value             = HELP_F,
         },
         .element[4] = { 
-            .value[SHORT]  = FILEPATH_FLAG_HASH_SHORT,   .value[LONG]   = FILEPATH_FLAG_HASH_LONG, 
-            .string[SHORT] = FILEPATH_FLAG_STRING_SHORT, .string[LONG]  = FILEPATH_FLAG_STRING_LONG,
-            .type          = FILEPATH_F,
+            .hash_key[SHORT]   = FILEPATH_FLAG_HASH_SHORT,   .hash_key[LONG]    = FILEPATH_FLAG_HASH_LONG, 
+            .string_key[SHORT] = FILEPATH_FLAG_STRING_SHORT, .string_key[LONG]  = FILEPATH_FLAG_STRING_LONG,
+            .value             = FILEPATH_F,
         },
         .element[5] = { 
-            .value[SHORT]  = INFO_FLAG_HASH_SHORT,   .value[LONG]   = INFO_FLAG_HASH_LONG, 
-            .string[SHORT] = INFO_FLAG_STRING_SHORT, .string[LONG]  = INFO_FLAG_STRING_LONG,
-            .type          = INFORMATION_F,
+            .hash_key[SHORT]   = INFO_FLAG_HASH_SHORT,   .hash_key[LONG]    = INFO_FLAG_HASH_LONG, 
+            .string_key[SHORT] = INFO_FLAG_STRING_SHORT, .string_key[LONG]  = INFO_FLAG_STRING_LONG,
+            .value             = INFORMATION_F,
         },
         .element[6] = { 
-            .value[SHORT]  = ARC_CONSISTENCY_FLAG_HASH_SHORT,   .value[LONG]   = ARC_CONSISTENCY_FLAG_HASH_LONG, 
-            .string[SHORT] = ARC_CONSISTENCY_FLAG_STRING_SHORT, .string[LONG]  = ARC_CONSISTENCY_FLAG_STRING_LONG,
-            .type          = ARC_CONSISTENCY_F,
+            .hash_key[SHORT]   = ARC_CONSISTENCY_FLAG_HASH_SHORT,   .hash_key[LONG]    = ARC_CONSISTENCY_FLAG_HASH_LONG, 
+            .string_key[SHORT] = ARC_CONSISTENCY_FLAG_STRING_SHORT, .string_key[LONG]  = ARC_CONSISTENCY_FLAG_STRING_LONG,
+            .value             = ARC_CONSISTENCY_F,
         },
         .element[7] = { 
-            .value[SHORT]  = FORWARD_CHECK_FLAG_HASH_SHORT,   .value[LONG]   = FORWARD_CHECK_FLAG_HASH_LONG, 
-            .string[SHORT] = FORWARD_CHECK_FLAG_STRING_SHORT, .string[LONG]  = FORWARD_CHECK_FLAG_STRING_LONG,
-            .type          = FORWARD_CHECK_F,
+            .hash_key[SHORT]   = FORWARD_CHECK_FLAG_HASH_SHORT,   .hash_key[LONG]    = FORWARD_CHECK_FLAG_HASH_LONG, 
+            .string_key[SHORT] = FORWARD_CHECK_FLAG_STRING_SHORT, .string_key[LONG]  = FORWARD_CHECK_FLAG_STRING_LONG,
+            .value             = FORWARD_CHECK_F,
         },
     };
 
     Hash h = _get_hash(flag_string);
-    FIndex index = flag_string[1] == '-' ? LONG : SHORT;
+    // check if flag string is in short or long form
+    FSType length_type = flag_string[1] == '-' ? LONG : SHORT;
+    // hashtable elements are accesed by distance from hash's modulo (hashtable element count).
     for (size_t i = 0; i < (HASHTABLE_SIZE + 1) >> 1; i++) {
-        size_t ai = (h.id + i)     & (HASHTABLE_SIZE - 1);
-        size_t bi = (h.id - i - 1) & (HASHTABLE_SIZE - 1);
+        size_t ai = (h.whole + i)     & (HASHTABLE_SIZE - 1);
+        size_t bi = (h.whole - i - 1) & (HASHTABLE_SIZE - 1);
 
         FHElement a = ht.element[ai];
         FHElement b = ht.element[bi];
 
-        if (a.value[index] == h.id && !strncmp(flag_string, ht.element[ai].string[index], LONGEST_FLAG_S)) return a.type;
-        if (b.value[index] == h.id && !strncmp(flag_string, ht.element[bi].string[index], LONGEST_FLAG_S)) return b.type;
+        if (a.hash_key[length_type] == h.whole && !strncmp(flag_string, ht.element[ai].string_key[length_type], LONGEST_FLAG_S)) return a.value;
+        if (b.hash_key[length_type] == h.whole && !strncmp(flag_string, ht.element[bi].string_key[length_type], LONGEST_FLAG_S)) return b.value;
     }
 
-    return INVALID_F;
+    return INVALID_F; // returned if flag wasnt found.
 }
 
-bool _is_valid_file(char * filename) {
+bool _is_valid_file(char * filepath) {
     regex_t rx;
+    // assert that parser worked
     assert(regcomp( &rx, "(.*)\\.(kkr)", REG_EXTENDED) == 0 && "REGEX PARSER FAILED");
-    bool is_valid = regexec(&rx, filename, 0, NULL, 0) == 0;
+    bool is_valid = regexec(&rx, filepath, 0, NULL, 0) == 0; // evaualte file
     regfree(&rx);
 
     return is_valid;
@@ -203,37 +293,43 @@ bool _is_valid_file(char * filename) {
 
 void _setup_filepath(char * value) {
     assert(value && "ARGUMENT VALUE IS NULL");
-    assert(_is_valid_file(value));
+    assert(_is_valid_file(value) && "INVALID FILE IN FILEPATH");
     get_settings_singleton()->filepath = value;
 }
 
 void _setup_backtrack(char * value) {
     assert(value && "ARGUMENT VALUE IS NULL");
 
-    bool t = !strncmp(value, "true", 4);
-    bool f = !strncmp(value, "false", 5);
-    assert((t || f) && "VALUE IS NEITHER TRUE NOR FALSE");
+    bool t = !strncmp(value, "true",  sizeof("true"));
+    bool f = !strncmp(value, "false", sizeof("false"));
+    // check if string value is boolean true or false 
+    assert((t || f) && "BACKTRACK VALUE IS NEITHER TRUE NOR FALSE");
 
+    // if 't' is true then value == "true", else value == "false"
     get_settings_singleton()->is_backtrack = t;
 }
 
 void _setup_forward_check(char * value) {
     assert(value && "ARGUMENT VALUE IS NULL");
 
-    bool t = !strncmp(value, "true", 4);
-    bool f = !strncmp(value, "false", 5);
-    assert((t || f) && "VALUE IS NEITHER TRUE NOR FALSE");
+    bool t = !strncmp(value, "true",  sizeof("true"));
+    bool f = !strncmp(value, "false", sizeof("false"));
+    // check if string value is boolean true or false 
+    assert((t || f) && "FORWARD CHECK VALUE IS NEITHER TRUE NOR FALSE");
 
+    // if 't' is true then value == "true", else value == "false"
     get_settings_singleton()->is_forward_check = t;
 }
 
 void _setup_arc_consistency(char * value) {
     assert(value && "ARGUMENT VALUE IS NULL");
 
-    bool t = !strncmp(value, "true", 4);
-    bool f = !strncmp(value, "false", 5);
-    assert((t || f) && "VALUE IS NEITHER TRUE NOR FALSE");
+    bool t = !strncmp(value, "true",  sizeof("true"));
+    bool f = !strncmp(value, "false", sizeof("false"));
+    // check if string value is boolean true or false 
+    assert((t || f) && "ARC CONSISTENCY VALUE IS NEITHER TRUE NOR FALSE");
 
+    // if 't' is true then value == "true", else value == "false"
     get_settings_singleton()->is_arc_consistency = t;
 }
 
@@ -244,36 +340,38 @@ void _setup_information(char * value) {
 
 void _setup_help(char * value) {
     printf("Information helpful for the user:\n");
-    printf("\t-h --help                                    show this message\n");
-    printf("\t-i --information                             show information about SLNOSLAV\n");
+    printf("\t--help,-h                        show this message\n");
+    printf("\t--information,-i                 show information about SLNOSLAV\n");
 
     printf("\nProgram settings:\n");
-    printf("\t-fp  <filepath> --filepath        <filepath> filepath to .kkr file           [\"test/data/11x11s.kkr\"]\n");
-    printf("\t-bt  true|false --backtrack       true|false enable/disable backtracking     [true]\n");
-    printf("\t-fch true|false --forward-check   true|false enable/disable forward checking [false]\n");
-    printf("\t-ac  true|false --arc-consistency true|false enable/disable arc-consistency  [true]\n");
+    printf("\t--filepath,-fp        <filepath> filepath to .kkr file           [\"test/data/11x11s.kkr\"]\n");
+    printf("\t--backtrack,-bt       true|false enable/disable backtracking     [true]\n");
+    printf("\t--forward-check,-fch  true|false enable/disable forward checking [false]\n");
+    printf("\t--arc-consistency,-ac true|false enable/disable arc-consistency  [true]\n");
 
     exit(EXIT_SUCCESS);
 }
 
 void _setup_settings(Argument argument) {
+    // hashtable to lookup function pointer based on flag enum
     static FunctionHashtable ht = {
-        .element[0] = { .function = _setup_arc_consistency, .type = ARC_CONSISTENCY_F, },
-        .element[2] = { .function = _setup_information,     .type = INFORMATION_F,     },
-        .element[1] = { .function = _setup_forward_check,   .type = FORWARD_CHECK_F,   },
-        .element[3] = { .function = _setup_filepath,        .type = FILEPATH_F,        },
-        .element[4] = { .function = _setup_help,            .type = HELP_F,            },
-        .element[5] = { .function = _setup_backtrack,       .type = BACKTRACK_F,       },
+        .element[0] = { .value = _setup_arc_consistency, .key = ARC_CONSISTENCY_F, },
+        .element[2] = { .value = _setup_information,     .key = INFORMATION_F,     },
+        .element[1] = { .value = _setup_forward_check,   .key = FORWARD_CHECK_F,   },
+        .element[3] = { .value = _setup_filepath,        .key = FILEPATH_F,        },
+        .element[4] = { .value = _setup_help,            .key = HELP_F,            },
+        .element[5] = { .value = _setup_backtrack,       .key = BACKTRACK_F,       },
     };
 
+    // hashtable elements are accesed by distance from hash's modulo (hashtable element count).
     for (size_t i = 0; i < (HASHTABLE_SIZE + 1) >> 1; i++) {
         size_t first_index  = (argument.type + i)     & (HASHTABLE_SIZE - 1);
         size_t second_index = (argument.type - i - 1) & (HASHTABLE_SIZE - 1);
 
-        SHElement first = ht.element[first_index];
+        SHElement first  = ht.element[first_index];
         SHElement second = ht.element[second_index];
 
-        if (first.type == argument.type)  { first.function(argument.value); break; }
-        if (second.type == argument.type) { second.function(argument.value); break; }
+        if (first.key  == argument.type) { first.value(argument.value);  break; }
+        if (second.key == argument.type) { second.value(argument.value); break; }
     }
 }

@@ -4,6 +4,6 @@
 #include <instance/argument.h>
 #include <structures/concrete/state.h>
 
-void run(void);
+void run_program(void);
 
 #endif /* SLNOSLAV_H */

@@ -6,7 +6,7 @@
 #include <instance/settings.h>
 #include <algorithms/depth_first_search.h>
 
-void run(void) {
+void run_program(void) {
     FILE * fp = fopen(get_settings_singleton()->filepath, "rb");
     
     assert(fp && "COULDN'T OPEN FILE");
