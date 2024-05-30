@@ -3,7 +3,7 @@
 
 #include <slnoslav.h>
 
-#include <program/settings.h>
+#include <instance/settings.h>
 #include <algorithms/depth_first_search.h>
 
 void run(void) {

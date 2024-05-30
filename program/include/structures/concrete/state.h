@@ -1,6 +1,6 @@
-#ifndef KAKURO_STATE_H
+#ifndef STRUCTURES_CONCRETE_STATE_H
 
-#define KAKURO_STATE_H
+#define STRUCTURES_CONCRETE_STATE_H
 
 #include <stdint.h>
 #include <stddef.h>
@@ -59,4 +59,4 @@ SMatrix generate_neighbor(SArray array, ksize_t index);
 void    print_state(State s);
 void    print_state_array(SArray s);
 
-#endif
+#endif /* STRUCTURES_CONCRETE_STATE_H */

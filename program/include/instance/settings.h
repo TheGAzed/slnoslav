@@ -1,5 +1,5 @@
-#ifndef PROGRAM_SETTINGS_H
-#define PROGRAM_SETTINGS_H
+#ifndef INSTANCE_SETTINGS_H
+#define INSTANCE_SETTINGS_H
 
 #include <stdlib.h>
 #include <stdbool.h>
@@ -14,4 +14,4 @@ typedef struct settings {
 
 Settings * get_settings_singleton(void);
 
-#endif /* PROGRAM_SETTINGS_H */
+#endif /* INSTANCE_SETTINGS_H */

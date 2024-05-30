@@ -1,6 +1,6 @@
-#ifndef DATA_STRUCTURES_BOARD_H
+#ifndef STRUCTURES_CONCRETE_BOARD_H
 
-#define DATA_STRUCTURES_BOARD_H
+#define STRUCTURES_CONCRETE_BOARD_H
 
 #include <stdint.h>
 #include <stdio.h>
@@ -47,4 +47,4 @@ void   free_kakuro(Kakuro * board);
 bool   is_wall_hit(Kakuro board, ksize_t row, ksize_t col);
 void   print_board(Kakuro board);
 
-#endif /* DATA_STRUCTURES_BOARD_H */
+#endif /* STRUCTURES_CONCRETE_BOARD_H */

@@ -30,6 +30,7 @@
         "state-array-stack.h": "c",
         "string_view": "c",
         "initializer_list": "c",
-        "slnoslav.h": "c"
+        "slnoslav.h": "c",
+        "stdint.h": "c"
     }
 }

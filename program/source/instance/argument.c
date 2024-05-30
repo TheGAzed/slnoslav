@@ -4,13 +4,12 @@
 #include <stdio.h>
 #include <regex.h>
 
-#include <program/argument.h>
+#include <instance/argument.h>
+#include <instance/settings.h>
 
 #define FINITE_QUEUE
 #define QUEUE_DATA_TYPE char *
 #include <structures/abstract/queue.h>
-
-#include <program/settings.h>
 
 #define CONSOLE_ARGUMENT_COUND 6
 #define HASHTABLE_SIZE (1 << 3)

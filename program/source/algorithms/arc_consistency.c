@@ -33,13 +33,13 @@ State _check_magic_table(ksize_t blocks, ksize_t sum);
 State _check_even_two_blocks(ksize_t block, ksize_t sum);
 State _check_high_end(ksize_t block, ksize_t sum);
 State _check_low_end(ksize_t block, ksize_t sum);
-void  _reduce_multi_values(Kakuro board, SArray * current_state);
-void  _reduce_row_multi_values(Kakuro board, SArray * current_state, Check * checks, ksize_t index);
-void  _reduce_col_multi_values(Kakuro board, SArray * current_state, Check * checks, ksize_t index);
+void  _reduce_multi_values(Kakuro board, SArray * initial_state);
+void  _reduce_row_multi_values(Kakuro board, SArray * initial_state, Check * checks, ksize_t index);
+void  _reduce_col_multi_values(Kakuro board, SArray * initial_state, Check * checks, ksize_t index);
 
-bool _reduce_one_values(Kakuro board, SArray * current_state);
-bool _reduce_row_one_values(Kakuro board, Stack * ones, SArray * current_state, ksize_t index);
-bool _reduce_col_one_values(Kakuro board, Stack * ones, SArray * current_state, ksize_t index);
+void _reduce_one_values(Kakuro board, SArray * current_state);
+void _reduce_row_one_values(Kakuro board, Stack * ones, SArray * current_state, ksize_t index);
+void _reduce_col_one_values(Kakuro board, Stack * ones, SArray * current_state, ksize_t index);
 
 RCombinations _create_combinations(Kakuro board, SArray * current_state, ksize_t index, KGSizes type);
 void          _destroy_combinations(RCombinations * combinations);
@@ -47,14 +47,18 @@ bool          _reduce_no_combination(Kakuro board, SArray * current_state);
 bool          _reduce_no_col_combination(Kakuro board, SArray * current_state, Check * checks, ksize_t index);
 bool          _reduce_no_row_combination(Kakuro board, SArray * current_state, Check * checks, ksize_t index);
 
-bool arc_consistency(Kakuro board, SArray * current_state) {
+void reduce(Kakuro board, SArray * initial_state) {
+    assert(initial_state && "INITIAL STATE ARRAY IS NULL");
+
+    _reduce_multi_values(board, initial_state);
+}
+
+bool look_ahead(Kakuro board, SArray * current_state) {
     assert(current_state && "CURRENT STATE ARRAY IS NULL");
-    
-    _reduce_multi_values(board, current_state);
-    while(
-        _reduce_one_values(board, current_state) | 
-        _reduce_no_combination(board, current_state)
-    );
+
+    do {
+        _reduce_one_values(board, current_state);
+    } while (valid_states(*current_state) && _reduce_no_combination(board, current_state));
 
     return valid_states(*current_state);
 }
@@ -189,33 +193,24 @@ void _reduce_col_multi_values(Kakuro board, SArray * current_state, Check * chec
     destroy_stack(&multi, NULL);
 }
 
-bool _reduce_one_values(Kakuro board, SArray * current_state) {
+void _reduce_one_values(Kakuro board, SArray * current_state) {
     Stack ones = create_stack();
 
     for (ksize_t i = 0; i < board.game.empty_count; i++) {
         if (is_one_value(current_state->elements[i])) push_stack(&ones, i);
     }
 
-    bool is_reduced = false;
     while (!is_empty_stack(ones)) {
         ksize_t index = pop_stack(&ones);
 
-        if (!valid_states(*current_state)) break;
-        is_reduced |= _reduce_row_one_values(board, &ones, current_state, index);
-
-        if (!valid_states(*current_state)) break;
-        is_reduced |= _reduce_col_one_values(board, &ones, current_state, index);
+        _reduce_row_one_values(board, &ones, current_state, index);
+        _reduce_col_one_values(board, &ones, current_state, index);
     }
 
     destroy_stack(&ones, NULL);
-
-    return is_reduced;
 }
 
-bool _reduce_row_one_values(Kakuro board, Stack * ones, SArray * current_state, ksize_t index) {
-    assert(is_one_value(current_state->elements[index]) && "EXPECTED ONE VALUE STATE");
-
-    bool is_reduced = false;
+void _reduce_row_one_values(Kakuro board, Stack * ones, SArray * current_state, ksize_t index) {
     ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
 
     for (size_t c = col - 1; !is_wall_hit(board, row, c); c--) {
@@ -223,7 +218,6 @@ bool _reduce_row_one_values(Kakuro board, Stack * ones, SArray * current_state, 
 
         if (!(s->mask & current_state->elements[index].mask)) continue;
 
-        is_reduced = true;
         s->mask &= ~(current_state->elements[index].mask);
         if (is_one_value(*s)) push_stack(ones, (ksize_t)board.grid[row][c]);
     }
@@ -233,18 +227,12 @@ bool _reduce_row_one_values(Kakuro board, Stack * ones, SArray * current_state, 
 
         if (!(s->mask & current_state->elements[index].mask)) continue;
 
-        is_reduced = true;
         s->mask &= ~(current_state->elements[index].mask);
         if (is_one_value(*s)) push_stack(ones, (ksize_t)board.grid[row][c]);
     }
-
-    return is_reduced;
 }
 
-bool _reduce_col_one_values(Kakuro board, Stack * ones, SArray * current_state, ksize_t index) {
-    assert(is_one_value(current_state->elements[index]) && "EXPECTED ONE VALUE STATE");
-
-    bool is_reduced = false;
+void _reduce_col_one_values(Kakuro board, Stack * ones, SArray * current_state, ksize_t index) {
     ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
 
     for (size_t r = row - 1; !is_wall_hit(board, r, col); r--) {
@@ -252,7 +240,6 @@ bool _reduce_col_one_values(Kakuro board, Stack * ones, SArray * current_state, 
 
         if (!(s->mask & current_state->elements[index].mask)) continue;
 
-        is_reduced = true;
         s->mask &= ~current_state->elements[index].mask;
         if (is_one_value(*s)) push_stack(ones, (ksize_t)board.grid[r][col]);
     }
@@ -262,12 +249,9 @@ bool _reduce_col_one_values(Kakuro board, Stack * ones, SArray * current_state, 
 
         if (!(s->mask & current_state->elements[index].mask)) continue;
 
-        is_reduced = true;
         s->mask &= ~current_state->elements[index].mask;
         if (is_one_value(*s)) push_stack(ones, (ksize_t)board.grid[r][col]);
     }
-
-    return is_reduced;
 }
 
 RCombinations _create_combinations(Kakuro board, SArray * current_state, ksize_t index, KGSizes type) {
@@ -327,22 +311,22 @@ bool _reduce_no_combination(Kakuro board, SArray * current_state) {
 
     bool is_reduced = false;
     for (size_t i = 0; i < board.game.empty_count; i++) {
-        if (!valid_states(*current_state)) break;
         if (!(checks[i] & ROWCHECK)) is_reduced |= _reduce_no_row_combination(board, current_state, checks, i);
-
-        if (!valid_states(*current_state)) break;
         if (!(checks[i] & COLCHECK)) is_reduced |= _reduce_no_col_combination(board, current_state, checks, i);
     }
 
     return is_reduced;
 }
 
-bool _reduce_no_row_combination(Kakuro board, SArray * current_state, Check * checks, ksize_t index) {        
+bool _reduce_no_row_combination(Kakuro board, SArray * current_state, Check * checks, ksize_t index) {
+    ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
+    for (ksize_t i = 0; i < board.blocks[ROW][index]; i++) checks[board.grid[row][col + i]] |= ROWCHECK;
+    for (ksize_t i = 0; i < board.blocks[ROW][index]; i++) {
+        if (!current_state->elements[board.grid[row][col + i]].mask) return false;
+    }
+
     RCombinations c = _create_combinations(board, current_state, index, ROW);
     bool is_reduced = false;
-    ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
-
-    for (ksize_t i = 0; i < board.blocks[ROW][index]; i++) checks[board.grid[row][col + i]] |= ROWCHECK;
 
     for (ksize_t i = 0; i < c.e_matrix.size; i++) {
         for (ksize_t j = 0; j < c.e_matrix.elements[i].size; j++) {
@@ -359,11 +343,14 @@ bool _reduce_no_row_combination(Kakuro board, SArray * current_state, Check * ch
 }
 
 bool _reduce_no_col_combination(Kakuro board, SArray * current_state, Check * checks, ksize_t index) {
+    ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
+    for (ksize_t i = 0; i < board.blocks[COLUMN][index]; i++) checks[board.grid[row + i][col]] |= COLCHECK;
+    for (ksize_t i = 0; i < board.blocks[COLUMN][index]; i++) {
+        if (!current_state->elements[board.grid[row + i][col]].mask) return false;
+    }
+
     RCombinations c = _create_combinations(board, current_state, index, COLUMN);
     bool is_reduced = false;
-    ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
-
-    for (ksize_t i = 0; i < board.blocks[COLUMN][index]; i++) checks[board.grid[row + i][col]] |= COLCHECK;
 
     for (ksize_t i = 0; i < c.e_matrix.size; i++) {
         for (ksize_t j = 0; j < c.e_matrix.elements[i].size; j++) {

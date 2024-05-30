@@ -16,13 +16,14 @@ SArray depth_first_search(Kakuro board) {
 
     SArray initial = create_state_array(board.game.empty_count);
     set_full_state_array(&initial);
+    reduce(board, &initial);
     push_stack(&stack, initial);
 
     SArray solution = { 0 };
     while (!is_empty_stack(stack)) {
         SArray guess = pop_stack(&stack);
 
-        if (!arc_consistency(board, &guess) || backtrack(board, guess)) {
+        if (!look_ahead(board, &guess) || backtrack(board, guess)) {
             destroy_state_array(&guess);
             continue;
         }

@@ -1,4 +1,4 @@
-#include <program/settings.h>
+#include <instance/settings.h>
 
 Settings * get_settings_singleton(void) {
     static Settings setup = {

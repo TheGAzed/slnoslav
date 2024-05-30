@@ -9,8 +9,8 @@ target_sources(program
         source/algorithms/arc_consistency.c
         source/algorithms/forward_checking.c
 
-        source/program/argument.c
-        source/program/settings.c
+        source/instance/argument.c
+        source/instance/settings.c
         
         source/structures/concrete/board.c
         source/structures/concrete/state.c

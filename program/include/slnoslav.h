@@ -1,9 +1,9 @@
-#ifndef KAKURO_SLNOSLAV_H
-#define KAKURO_SLNOSLAV_H
+#ifndef SLNOSLAV_H
+#define SLNOSLAV_H
 
-#include <program/argument.h>
+#include <instance/argument.h>
 #include <structures/concrete/state.h>
 
 void run(void);
 
-#endif
+#endif /* SLNOSLAV_H */
