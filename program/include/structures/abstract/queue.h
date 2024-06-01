@@ -3,7 +3,11 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #include <assert.h>
+
+//#define FINITE_QUEUE
+//#undef FINITE_QUEUE
 
 #ifndef QUEUE_DATA_TYPE 
 
@@ -56,13 +60,16 @@ static bool            is_empty_queue(Queue queue);
 static void            enqueue(Queue * queue, QUEUE_DATA_TYPE element);
 static QUEUE_DATA_TYPE dequeue(Queue * queue);
 static QUEUE_DATA_TYPE peek_queue(Queue queue);
+static Queue           copy_queue(Queue queue, QUEUE_DATA_TYPE (*copy_element)(QUEUE_DATA_TYPE));
 static void            destroy_queue(Queue * queue, void (*free_element)(QUEUE_DATA_TYPE *));
 static size_t          _get_index_queue(Queue queue, QIPosition type);
 
 #ifdef FINITE_QUEUE
 
 static inline Queue create_queue(size_t max) {
-    return (Queue) { .elements = malloc(sizeof(QUEUE_DATA_TYPE) * max), .max = max, .size = 0, .current = 0 };
+    Queue queue = { .elements = malloc(sizeof(QUEUE_DATA_TYPE) * max), .max = max, .size = 0, .current = 0 };
+    assert(queue.elements && "MEMORY ALLOCATION FAILED");
+    return queue;
 }
 
 static inline bool is_full_queue(Queue queue) {
@@ -149,6 +156,41 @@ static inline QUEUE_DATA_TYPE peek_queue(Queue queue) {
     return queue.head->elements[idx];
 #endif /* FINITE_QUEUE */
 
+}
+
+static inline Queue copy_queue(Queue queue, QUEUE_DATA_TYPE (*copy_element)(QUEUE_DATA_TYPE)) {
+#ifdef FINITE_QUEUE
+    Queue copy = queue;
+    assert((copy.elements = malloc(sizeof(QUEUE_DATA_TYPE) * copy.max)) && "MEMORY ALLOCATION FAILED");
+
+    size_t current_index = _get_index_queue(queue, QI_POSITION_CURRENT);
+    for (size_t i = 0; i < copy.size; i++) {
+        size_t index = (current_index + i) % copy.max;
+        copy.elements[index] = copy_element ? copy_element(queue.elements[index]) : queue.elements[index];
+    }
+#else
+    Queue copy = create_queue();
+    copy.current = queue.current;
+
+    QLArray * current_array = queue.head;
+    for (size_t i = _get_index_queue(queue, QI_POSITION_CURRENT); i < queue.size && current_array;) {
+        QLArray * temp = malloc(sizeof(QLArray));
+        assert(temp && "MEMORY ALLOCATION FAILED");
+        temp->next = NULL;
+
+        if (!copy.size) copy.head = copy.tail = temp;
+        else copy.tail = copy.tail->next = temp;
+
+        for (size_t j = i % QUEUE_LIST_ARRAY_SIZE; j < QUEUE_LIST_ARRAY_SIZE; i++, j++) {
+            copy.tail->elements[j] = copy_element ? copy_element(current_array->elements[j]) : current_array->elements[j];
+            copy.size++;
+        }
+        current_array = current_array->next;
+    }
+
+#endif /* FINITE_QUEUE */
+
+    return copy;
 }
 
 static inline void destroy_queue(Queue * queue, void (*free_element)(QUEUE_DATA_TYPE *)) {

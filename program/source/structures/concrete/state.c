@@ -104,9 +104,16 @@ ksize_t get_one_value(State state) {
 }
 
 ksize_t state_to_sums(State state) {
-    ksize_t s = 0;
-    for (ksize_t i = 0; i < MAX_BLOCK_VALUES; i++) if (state.mask & (1 << i)) s += i + 1;
-    return s;
+    ksize_t sum = 0;
+    State copy_state = state;
+
+    while (copy_state.mask) {
+        sum += __builtin_ctz(copy_state.mask) + 1;
+        copy_state.mask &= ~(copy_state.mask & -copy_state.mask);
+    }
+    
+    //for (ksize_t i = 0; i < MAX_BLOCK_VALUES; i++) if (state.mask & (1 << i)) sum += i + 1;
+    return sum;
 }
 
 State get_one_state(ksize_t value) {
@@ -136,7 +143,7 @@ SMatrix generate_neighbor(SArray array, ksize_t index) {
     assert(array.size > index && "INVALID INDEX");
 
     SMatrix sm = { 
-        .size     = state_count(array.elements[index]),
+        .size = state_count(array.elements[index]),
     };
     
     ksize_t idx = 0;

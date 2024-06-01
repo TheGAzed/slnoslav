@@ -40,7 +40,7 @@ KGrid _init_grid(FILE * kakuro_file) {
     assert(kakuro_file && "KAKURO FILE POINTER IS NULL");
 
     KGrid g = { 0 };
-    fread(g.size, sizeof(ksize_t), GRID_DIMENTIONS, kakuro_file);
+    assert((GRID_DIMENTIONS == fread(g.size, sizeof(ksize_t), GRID_DIMENTIONS, kakuro_file)) && "READ FAILED");
     g.count = g.size[ROW] * g.size[COLUMN];
 
     assert((g.grids[ROW]    = malloc(g.size[ROW] * sizeof(lookup_t*))) && "ALLOCATION TO ROW ARRAY FAILED");

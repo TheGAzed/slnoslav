@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <stdio.h>
 
 #include <algorithms/arc_consistency.h>
 #include <structures/concrete/board.h>
@@ -30,6 +31,7 @@ typedef struct reduce_combinations {
 } RCombinations;
 
 State _check_magic_table(ksize_t blocks, ksize_t sum);
+State _check_one_blocks(ksize_t blocks, ksize_t sum);
 State _check_even_two_blocks(ksize_t block, ksize_t sum);
 State _check_high_end(ksize_t block, ksize_t sum);
 State _check_low_end(ksize_t block, ksize_t sum);
@@ -47,9 +49,9 @@ bool          _reduce_no_combination(Kakuro board, SArray * current_state);
 bool          _reduce_no_col_combination(Kakuro board, SArray * current_state, Check * checks, ksize_t index);
 bool          _reduce_no_row_combination(Kakuro board, SArray * current_state, Check * checks, ksize_t index);
 
-void reduce(Kakuro board, SArray * initial_state) {
+void reduce_tree(Kakuro board, SArray * initial_state) {
     assert(initial_state && "INITIAL STATE ARRAY IS NULL");
-
+    
     _reduce_multi_values(board, initial_state);
 }
 
@@ -133,10 +135,7 @@ void _reduce_multi_values(Kakuro board, SArray * current_state) {
     Check checks[KAKURO_SIZE_MAX] = { 0 };
 
     for (size_t i = 0; i < board.game.empty_count; i++) {
-        if (!valid_states(*current_state)) break;
         if (!(checks[i] & ROWCHECK)) _reduce_row_multi_values(board, current_state, checks, i);
-
-        if (!valid_states(*current_state)) break;
         if (!(checks[i] & COLCHECK)) _reduce_col_multi_values(board, current_state, checks, i);
     }
 }

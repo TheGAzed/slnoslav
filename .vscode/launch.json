@@ -5,10 +5,10 @@
     "version": "0.2.0",   
     "configurations": [
         {
-            "name": "TESTS launch",
+            "name": "UNITTESTS launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/test/TESTS",
+            "program": "${workspaceFolder}/build/test/unit/UNITTESTS",
 
             "args": [],
             "stopAtEntry": false,

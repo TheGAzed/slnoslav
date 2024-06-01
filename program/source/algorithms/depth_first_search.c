@@ -16,7 +16,7 @@ SArray depth_first_search(Kakuro board) {
 
     SArray initial = create_state_array(board.game.empty_count);
     set_full_state_array(&initial);
-    reduce(board, &initial);
+    reduce_tree(board, &initial);
     push_stack(&stack, initial);
 
     SArray solution = { 0 };
