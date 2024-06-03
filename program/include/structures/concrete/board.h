@@ -47,4 +47,12 @@ void   free_kakuro(Kakuro * board);
 bool   is_wall_hit(Kakuro board, ksize_t row, ksize_t col);
 void   print_board(Kakuro board);
 
+void   add_check    (Kakuro board, Check * checks, ksize_t index);
+void   add_row_check(Kakuro board, Check * checks, ksize_t index);
+void   add_col_check(Kakuro board, Check * checks, ksize_t index);
+
+void   sub_check    (Kakuro board, Check * checks, ksize_t index);
+void   sub_row_check(Kakuro board, Check * checks, ksize_t index);
+void   sub_col_check(Kakuro board, Check * checks, ksize_t index);
+
 #endif /* STRUCTURES_CONCRETE_BOARD_H */

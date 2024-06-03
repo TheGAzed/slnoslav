@@ -36,6 +36,66 @@ void free_kakuro(Kakuro * board) {
     _free_grid(&(board->game));
 }
 
+bool is_wall_hit(Kakuro board, ksize_t row, ksize_t col) {
+    return
+        (row >= board.game.size[ROW] || col >= board.game.size[COLUMN]) ||
+        board.grid[row][col] == -1;
+}
+
+void print_board(Kakuro board) {
+    for (size_t i = 0; i < GRID_DIMENTIONS; i++) {
+        for (size_t j = 0; j < board.game.size[ROW]; j++) {
+            for (size_t k = 0; k < board.game.size[COLUMN]; k++) {
+                printf("%02hhd ", board.game.grids[i][j][k]);
+            }
+            putchar('\n');
+        }
+        putchar('\n');
+    }
+}
+
+void add_check(Kakuro board, Check * checks, ksize_t index) {
+    add_row_check(board, checks, index);
+    add_col_check(board, checks, index);
+}
+
+void sub_check(Kakuro board, Check * checks, ksize_t index) {
+    sub_row_check(board, checks, index);
+    sub_col_check(board, checks, index);
+}
+
+void add_row_check(Kakuro board, Check * checks, ksize_t index) {
+    if (checks[index] & ROWCHECK) return;
+
+    ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
+    while (!is_wall_hit(board, row, col - 1)) col--;
+    for (ksize_t i = 0; i < board.blocks[ROW][index]; i++) checks[board.grid[row][col + i]] |= ROWCHECK;
+}
+
+void add_col_check(Kakuro board, Check * checks, ksize_t index) {
+    if (checks[index] & COLCHECK) return;
+
+    ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
+    while (!is_wall_hit(board, row - 1, col)) row--;
+    for (ksize_t i = 0; i < board.blocks[COLUMN][index]; i++) checks[board.grid[row + i][col]] |= COLCHECK;
+}
+
+void sub_row_check(Kakuro board, Check * checks, ksize_t index) {
+    if (!(checks[index] & ROWCHECK)) return;
+
+    ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
+    while (!is_wall_hit(board, row, col - 1)) col--;
+    for (ksize_t i = 0; i < board.blocks[ROW][index]; i++) checks[board.grid[row][col + i]] &= ~(ROWCHECK);
+}
+
+void sub_col_check(Kakuro board, Check * checks, ksize_t index) {
+    if (!(checks[index] & ROWCHECK)) return;
+
+    ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
+    while (!is_wall_hit(board, row - 1, col)) row--;
+    for (ksize_t i = 0; i < board.blocks[COLUMN][index]; i++) checks[board.grid[row + i][col]] &= ~(COLCHECK);
+}
+
 KGrid _init_grid(FILE * kakuro_file) {
     assert(kakuro_file && "KAKURO FILE POINTER IS NULL");
 
@@ -185,22 +245,4 @@ ksize_t _empty_cell_count(KGrid from) {
     }
 
     return count;
-}
-
-bool is_wall_hit(Kakuro board, ksize_t row, ksize_t col) {
-    return
-        (row >= board.game.size[ROW] || col >= board.game.size[COLUMN]) ||
-        board.grid[row][col] == -1;
-}
-
-void print_board(Kakuro board) {
-    for (size_t i = 0; i < GRID_DIMENTIONS; i++) {
-        for (size_t j = 0; j < board.game.size[ROW]; j++) {
-            for (size_t k = 0; k < board.game.size[COLUMN]; k++) {
-                printf("%02hhd ", board.game.grids[i][j][k]);
-            }
-            putchar('\n');
-        }
-        putchar('\n');
-    }
 }

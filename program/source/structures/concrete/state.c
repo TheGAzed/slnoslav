@@ -136,7 +136,7 @@ ksize_t shortest_multi_index(SArray array) {
 }
 
 ksize_t state_count(State state) {
-    return (ksize_t)__builtin_popcount(state.mask);
+    return __builtin_popcount(state.mask);
 }
 
 SMatrix generate_neighbor(SArray array, ksize_t index) {
