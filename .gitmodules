@@ -1,6 +1,3 @@
 [submodule "external/greatest"]
 	path = external/greatest
 	url  = git@github.com:silentbicycle/greatest.git
-[submodule "external/ubench"]
-	path = external/ubench
-	url  = git@github.com:sheredom/ubench.h.git

@@ -14,13 +14,11 @@ typedef uint8_t ksize_t;
 #define FULL_STATE    0b111111111
 #define INVALID_STATE 0b000000000
 
-typedef struct state {
-    unsigned mask : MAX_BLOCK_VALUES;
-} State;
+typedef uint16_t state_t;
 
 typedef struct state_array {
     ksize_t  size;
-    State * elements;
+    state_t * elements;
 } SArray;
 
 typedef struct state_array_array {
@@ -41,22 +39,22 @@ SArray   copy_state_array (SArray array);
 bool     compare_states   (SArray array_a, SArray array_b);
 bool     valid_states     (SArray array);
 bool     is_end_state     (SArray array);
-SArray   split_state      (State state);
-State    merge_state_array(SArray array);
+SArray   split_state      (state_t state);
+state_t  merge_state_array(SArray array);
 
-bool     is_one_value  (State state);
+bool     is_one_value  (state_t state);
 ksize_t  get_sums      (ksize_t start, EType type);
-State    get_edge_state(ksize_t count, EType type);
-ksize_t  get_one_value (State state);
+state_t  get_edge_state(ksize_t count, EType type);
+ksize_t  get_one_value (state_t state);
 
-ksize_t state_to_sums       (State state);
-State   get_one_state       (ksize_t value);
+ksize_t state_to_sums       (state_t state);
+state_t get_one_state       (ksize_t value);
 ksize_t shortest_multi_index(SArray array);
-ksize_t state_count(State state);
+ksize_t state_count(state_t state);
 
 SMatrix generate_neighbor(SArray array, ksize_t index);
 
-void    print_state(State s);
+void    print_state(state_t s);
 void    print_state_array(SArray s);
 
 #endif /* STRUCTURES_CONCRETE_STATE_H */

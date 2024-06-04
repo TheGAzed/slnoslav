@@ -23,8 +23,8 @@ bool _backtrack_row_sum(Kakuro board, SArray current_state, Check * checks, size
 
     for (ksize_t i = 0; i < blocks; i++) {
         checks[board.grid[row][col + i]] |= ROWCHECK;
-        State s = current_state.elements[board.grid[row][col + i]];
-        if (is_one_value(s)) { filled_blocks++; filled_sums += __builtin_ctz(s.mask) + 1; }
+        state_t s = current_state.elements[board.grid[row][col + i]];
+        if (is_one_value(s)) { filled_blocks++; filled_sums += __builtin_ctz(s) + 1; }
     }
 
     return
@@ -41,13 +41,13 @@ bool _backtrack_col_sum(Kakuro board, SArray current_state, Check * checks, size
 
     for (ksize_t i = 0; i < blocks; i++) {
         checks[board.grid[row + i][col]] |= COLCHECK;
-        State s = current_state.elements[board.grid[row + i][col]];
-        if (is_one_value(s)) { filled_blocks++; filled_sums += __builtin_ctz(s.mask) + 1; }
+        state_t s = current_state.elements[board.grid[row + i][col]];
+        if (is_one_value(s)) { filled_blocks++; filled_sums += __builtin_ctz(s) + 1; }
     }
 
     return 
         (blocks == filled_blocks) ? filled_sums != sums                                                  : false || 
         (filled_sums > sums)                                                                                     || 
-        (blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, UPPER_EDGE) < (sums - filled_sums) : false  || 
+        (blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, UPPER_EDGE) < (sums - filled_sums)  : false || 
         (blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, LOWER_EDGE)  > (sums - filled_sums) : false;
 }
