@@ -5,6 +5,7 @@
 
 #include <algorithms/arc_consistency.h>
 #include <structures/concrete/board.h>
+#include <instance/settings.h>
 
 #define STACK_DATA_TYPE ksize_t
 #include <structures/abstract/stack.h>
@@ -52,12 +53,14 @@ bool          _reduce_no_row_combination(Kakuro board, SArray * current_state, C
 
 void reduce_tree(Kakuro board, SArray * initial_state) {
     assert(initial_state && "INITIAL STATE ARRAY IS NULL");
+    if (!(get_settings_singleton()->is_arc_consistency)) return;
     
     _reduce_multi_values(board, initial_state);
 }
 
 bool look_ahead(Kakuro board, SArray * current_state) {
     assert(current_state && "CURRENT STATE ARRAY IS NULL");
+    if (!(get_settings_singleton()->is_arc_consistency)) return true;
 
     Check checks[KAKURO_SIZE_MAX] = { 0 };
     do {

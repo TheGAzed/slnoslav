@@ -345,9 +345,9 @@ void _setup_help(char * value) {
 
     printf("\nProgram settings:\n");
     printf("\t--filepath,-fp        <filepath> filepath to .kkr file           [\"test/data/11x11s.kkr\"]\n");
-    printf("\t--backtrack,-bt       true|false enable/disable backtracking     [true]\n");
+    printf("\t--backtrack,-bt       true|false enable/disable backtracking     [false]\n");
     printf("\t--forward-check,-fch  true|false enable/disable forward checking [false]\n");
-    printf("\t--arc-consistency,-ac true|false enable/disable arc-consistency  [true]\n");
+    printf("\t--arc-consistency,-ac true|false enable/disable arc-consistency  [false]\n");
 
     exit(EXIT_SUCCESS);
 }

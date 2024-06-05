@@ -6,6 +6,6 @@
 #include <structures/concrete/state.h>
 #include <structures/concrete/board.h>
 
-void forward_checking(Kakuro board, SArray * current_state, ksize_t index);
+bool forward_checking(Kakuro board, SArray * current_state, ksize_t index);
 
 #endif /* ALGORITHMS_FORWARD_CHECKING_H */

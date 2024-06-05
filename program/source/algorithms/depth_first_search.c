@@ -38,8 +38,8 @@ SArray depth_first_search(Kakuro board) {
 
         SMatrix next = generate_neighbor(guess, index);
         for (size_t i = 0; i < next.size; i++) {
-            forward_checking(board, &next.elements[i], index);
-            push_stack(&stack, next.elements[i]);
+            if (forward_checking(board, &next.elements[i], index)) push_stack(&stack, next.elements[i]);
+            else destroy_state_array(&next.elements[i]);
         }
 
         destroy_state_array(&guess);
