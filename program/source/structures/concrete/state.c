@@ -156,6 +156,11 @@ SMatrix generate_neighbor(SArray array, ksize_t index) {
     return sm;
 }
 
+void destroy_state_matrix(SMatrix * matrix) {
+    for (ksize_t i = 0; i < matrix->size; i++) destroy_state_array(&matrix->elements[i]);
+    matrix->size = 0;
+}
+
 void print_state(state_t s) {
     if (is_one_value(s)) printf("%*d ", 2 * get_one_value(s) - 1, get_one_value(s));
     else {
@@ -174,4 +179,11 @@ void print_state_array(SArray s) {
     }
     putchar('\n');
     fflush(stdout);
+}
+
+void print_solution(SArray solved) {
+    assert(is_end_state(solved) && "CAN ONLY PRITN END STATE");
+    printf("[ ");
+    for (ksize_t i = 0; i < solved.size; i++) printf("%u ", __builtin_ctz(solved.elements[i]) + 1);
+    puts("]");
 }

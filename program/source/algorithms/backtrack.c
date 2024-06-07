@@ -5,6 +5,7 @@
 #include <structures/concrete/state.h>
 #include <algorithms/backtrack.h>
 #include <instance/settings.h>
+#include <instance/statistics.h>
 
 bool _backtrack_row_sum(Kakuro board, SArray current_state, size_t index);
 bool _backtrack_col_sum(Kakuro board, SArray current_state, size_t index);
@@ -18,6 +19,7 @@ bool _backtrack_col_repeat(Kakuro board, SArray current_state, size_t index);
 
 bool backtrack(Kakuro board, SArray current_state) {
     if (!(get_settings_singleton()->is_backtrack)) return _backtrack_valid_sums(board, current_state);
+    get_stat_singleton()->backtrack_call_count++;
 
     Check checks[KAKURO_SIZE_MAX] = { 0 };
 
@@ -32,7 +34,7 @@ bool backtrack(Kakuro board, SArray current_state) {
         add_check(board, checks, i);
     }
 
-    return is_backtrack;
+    return invalid_state_backtrack_stat(is_backtrack);
 }
 
 bool _backtrack_row_sum(Kakuro board, SArray current_state, size_t index) {
@@ -121,7 +123,7 @@ bool _backtrack_row_repeat(Kakuro board, SArray current_state, size_t index) {
     ksize_t block = board.blocks[ROW][index];
     for (ksize_t i = 0; i < block; i++) {
         state_t s = current_state.elements[board.grid[row][col + i]];
-        if (!is_one_value(s)) return false;
+        if (!is_one_value(s)) continue;
 
         if (state & s) return true;
         else state |= s;
@@ -137,7 +139,7 @@ bool _backtrack_col_repeat(Kakuro board, SArray current_state, size_t index) {
     ksize_t block = board.blocks[COLUMN][index];
     for (ksize_t i = 0; i < block; i++) {
         state_t s = current_state.elements[board.grid[row + i][col]];
-        if (!is_one_value(s)) return false;
+        if (!is_one_value(s)) continue;
 
         if (state & s) return true;
         else state |= s;

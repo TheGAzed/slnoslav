@@ -53,8 +53,10 @@ ksize_t shortest_multi_index(SArray array);
 ksize_t state_count(state_t state);
 
 SMatrix generate_neighbor(SArray array, ksize_t index);
+void    destroy_state_matrix(SMatrix * matrix);
 
-void    print_state(state_t s);
-void    print_state_array(SArray s);
+void print_state(state_t s);
+void print_state_array(SArray s);
+void print_solution(SArray solved);
 
 #endif /* STRUCTURES_CONCRETE_STATE_H */

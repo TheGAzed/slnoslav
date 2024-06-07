@@ -2,16 +2,19 @@
 
 #include <algorithms/forward_checking.h>
 #include <instance/settings.h>
+#include <instance/statistics.h>
 
 bool _row_forward_check(Kakuro board, SArray * current_state, ksize_t index);
 bool _col_forward_check(Kakuro board, SArray * current_state, ksize_t index);
 
 bool forward_checking(Kakuro board, SArray * current_state, ksize_t index) {
     if (!(get_settings_singleton()->is_forward_check)) return true;
+    get_stat_singleton()->forward_check_call_count++;
 
-    return 
+    return !invalid_state_forward_check_stat(!(
         _row_forward_check(board, current_state, index) && 
-        _col_forward_check(board, current_state, index);
+        _col_forward_check(board, current_state, index)
+    ));
 }
 
 bool _row_forward_check(Kakuro board, SArray * current_state, ksize_t index) {

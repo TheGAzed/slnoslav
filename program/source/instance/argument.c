@@ -14,43 +14,23 @@
 #define CONSOLE_ARGUMENT_COUND 6
 #define HASHTABLE_SIZE (1 << 3)
 
-#define FILEPATH_FLAG_STRING_SHORT "-fp"
-#define FILEPATH_FLAG_STRING_LONG  "--filepath"
-
 #define FILEPATH_FLAG_HASH_SHORT 0x665d
 #define FILEPATH_FLAG_HASH_LONG  0x2823
-
-#define BACKTRACK_FLAG_STRING_SHORT "-bt"
-#define BACKTRACK_FLAG_STRING_LONG  "--backtrack"
 
 #define BACKTRACK_FLAG_HASH_SHORT 0x6259
 #define BACKTRACK_FLAG_HASH_LONG  0x3652
 
-#define FORWARD_CHECK_FLAG_STRING_SHORT "-fch"
-#define FORWARD_CHECK_FLAG_STRING_LONG  "--forward-check"
-
 #define FORWARD_CHECK_FLAG_HASH_SHORT 0x0e4e
 #define FORWARD_CHECK_FLAG_HASH_LONG  0x6151
-
-#define ARC_CONSISTENCY_FLAG_STRING_SHORT "-ac"
-#define ARC_CONSISTENCY_FLAG_STRING_LONG  "--arc-consistency"
 
 #define ARC_CONSISTENCY_FLAG_HASH_SHORT 0x614e
 #define ARC_CONSISTENCY_FLAG_HASH_LONG  0x1b28
 
-#define INFO_FLAG_STRING_SHORT "-i"
-#define INFO_FLAG_STRING_LONG  "--information"
-
 #define INFO_FLAG_HASH_SHORT 0x692d
 #define INFO_FLAG_HASH_LONG  0x5a36
 
-#define HELP_FLAG_STRING_SHORT "-h"
-#define HELP_FLAG_STRING_LONG  "--help"
-
 #define HELP_FLAG_HASH_SHORT 0x682d
 #define HELP_FLAG_HASH_LONG  0x3829
-
-#define LONGEST_FLAG_S  sizeof(ARC_CONSISTENCY_FLAG_STRING_LONG)
 
 typedef uint16_t full_hash_t;
 typedef uint8_t  part_hash_t;
@@ -211,6 +191,8 @@ void setup_program(int argc, char **argv) {
         // call to settings setup to set program settings
         _setup_settings(argument); 
     }
+
+
 }
 
 Hash _get_hash(char * string) {

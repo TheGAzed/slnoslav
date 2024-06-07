@@ -11,6 +11,7 @@ target_sources(program
 
         source/instance/argument.c
         source/instance/settings.c
+        source/instance/statistics.c
         
         source/structures/concrete/board.c
         source/structures/concrete/state.c

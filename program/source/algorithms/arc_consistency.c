@@ -6,6 +6,7 @@
 #include <algorithms/arc_consistency.h>
 #include <structures/concrete/board.h>
 #include <instance/settings.h>
+#include <instance/statistics.h>
 
 #define STACK_DATA_TYPE ksize_t
 #include <structures/abstract/stack.h>
@@ -25,12 +26,10 @@ typedef struct magic_table {
     state_t * united[MAGIC_TABLE_LENGTH];
 } MTable;
 
-typedef uint32_t comb_t;
 typedef struct reduce_combinations {
     SMatrix  e_matrix;
-    comb_t e_count;
     ksize_t  e_valid[MAX_BLOCK_VALUES][MAX_BLOCK_VALUES];
-} RCombinations;
+} Valid;
 
 state_t _check_magic_table(ksize_t blocks, ksize_t sum);
 state_t _check_one_blocks(ksize_t blocks, ksize_t sum);
@@ -45,11 +44,11 @@ void _reduce_one_values(Kakuro board, SArray * current_state, Check * checks);
 void _reduce_row_one_values(Kakuro board, Stack * ones, SArray * current_state, ksize_t index, Check * checks);
 void _reduce_col_one_values(Kakuro board, Stack * ones, SArray * current_state, ksize_t index, Check * checks);
 
-RCombinations _create_combinations(Kakuro board, SArray * current_state, ksize_t index, KGSizes type);
-void          _destroy_combinations(RCombinations * combinations);
-bool          _reduce_no_combination(Kakuro board, SArray * current_state, Check * checks);
-bool          _reduce_no_col_combination(Kakuro board, SArray * current_state, Check * checks, ksize_t index);
-bool          _reduce_no_row_combination(Kakuro board, SArray * current_state, Check * checks, ksize_t index);
+Valid _create_valid(Kakuro board, SArray * current_state, ksize_t index, KGSizes type);
+void  _destroy_valid(Valid * combinations);
+bool  _reduce_no_combination(Kakuro board, SArray * current_state, Check * checks);
+bool  _reduce_no_col_combination(Kakuro board, SArray * current_state, Check * checks, ksize_t index);
+bool  _reduce_no_row_combination(Kakuro board, SArray * current_state, Check * checks, ksize_t index);
 
 void reduce_tree(Kakuro board, SArray * initial_state) {
     assert(initial_state && "INITIAL STATE ARRAY IS NULL");
@@ -61,13 +60,14 @@ void reduce_tree(Kakuro board, SArray * initial_state) {
 bool look_ahead(Kakuro board, SArray * current_state) {
     assert(current_state && "CURRENT STATE ARRAY IS NULL");
     if (!(get_settings_singleton()->is_arc_consistency)) return true;
+    get_stat_singleton()->look_ahead_call_count++;
 
     Check checks[KAKURO_SIZE_MAX] = { 0 };
     do {
         _reduce_one_values(board, current_state, checks);
     } while (valid_states(*current_state) && _reduce_no_combination(board, current_state, checks));
 
-    return valid_states(*current_state);
+    return !invalid_state_look_ahead_stat(!valid_states(*current_state));
 }
 
 state_t _check_magic_table(ksize_t blocks, ksize_t sum) {
@@ -248,15 +248,13 @@ void _reduce_col_one_values(Kakuro board, Stack * ones, SArray * current_state, 
     if (is_col_changed) sub_col_check(board, checks, index);
 }
 
-RCombinations _create_combinations(Kakuro board, SArray * current_state, ksize_t index, KGSizes type) {
-    RCombinations comb = { 
-        .e_count  = 1,
-        .e_matrix  = {
-            .size = board.blocks[type][index],
-        }
+Valid _create_valid(Kakuro board, SArray * current_state, ksize_t index, KGSizes type) {
+    Valid comb = { 
+        .e_matrix  = { .size = board.blocks[type][index], }
     };
 
     ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
+    uint32_t comb_count = 1;
     for (ksize_t i = 0; i < board.blocks[type][index]; i++) {
         state_t s = type == ROW ? 
             current_state->elements[board.grid[row][col + i]] : 
@@ -264,12 +262,12 @@ RCombinations _create_combinations(Kakuro board, SArray * current_state, ksize_t
         
         ksize_t s_count = state_count(s);
 
-        comb.e_count             *= s_count;
+        comb_count             *= s_count;
         comb.e_matrix.elements[i] = split_state(s);
     }
 
     ksize_t c_lookup[MAX_BLOCK_VALUES] = { 0 };
-    for (comb_t i = 0; i < comb.e_count; i++) {
+    for (uint32_t i = 0; i < comb_count; i++) {
         state_t s = { 0 };
 
         for (ksize_t j = 0; j < comb.e_matrix.size; j++) {
@@ -294,10 +292,8 @@ RCombinations _create_combinations(Kakuro board, SArray * current_state, ksize_t
     return comb;
 }
 
-void _destroy_combinations(RCombinations * combinations) {
-    for (ksize_t i = 0; i < combinations->e_matrix.size; i++) destroy_state_array(&combinations->e_matrix.elements[i]);
-    
-    combinations->e_count = 0;
+void _destroy_valid(Valid * combinations) {
+    destroy_state_matrix(&(combinations->e_matrix));
 }
 
 bool _reduce_no_combination(Kakuro board, SArray * current_state, Check * checks) {
@@ -317,7 +313,7 @@ bool _reduce_no_row_combination(Kakuro board, SArray * current_state, Check * ch
         if (!current_state->elements[board.grid[row][col + i]]) return false;
     }
 
-    RCombinations comb = _create_combinations(board, current_state, index, ROW);
+    Valid comb = _create_valid(board, current_state, index, ROW);
     bool is_reduced = false;
 
     for (ksize_t i = 0; i < comb.e_matrix.size; i++) {
@@ -329,7 +325,7 @@ bool _reduce_no_row_combination(Kakuro board, SArray * current_state, Check * ch
         }
     }
 
-    _destroy_combinations(&comb);
+    _destroy_valid(&comb);
 
     return is_reduced;
 }
@@ -337,22 +333,22 @@ bool _reduce_no_row_combination(Kakuro board, SArray * current_state, Check * ch
 bool _reduce_no_col_combination(Kakuro board, SArray * current_state, Check * checks, ksize_t index) {
     ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
     for (ksize_t i = 0; i < board.blocks[COLUMN][index]; i++) {
-        if (!current_state->elements[board.grid[row + i][col]]) return false;
+        if (current_state->elements[board.grid[row + i][col]] == INVALID_STATE) return false;
     }
 
-    RCombinations c = _create_combinations(board, current_state, index, COLUMN);
+    Valid comb = _create_valid(board, current_state, index, COLUMN);
     bool is_reduced = false;
 
-    for (ksize_t i = 0; i < c.e_matrix.size; i++) {
-        for (ksize_t j = 0; j < c.e_matrix.elements[i].size; j++) {
-            if (c.e_valid[i][j]) continue;
+    for (ksize_t i = 0; i < comb.e_matrix.size; i++) {
+        for (ksize_t j = 0; j < comb.e_matrix.elements[i].size; j++) {
+            if (comb.e_valid[i][j]) continue;
 
-            current_state->elements[board.grid[row + i][col]] &= ~c.e_matrix.elements[i].elements[j];
+            current_state->elements[board.grid[row + i][col]] &= ~comb.e_matrix.elements[i].elements[j];
             is_reduced = true;
         }
     }
 
-    _destroy_combinations(&c);
+    _destroy_valid(&comb);
 
     return is_reduced;
 }

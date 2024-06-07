@@ -8,6 +8,8 @@
 #include <algorithms/arc_consistency.h>
 #include <algorithms/forward_checking.h>
 
+#include <instance/statistics.h>
+
 #define STACK_DATA_TYPE SArray
 #include <structures/abstract/stack.h>
 
@@ -21,6 +23,8 @@ SArray depth_first_search(Kakuro board) {
 
     SArray solution = { 0 };
     while (!is_empty_stack(stack)) {
+        get_stat_singleton()->dfs_iteration_count++;
+
         SArray guess = pop_stack(&stack);
 
         if (!look_ahead(board, &guess) || backtrack(board, guess)) {
@@ -41,6 +45,8 @@ SArray depth_first_search(Kakuro board) {
             if (forward_checking(board, &next.elements[i], index)) push_stack(&stack, next.elements[i]);
             else destroy_state_array(&next.elements[i]);
         }
+
+        set_dfs_stack_max_size(stack.size);
 
         destroy_state_array(&guess);
     }
