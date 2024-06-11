@@ -306,13 +306,13 @@ void _setup_forward_check(char * value) {
 void _setup_arc_consistency(char * value) {
     assert(value && "ARGUMENT VALUE IS NULL");
 
-    bool t = !strncmp(value, "true",  sizeof("true"));
-    bool f = !strncmp(value, "false", sizeof("false"));
+    bool bool_true = !strncmp(value, "true",  sizeof("true"));
+    bool bool_false = !strncmp(value, "false", sizeof("false"));
     // check if string value is boolean true or false 
-    assert((t || f) && "ARC CONSISTENCY VALUE IS NEITHER TRUE NOR FALSE");
+    assert((bool_true || bool_false) && "ARC CONSISTENCY VALUE IS NEITHER TRUE NOR FALSE");
 
-    // if 't' is true then value == "true", else value == "false"
-    get_settings_singleton()->is_arc_consistency = t;
+    // if 'bool_true' is true then value == "true", else value == "false"
+    get_settings_singleton()->is_arc_consistency = bool_true;
 }
 
 void _setup_information(char * value) {
@@ -326,10 +326,10 @@ void _setup_help(char * value) {
     printf("\t--information,-i                 show information about SLNOSLAV\n");
 
     printf("\nProgram settings:\n");
-    printf("\t--filepath,-fp        <filepath> filepath to .kkr file           [\"test/data/11x11s.kkr\"]\n");
-    printf("\t--backtrack,-bt       true|false enable/disable backtracking     [false]\n");
-    printf("\t--forward-check,-fch  true|false enable/disable forward checking [false]\n");
-    printf("\t--arc-consistency,-ac true|false enable/disable arc-consistency  [false]\n");
+    printf("\t--filepath,-fp        <filepath> filepath to .kkr file           [\"program/0.kkr\"]\n");
+    printf("\t--backtrack,-bt       true|false enable/disable backtracking     [true]\n");
+    printf("\t--forward-check,-fch  true|false enable/disable forward checking [true]\n");
+    printf("\t--arc-consistency,-ac true|false enable/disable arc-consistency  [true]\n");
 
     exit(EXIT_SUCCESS);
 }

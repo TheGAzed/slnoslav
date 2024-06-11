@@ -195,9 +195,9 @@ static inline size_t _get_index_stack(Stack stack, SIPosition type) {
     assert((!is_empty_stack(stack) || type != SI_POSITION_CURRENT) && "CAN'T GET CURRENT INDEX IF EMPTY STACK");
 
 #ifdef FINITE_STACK
-    return (stack.size - type) % (stack.max - 1);
+    return (stack.size - type) % stack.max;
 #else
-    return (stack.size - type) % (STACK_LIST_ARRAY_SIZE - 1);
+    return (stack.size - type) % STACK_LIST_ARRAY_SIZE;
 #endif /* FINITE_STACK */
 
 }

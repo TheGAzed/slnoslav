@@ -10,11 +10,7 @@ target_link_libraries(unit_tests
 
 target_sources(unit_tests
     PRIVATE
-        structures/board/test_board_istack.c
-        structures/board/test_board_4x4s.c
-        structures/board/test_board_6x4s.c
-        structures/board/test_board_6x4u.c
-        structures/board/test_board_10x10s.c
+        structures/abstract/stack_test.c
 )
 
 target_include_directories(unit_tests

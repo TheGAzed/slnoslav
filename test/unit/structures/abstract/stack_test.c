@@ -258,7 +258,7 @@ TEST push_max_array_minus_one_with_1_plus_one_42_and_pop_back_42(void) {
     PASS();
 }
 
-SUITE (test_board_stack) {
+SUITE (stack_test) {
     RUN_TEST(init_stack_is_empty);
     RUN_TEST(init_stack_top_array_pointer_null);
     RUN_TEST(push_one_to_empty_stack_expected_count_one);

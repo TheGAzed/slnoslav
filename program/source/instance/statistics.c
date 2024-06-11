@@ -49,8 +49,8 @@ void print_statistics(void) {
 
     puts("STATISTICS");
     puts("\tDEPTH FIRST SEARCH:");
-    printf("\t\t - DFS ITERATIONS   : %lu\n", get_stat_singleton()->dfs_iteration_count);
-    printf("\t\t - MAX STACK LENGTH : %lu\n", get_stat_singleton()->dfs_stack_max_size);
+    printf("\t\t - DFS ITERATIONS : %lu\n", get_stat_singleton()->dfs_iteration_count);
+    printf("\t\t - MAX STACK SIZE : %lu\n", get_stat_singleton()->dfs_stack_max_size);
 
     puts("\tBACKTRACK:");
     printf("\t\t - CALLS            : %lu\n", get_stat_singleton()->backtrack_call_count);

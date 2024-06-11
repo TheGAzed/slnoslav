@@ -182,7 +182,7 @@ void print_state_array(SArray s) {
 }
 
 void print_solution(SArray solved) {
-    assert(is_end_state(solved) && "CAN ONLY PRITN END STATE");
+    assert(is_end_state(solved) && "CAN ONLY PRINT END STATE");
     printf("[ ");
     for (ksize_t i = 0; i < solved.size; i++) printf("%u ", __builtin_ctz(solved.elements[i]) + 1);
     puts("]");

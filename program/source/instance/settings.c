@@ -2,10 +2,10 @@
 
 Settings * get_settings_singleton(void) {
     static Settings setup = {
-        .filepath           = "test/data/4x4s.kkr",
-        .is_backtrack       = false,
-        .is_forward_check   = false,
-        .is_arc_consistency = false,
+        .filepath           = "program/0.kkr",
+        .is_backtrack       = true,
+        .is_forward_check   = true,
+        .is_arc_consistency = true,
     };
 
     return &setup;
