@@ -29,6 +29,8 @@ TEST easy_one(void) {
         ASSERTm("INVALID SOLUTION", get_one_value(solution.elements[i]) == expected_solution[i]);
     }
 
+    destroy_state_array(&solution);
+
     PASS();
 }
 
@@ -55,6 +57,8 @@ TEST easy_two(void) {
     for (ksize_t i = 0; i < solution.size; i++) {
         ASSERTm("INVALID SOLUTION", get_one_value(solution.elements[i]) == expected_solution[i]);
     }
+
+    destroy_state_array(&solution);
 
     PASS();
 }
@@ -83,6 +87,8 @@ TEST easy_three(void) {
         ASSERTm("INVALID SOLUTION", get_one_value(solution.elements[i]) == expected_solution[i]);
     }
 
+    destroy_state_array(&solution);
+
     PASS();
 }
 
@@ -110,6 +116,8 @@ TEST easy_four(void) {
         ASSERTm("INVALID SOLUTION", get_one_value(solution.elements[i]) == expected_solution[i]);
     }
 
+    destroy_state_array(&solution);
+
     PASS();
 }
 
@@ -136,6 +144,8 @@ TEST easy_five(void) {
     for (ksize_t i = 0; i < solution.size; i++) {
         ASSERTm("INVALID SOLUTION", get_one_value(solution.elements[i]) == expected_solution[i]);
     }
+
+    destroy_state_array(&solution);
 
     PASS();
 }
