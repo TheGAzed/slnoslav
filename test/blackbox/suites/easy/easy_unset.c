@@ -16,10 +16,10 @@ TEST easy_unset_one(void) {
     FILE * fp = fopen(get_settings_singleton()->filepath, "rb");
     ASSERTm("COULDN'T OPEN FILE", fp);
     rewind(fp);
-
+    printf("FEOF: %d\n", feof(fp));
     Kakuro board = init_kakuro(fp);
     printf("BOARD SIZE: %u %u\n", board.game.size[ROW], board.game.size[COLUMN]);
-    printf("FEOF: %d\n", feof(fp));
+
     fflush(stdout);
     fclose(fp);
     
