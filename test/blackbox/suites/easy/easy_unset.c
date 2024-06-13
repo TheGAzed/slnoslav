@@ -18,7 +18,8 @@ TEST easy_unset_one(void) {
     rewind(fp);
 
     Kakuro board = init_kakuro(fp);
-    print_board(board);
+    printf("BOARD SIZE: %u %u\n", board.game.size[ROW], board.game.size[COLUMN]);
+    fflush(stdout);
     fclose(fp);
     
     SArray solution = depth_first_search(board);
