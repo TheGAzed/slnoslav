@@ -13,7 +13,7 @@ TEST easy_unset_one(void) {
     get_settings_singleton()->is_backtrack       = false;
     get_settings_singleton()->is_forward_check   = false;
 
-    FILE * fp = fopen(get_settings_singleton()->filepath, "rb");
+    FILE * fp = fopen(get_settings_singleton()->filepath, "r");
     ASSERTm("COULDN'T OPEN FILE", fp);
     Kakuro board = init_kakuro(fp);
 
@@ -43,7 +43,7 @@ TEST easy_unset_two(void) {
     get_settings_singleton()->is_backtrack       = false;
     get_settings_singleton()->is_forward_check   = false;
 
-    FILE * fp = fopen(get_settings_singleton()->filepath, "rb");
+    FILE * fp = fopen(get_settings_singleton()->filepath, "r");
     ASSERTm("COULDN'T OPEN FILE", fp);
 
     Kakuro board = init_kakuro(fp);
@@ -72,7 +72,7 @@ TEST easy_unset_three(void) {
     get_settings_singleton()->is_backtrack       = false;
     get_settings_singleton()->is_forward_check   = false;
 
-    FILE * fp = fopen(get_settings_singleton()->filepath, "rb");
+    FILE * fp = fopen(get_settings_singleton()->filepath, "r");
     ASSERTm("COULDN'T OPEN FILE", fp);
 
     Kakuro board = init_kakuro(fp);
@@ -101,7 +101,7 @@ TEST easy_unset_four(void) {
     get_settings_singleton()->is_backtrack       = false;
     get_settings_singleton()->is_forward_check   = false;
 
-    FILE * fp = fopen(get_settings_singleton()->filepath, "rb");
+    FILE * fp = fopen(get_settings_singleton()->filepath, "r");
     ASSERTm("COULDN'T OPEN FILE", fp);
 
     Kakuro board = init_kakuro(fp);
@@ -130,7 +130,7 @@ TEST easy_unset_five(void) {
     get_settings_singleton()->is_backtrack       = false;
     get_settings_singleton()->is_forward_check   = false;
 
-    FILE * fp = fopen(get_settings_singleton()->filepath, "rb");
+    FILE * fp = fopen(get_settings_singleton()->filepath, "r");
     ASSERTm("COULDN'T OPEN FILE", fp);
 
     Kakuro board = init_kakuro(fp);
