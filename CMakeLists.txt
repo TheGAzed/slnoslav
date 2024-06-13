@@ -7,7 +7,7 @@ project(SLNOSLAV
 )
 
 if(MSVC)
-    set(CMAKE_C_FLAGS "-std=c17 -pg -Wall")
+    set(CMAKE_C_FLAGS "-std=c17 -pg")
 else()
     set(CMAKE_C_FLAGS "-std=c17 -pg -Wall -Werror")
 endif()
