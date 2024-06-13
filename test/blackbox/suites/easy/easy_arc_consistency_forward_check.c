@@ -5,13 +5,13 @@
 
 #define EASY_PUZZLE_PATH "./test/puzzles/easy/"
 
-TEST easy_one(void) {
+TEST easy_arc_consistency_forward_check_one(void) {
     ksize_t expected_solution[] = { 9, 7, 5, 7, 6, 8, 9 };
 
     get_settings_singleton()->filepath           = EASY_PUZZLE_PATH"1.kkr";
-    get_settings_singleton()->is_arc_consistency = false;
+    get_settings_singleton()->is_arc_consistency = true;
     get_settings_singleton()->is_backtrack       = false;
-    get_settings_singleton()->is_forward_check   = false;
+    get_settings_singleton()->is_forward_check   = true;
 
     FILE * fp = fopen(get_settings_singleton()->filepath, "rb");
     ASSERTm("COULDN'T OPEN FILE", fp);
@@ -34,13 +34,13 @@ TEST easy_one(void) {
     PASS();
 }
 
-TEST easy_two(void) {
+TEST easy_arc_consistency_forward_check_two(void) {
     ksize_t expected_solution[] = { 9, 6, 7, 3, 2, 1, 5 };
 
     get_settings_singleton()->filepath           = EASY_PUZZLE_PATH"2.kkr";
-    get_settings_singleton()->is_arc_consistency = false;
+    get_settings_singleton()->is_arc_consistency = true;
     get_settings_singleton()->is_backtrack       = false;
-    get_settings_singleton()->is_forward_check   = false;
+    get_settings_singleton()->is_forward_check   = true;
 
     FILE * fp = fopen(get_settings_singleton()->filepath, "rb");
     ASSERTm("COULDN'T OPEN FILE", fp);
@@ -63,13 +63,13 @@ TEST easy_two(void) {
     PASS();
 }
 
-TEST easy_three(void) {
+TEST easy_arc_consistency_forward_check_three(void) {
     ksize_t expected_solution[] = { 8, 5, 1, 4, 2, 3, 9 };
 
     get_settings_singleton()->filepath           = EASY_PUZZLE_PATH"3.kkr";
-    get_settings_singleton()->is_arc_consistency = false;
+    get_settings_singleton()->is_arc_consistency = true;
     get_settings_singleton()->is_backtrack       = false;
-    get_settings_singleton()->is_forward_check   = false;
+    get_settings_singleton()->is_forward_check   = true;
 
     FILE * fp = fopen(get_settings_singleton()->filepath, "rb");
     ASSERTm("COULDN'T OPEN FILE", fp);
@@ -92,13 +92,13 @@ TEST easy_three(void) {
     PASS();
 }
 
-TEST easy_four(void) {
+TEST easy_arc_consistency_forward_check_four(void) {
     ksize_t expected_solution[] = { 1, 4, 2, 3, 9, 1, 2 };
 
     get_settings_singleton()->filepath           = EASY_PUZZLE_PATH"4.kkr";
-    get_settings_singleton()->is_arc_consistency = false;
+    get_settings_singleton()->is_arc_consistency = true;
     get_settings_singleton()->is_backtrack       = false;
-    get_settings_singleton()->is_forward_check   = false;
+    get_settings_singleton()->is_forward_check   = true;
 
     FILE * fp = fopen(get_settings_singleton()->filepath, "rb");
     ASSERTm("COULDN'T OPEN FILE", fp);
@@ -121,13 +121,13 @@ TEST easy_four(void) {
     PASS();
 }
 
-TEST easy_five(void) {
+TEST easy_arc_consistency_forward_check_five(void) {
     ksize_t expected_solution[] = { 1, 8, 6, 9, 4, 5, 8 };
 
     get_settings_singleton()->filepath           = EASY_PUZZLE_PATH"5.kkr";
-    get_settings_singleton()->is_arc_consistency = false;
+    get_settings_singleton()->is_arc_consistency = true;
     get_settings_singleton()->is_backtrack       = false;
-    get_settings_singleton()->is_forward_check   = false;
+    get_settings_singleton()->is_forward_check   = true;
 
     FILE * fp = fopen(get_settings_singleton()->filepath, "rb");
     ASSERTm("COULDN'T OPEN FILE", fp);
@@ -150,11 +150,11 @@ TEST easy_five(void) {
     PASS();
 }
 
-SUITE (easy_puzzles) {
+SUITE (easy_arc_consistency_forward_check) {
     // 4x4
-    RUN_TEST(easy_one);
-    RUN_TEST(easy_two);
-    RUN_TEST(easy_three);
-    RUN_TEST(easy_four);
-    RUN_TEST(easy_five);
+    RUN_TEST(easy_arc_consistency_forward_check_one);
+    RUN_TEST(easy_arc_consistency_forward_check_two);
+    RUN_TEST(easy_arc_consistency_forward_check_three);
+    RUN_TEST(easy_arc_consistency_forward_check_four);
+    RUN_TEST(easy_arc_consistency_forward_check_five);
 }

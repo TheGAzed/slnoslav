@@ -10,7 +10,14 @@ target_link_libraries(black_box
 
 target_sources(black_box
     PRIVATE
-        suites/easy_puzzles.c
+        suites/easy/easy_unset.c
+        suites/easy/easy_forward_check.c
+        suites/easy/easy_backtrack.c
+        suites/easy/easy_backtrack_forward_check.c
+        suites/easy/easy_arc_consistency.c
+        suites/easy/easy_arc_consistency_forward_check.c
+        suites/easy/easy_arc_consistency_backtrack.c
+        suites/easy/easy_arc_consistency_backtrack_forward_check.c
 )
 
 target_include_directories(black_box
