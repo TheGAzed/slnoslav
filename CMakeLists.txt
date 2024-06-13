@@ -9,7 +9,7 @@ project(SLNOSLAV
 if(MSVC)
     add_compile_options(/std:c17)
 else()
-    set(CMAKE_C_FLAGS "-std=c17 -pg -Wall -Werror")
+    set(CMAKE_C_FLAGS "-std=c17 -pg -Wall -Werror -ftest-coverage")
 endif()
 
 add_subdirectory(external)
