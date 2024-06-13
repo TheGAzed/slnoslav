@@ -31,3 +31,8 @@ target_link_libraries(BLACKBOX
         greatest
         program
 )
+
+add_test(
+    NAME BLACKBOX_TEST
+    COMMAND BLACKBOX
+)

@@ -24,3 +24,8 @@ target_link_libraries(UNITTESTS
         greatest
         program
 )
+
+add_test(
+    NAME UNIT_TEST
+    COMMAND UNITTESTS
+)
