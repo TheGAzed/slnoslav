@@ -19,6 +19,7 @@ TEST easy_unset_one(void) {
 
     Kakuro board = init_kakuro(fp);
     printf("BOARD SIZE: %u %u\n", board.game.size[ROW], board.game.size[COLUMN]);
+    printf("FEOF: %d\n", feof(fp));
     fflush(stdout);
     fclose(fp);
     
