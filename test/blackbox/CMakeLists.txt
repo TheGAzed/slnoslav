@@ -1,14 +1,14 @@
 add_executable(BLACKBOX main.c)
 
-add_library(black_box "")
+add_library(BLACK_BOX_LIB "")
 
-target_link_libraries(black_box
+target_link_libraries(BLACK_BOX_LIB
     PRIVATE
-        greatest
-        program
+        GREATEST_LIB
+        PROGRAM_LIB
 )
 
-target_sources(black_box
+target_sources(BLACK_BOX_LIB
     PRIVATE
         suites/easy/easy_unset.c
         suites/easy/easy_forward_check.c
@@ -20,16 +20,16 @@ target_sources(black_box
         suites/easy/easy_arc_consistency_backtrack_forward_check.c
 )
 
-target_include_directories(black_box
+target_include_directories(BLACK_BOX_LIB
     PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}
 )
 
 target_link_libraries(BLACKBOX
     PRIVATE
-        black_box
-        greatest
-        program
+        BLACK_BOX_LIB
+        GREATEST_LIB
+        PROGRAM_LIB
 )
 
 add_test(

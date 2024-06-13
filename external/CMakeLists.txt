@@ -1,21 +1,21 @@
-add_library(greatest "")
+add_library(GREATEST_LIB "")
 
-set_target_properties(greatest PROPERTIES LINKER_LANGUAGE C)
+set_target_properties(GREATEST_LIB PROPERTIES LINKER_LANGUAGE C)
 
-target_sources(greatest
+target_sources(GREATEST_LIB
     PUBLIC
         greatest/greatest.h
 )
 
-target_include_directories(greatest PUBLIC greatest)
+target_include_directories(GREATEST_LIB PUBLIC greatest)
 
-add_library(nuklear "")
+add_library(NUKLEAR_LIB "")
 
-set_target_properties(nuklear PROPERTIES LINKER_LANGUAGE C)
+set_target_properties(NUKLEAR_LIB PROPERTIES LINKER_LANGUAGE C)
 
-target_sources(nuklear
+target_sources(NUKLEAR_LIB
     PUBLIC
         nuklear/nuklear.h
 )
 
-target_include_directories(nuklear PUBLIC nuklear/src)
+target_include_directories(NUKLEAR_LIB PUBLIC nuklear/src)

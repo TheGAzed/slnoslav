@@ -1,28 +1,28 @@
 add_executable(UNITTESTS main.c)
 
-add_library(unit_tests "")
+add_library(UNIT_TEST_LIB "")
 
-target_link_libraries(unit_tests
+target_link_libraries(UNIT_TEST_LIB
     PRIVATE
-        greatest
-        program
+        GREATEST_LIB
+        PROGRAM_LIB
 )
 
-target_sources(unit_tests
+target_sources(UNIT_TEST_LIB
     PRIVATE
         structures/abstract/stack_test.c
 )
 
-target_include_directories(unit_tests
+target_include_directories(UNIT_TEST_LIB
     PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}
 )
 
 target_link_libraries(UNITTESTS
     PRIVATE
-        unit_tests
-        greatest
-        program
+        UNIT_TEST_LIB
+        GREATEST_LIB
+        PROGRAM_LIB
 )
 
 add_test(
