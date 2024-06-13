@@ -122,7 +122,6 @@ TEST easy_arc_consistency_backtrack_forward_check_four(void) {
 }
 
 TEST easy_arc_consistency_backtrack_forward_check_five(void) {
-    ASSERT(false);
     ksize_t expected_solution[] = { 1, 8, 6, 9, 4, 5, 8 };
 
     get_settings_singleton()->filepath           = EASY_PUZZLE_PATH"5.kkr";
