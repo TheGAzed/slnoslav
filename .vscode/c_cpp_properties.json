@@ -19,8 +19,8 @@
             "compilerPath": "/usr/bin/gcc",
             "browse": {
                 "path": [
-                    "/mnt/c/Users/gamep/OneDrive/Počítač/Programming/kakuro/**",
-                    "/mnt/c/Users/gamep/OneDrive/Počítač/Programming/kakuro"
+                    "${workspaceFolder}/**",
+                    "${workspaceFolder}"
                 ],
                 "limitSymbolsToIncludedHeaders": true
             }

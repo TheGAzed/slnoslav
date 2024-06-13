@@ -264,7 +264,7 @@ Flag _get_flag(char * flag_string) {
 }
 
 bool _is_valid_file(char * filepath) {
-    regex_t rx;
+    regex_t rx = { 0 };
     // assert that parser worked
     assert(regcomp( &rx, "(.*)\\.(kkr)", REG_EXTENDED) == 0 && "REGEX PARSER FAILED");
     bool is_valid = regexec(&rx, filepath, 0, NULL, 0) == 0; // evaualte file
@@ -282,34 +282,31 @@ void _setup_filepath(char * value) {
 void _setup_backtrack(char * value) {
     assert(value && "ARGUMENT VALUE IS NULL");
 
-    bool t = !strncmp(value, "true",  sizeof("true"));
-    bool f = !strncmp(value, "false", sizeof("false"));
+    bool bool_true= !strncmp(value, "true",  sizeof("true"));
     // check if string value is boolean true or false 
-    assert((t || f) && "BACKTRACK VALUE IS NEITHER TRUE NOR FALSE");
+    assert((bool_true|| !strncmp(value, "false", sizeof("false"))) && "BACKTRACK VALUE IS NEITHER TRUE NOR FALSE");
 
     // if 't' is true then value == "true", else value == "false"
-    get_settings_singleton()->is_backtrack = t;
+    get_settings_singleton()->is_backtrack = bool_true;
 }
 
 void _setup_forward_check(char * value) {
     assert(value && "ARGUMENT VALUE IS NULL");
 
-    bool t = !strncmp(value, "true",  sizeof("true"));
-    bool f = !strncmp(value, "false", sizeof("false"));
+    bool bool_true = !strncmp(value, "true",  sizeof("true"));
     // check if string value is boolean true or false 
-    assert((t || f) && "FORWARD CHECK VALUE IS NEITHER TRUE NOR FALSE");
+    assert((bool_true || !strncmp(value, "false", sizeof("false"))) && "FORWARD CHECK VALUE IS NEITHER TRUE NOR FALSE");
 
     // if 't' is true then value == "true", else value == "false"
-    get_settings_singleton()->is_forward_check = t;
+    get_settings_singleton()->is_forward_check = bool_true;
 }
 
 void _setup_arc_consistency(char * value) {
     assert(value && "ARGUMENT VALUE IS NULL");
 
     bool bool_true = !strncmp(value, "true",  sizeof("true"));
-    bool bool_false = !strncmp(value, "false", sizeof("false"));
     // check if string value is boolean true or false 
-    assert((bool_true || bool_false) && "ARC CONSISTENCY VALUE IS NEITHER TRUE NOR FALSE");
+    assert((bool_true || !strncmp(value, "false", sizeof("false"))) && "ARC CONSISTENCY VALUE IS NEITHER TRUE NOR FALSE");
 
     // if 'bool_true' is true then value == "true", else value == "false"
     get_settings_singleton()->is_arc_consistency = bool_true;
