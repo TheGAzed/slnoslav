@@ -13,11 +13,11 @@ typedef uint8_t ulookup_t;
 typedef uint8_t ksize_t;
 typedef enum kakuro_grid_sizes { ROW = 0, COLUMN = 1, } KGSizes;
 typedef struct kakuro_grid {
+    lookup_t **grids[GRID_DIMENTIONS];
+
+    ksize_t size[GRID_DIMENTIONS];
     ksize_t count;
     ksize_t empty_count;
-    ksize_t size[GRID_DIMENTIONS];
-
-    lookup_t **grids[GRID_DIMENTIONS];
 } KGrid;
 
 #define U_LOOKUP_COUNT 3

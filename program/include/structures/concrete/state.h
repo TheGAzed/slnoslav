@@ -17,13 +17,13 @@ typedef uint8_t ksize_t;
 typedef uint16_t state_t;
 
 typedef struct state_array {
-    ksize_t  size;
     state_t * elements;
+    ksize_t  size;
 } SArray;
 
 typedef struct state_array_array {
-    ksize_t size;
     SArray  elements[MAX_BLOCK_VALUES];
+    ksize_t size;
 } SMatrix;
 
 typedef enum edge_type {

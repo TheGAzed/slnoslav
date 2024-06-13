@@ -153,7 +153,7 @@ void _kakuro_alloc(Kakuro * board, FILE * kakuro_file) {
 void _kakuro_setup(Kakuro * board) {
     assert(board && "KAKURO POINTER IS NULL");
 
-    size_t index = 0;
+    lookup_t index = 0;
     for (size_t r = 0; r < board->game.size[ROW]; r++) {
         for (size_t c = 0; c < board->game.size[COLUMN]; c++) {
             board->grid[r][c] = (board->game.grids[ROW][r][c] == 0) ? index++ : -1;
