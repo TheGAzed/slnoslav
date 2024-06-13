@@ -2,7 +2,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <regex.h>
 
 #include <instance/argument.h>
 #include <instance/settings.h>
@@ -106,17 +105,6 @@ Hash   _get_hash(char * string);
  * @return Flag enum of valid program argument.
  */
 Flag   _get_flag(char * flag_string);
-/**
- * @brief 
- * Valides if filename in filepath is a .kkr file.
- * @note
- * Function uses the regex library to check if filepath ends in .kkr.  
- * 
- * @param filepath to file.
- * @return true if filepath contains a .kkr file.
- * @return false otherwise.
- */
-bool   _is_valid_file(char * filepath);
 
 /**
  * @brief 
@@ -263,19 +251,8 @@ Flag _get_flag(char * flag_string) {
     return INVALID_F; // returned if flag wasnt found.
 }
 
-bool _is_valid_file(char * filepath) {
-    regex_t rx = { 0 };
-    // assert that parser worked
-    assert(regcomp( &rx, "(.*)\\.(kkr)", REG_EXTENDED) == 0 && "REGEX PARSER FAILED");
-    bool is_valid = regexec(&rx, filepath, 0, NULL, 0) == 0; // evaualte file
-    regfree(&rx);
-
-    return is_valid;
-}
-
 void _setup_filepath(char * value) {
     assert(value && "ARGUMENT VALUE IS NULL");
-    assert(_is_valid_file(value) && "INVALID FILE IN FILEPATH");
     get_settings_singleton()->filepath = value;
 }
 

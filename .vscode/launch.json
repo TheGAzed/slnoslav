@@ -59,7 +59,6 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/program/SLNOSLAV",
-            "args": ["-fp", "test/data/11x11s.kkr"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
