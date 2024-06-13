@@ -6,7 +6,11 @@ project(SLNOSLAV
     LANGUAGES C
 )
 
-set(CMAKE_C_FLAGS "-std=c17 -pg -Wall -Werror")
+if(MSVC)
+    set(CMAKE_C_FLAGS "-std=c17 -pg -Wall /WX")
+else()
+    set(CMAKE_C_FLAGS "-std=c17 -pg -Wall -Werror")
+endif()
 
 add_subdirectory(external)
 add_subdirectory(program)
