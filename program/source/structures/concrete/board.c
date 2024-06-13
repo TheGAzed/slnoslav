@@ -52,6 +52,7 @@ void print_board(Kakuro board) {
         }
         putchar('\n');
     }
+    fflush(stdout);
 }
 
 void add_check(Kakuro board, Check * checks, ksize_t index) {
