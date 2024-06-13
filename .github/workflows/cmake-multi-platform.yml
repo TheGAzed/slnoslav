@@ -73,6 +73,11 @@ jobs:
     - name: Test
       #working-directory: ${{ steps.strings.outputs.build-output-dir }}
       run: |
-        pwd
+        ls test/puzzles/easy
+        xxd -b test/puzzles/easy/1.kkr
+        xxd -b test/puzzles/easy/2.kkr
+        xxd -b test/puzzles/easy/3.kkr
+        xxd -b test/puzzles/easy/4.kkr
+        xxd -b test/puzzles/easy/5.kkr
         ./build/test/unit/UNITTESTS
         ./build/test/blackbox/BLACKBOX
