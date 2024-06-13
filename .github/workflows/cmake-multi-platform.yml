@@ -71,7 +71,7 @@ jobs:
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
 
     - name: Test
-      working-directory: ${{ steps.strings.outputs.build-output-dir }}
+      #working-directory: ${{ steps.strings.outputs.build-output-dir }}
       run: |
-        ./test/unit/UNITTESTS
-        ./test/blackbox/BLACKBOX
+        ./build/test/unit/UNITTESTS
+        ./build/test/blackbox/BLACKBOX
