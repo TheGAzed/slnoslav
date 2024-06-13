@@ -73,5 +73,6 @@ jobs:
     - name: Test
       #working-directory: ${{ steps.strings.outputs.build-output-dir }}
       run: |
+        pwd
         ./build/test/unit/UNITTESTS
         ./build/test/blackbox/BLACKBOX
