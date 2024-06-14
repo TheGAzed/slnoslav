@@ -33,6 +33,8 @@
         "slnoslav.h": "c",
         "stdint.h": "c",
         "ubench.h": "c",
-        "settings.h": "c"
+        "settings.h": "c",
+        "bit": "c",
+        "chrono": "c"
     }
 }

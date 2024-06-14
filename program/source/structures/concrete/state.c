@@ -4,14 +4,6 @@
 
 #include <structures/concrete/state.h>
 
-#ifdef _MSC_VER
-
-#include <intrin.h>
-#define __builtin_ctz __lzcnt
-#define __builtin_popcount __popcnt
-
-#endif /* _MSC_VER */
-
 SArray create_state_array(ksize_t size) {
     assert(size != 0 && "SIZE OF ARRAY CAN'T BE ZERO");
 

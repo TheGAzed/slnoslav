@@ -7,13 +7,6 @@
 #include <instance/settings.h>
 #include <instance/statistics.h>
 
-#ifdef _MSC_VER
-
-#include <intrin.h>
-#define __builtin_ctz __lzcnt
-
-#endif /* _MSC_VER */
-
 bool _backtrack_row_sum(Kakuro board, SArray current_state, size_t index);
 bool _backtrack_col_sum(Kakuro board, SArray current_state, size_t index);
 
