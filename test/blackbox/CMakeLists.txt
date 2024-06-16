@@ -18,6 +18,9 @@ target_sources(BLACK_BOX_LIB
         suites/easy/easy_arc_consistency_forward_check.c
         suites/easy/easy_arc_consistency_backtrack.c
         suites/easy/easy_arc_consistency_backtrack_forward_check.c
+
+        suites/medium/medium_backtrack_forward_check.c
+        suites/medium/medium_arc_consistency_backtrack_forward_check.c
 )
 
 target_include_directories(BLACK_BOX_LIB

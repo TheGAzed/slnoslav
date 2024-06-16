@@ -15,9 +15,7 @@ typedef enum kakuro_grid_sizes { ROW = 0, COLUMN = 1, } KGSizes;
 typedef struct kakuro_grid {
     lookup_t **grids[GRID_DIMENTIONS];
 
-    ksize_t size[GRID_DIMENTIONS];
-    ksize_t count;
-    ksize_t empty_count;
+    ksize_t size[GRID_DIMENTIONS], count, empty_count;
 } KGrid;
 
 #define U_LOOKUP_COUNT 3
@@ -36,10 +34,8 @@ typedef struct kakuro {
 } Kakuro;
 
 typedef enum check {
-    UNCHECKED = 0,
-    ROWCHECK  = 1,
-    COLCHECK  = 2,
-    CHEKCED   = 3,
+    UNCHECKED = 0, ROWCHECK  = 1,
+    COLCHECK  = 2, CHEKCED   = 3,
 } Check;
 
 Kakuro init_kakuro(FILE * kakuro_file);

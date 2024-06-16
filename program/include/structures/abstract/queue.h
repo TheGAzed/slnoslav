@@ -27,15 +27,13 @@ typedef struct queue_list_array {
 #endif /* FINITE_QUEUE */
 
 typedef struct queue {
-    size_t size;
-    size_t current;
+    size_t size, current;
 
 #ifdef FINITE_QUEUE
     size_t max;
     QUEUE_DATA_TYPE * elements;
 #else
-    QLArray * head;
-    QLArray * tail;
+    QLArray * head, tail;
 #endif /* FINITE_QUEUE */
 
 } Queue;

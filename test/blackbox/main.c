@@ -9,6 +9,9 @@ extern SUITE(easy_arc_consistency_forward_check);
 extern SUITE(easy_arc_consistency_backtrack);
 extern SUITE(easy_arc_consistency_backtrack_forward_check);
 
+extern SUITE(medium_backtrack_forward_check);
+extern SUITE(medium_arc_consistency_backtrack_forward_check);
+
 GREATEST_MAIN_DEFS();
 
 int main(int argc, char **argv) {
@@ -22,6 +25,9 @@ int main(int argc, char **argv) {
     RUN_SUITE(easy_arc_consistency_forward_check);
     RUN_SUITE(easy_arc_consistency_backtrack);
     RUN_SUITE(easy_arc_consistency_backtrack_forward_check);
+
+    RUN_SUITE(medium_backtrack_forward_check);
+    RUN_SUITE(medium_arc_consistency_backtrack_forward_check);
 
     GREATEST_MAIN_END();
     return 0;
