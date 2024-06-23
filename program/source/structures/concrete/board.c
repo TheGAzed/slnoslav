@@ -101,7 +101,8 @@ KGrid _init_grid(FILE * kakuro_file) {
     assert(kakuro_file && "KAKURO FILE POINTER IS NULL");
 
     KGrid g = { 0 };
-    assert((GRID_DIMENTIONS == fread(g.size, sizeof(ksize_t), GRID_DIMENTIONS, kakuro_file)) && "READ FAILED");
+    assert(fread(&(g.size[ROW]), sizeof(ksize_t), 1, kakuro_file));
+    assert(fread(&(g.size[COLUMN]), sizeof(ksize_t), 1, kakuro_file));
     printf("%02hhd %02hhd\n", g.size[ROW], g.size[COLUMN]);
     fflush(stdout);
     g.count = g.size[ROW] * g.size[COLUMN];
