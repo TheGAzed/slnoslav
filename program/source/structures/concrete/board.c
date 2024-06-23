@@ -18,7 +18,7 @@ Kakuro init_kakuro(FILE * kakuro_file) {
     assert(kakuro_file && "KAKURO FILE POINTER IS NULL");
     ksize_t c; 
     do {
-        fread(&c, sizeof(ksize_t), 1, kakuro_file);
+        assert(fread(&c, sizeof(ksize_t), 1, kakuro_file));
         printf ("%02x ", c);
     } while (!feof(kakuro_file));
     fflush(stdout);
