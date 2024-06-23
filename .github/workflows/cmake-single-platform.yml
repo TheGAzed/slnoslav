@@ -43,5 +43,6 @@ jobs:
       # Execute tests defined by the CMake configuration.
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: |
-        xxd ./test/puzzles/easy/1.kkr
+        pwd
+        xxd test/puzzles/easy/1.kkr
         ctest -C ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure
