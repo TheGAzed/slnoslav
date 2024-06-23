@@ -22,6 +22,8 @@ TEST easy_unset_one(void) {
     SArray solution = depth_first_search(board);
     free_kakuro(&board);
 
+    print_board(board);
+
     ASSERTm("NO SOLUTION FOUND", solution.size);
     ASSERTm("LENGTHS DON'T ADD UP", solution.size == (sizeof(expected_solution) / sizeof(ksize_t)));
 
