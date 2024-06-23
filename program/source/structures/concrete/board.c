@@ -16,6 +16,7 @@ ksize_t _empty_cell_count(KGrid from);
 
 Kakuro init_kakuro(FILE * kakuro_file) {
     assert(kakuro_file && "KAKURO FILE POINTER IS NULL");
+    rewind(kakuro_file);
 
     Kakuro k = { 0 };
     _kakuro_alloc(&k, kakuro_file);
@@ -104,8 +105,6 @@ KGrid _init_grid(FILE * kakuro_file) {
     assert(fread(&(g.size[ROW]), sizeof(ksize_t), 1, kakuro_file));
     assert(fread(&(g.size[COLUMN]), sizeof(ksize_t), 1, kakuro_file));
 
-    assert(g.size[ROW] && "ROW COUNT IS ZERO");
-    assert(g.size[COLUMN] && "COLUMN COUNT IS ZERO");
     g.count = g.size[ROW] * g.size[COLUMN];
 
     assert((g.grids[ROW]    = malloc(g.size[ROW] * sizeof(lookup_t*))) && "ALLOCATION TO ROW ARRAY FAILED");
