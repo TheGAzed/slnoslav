@@ -5,7 +5,7 @@ add_library(UNIT_TEST_LIB "")
 target_link_libraries(UNIT_TEST_LIB
     PRIVATE
         GREATEST_LIB
-        PROGRAM_LIB
+        PROGRAM_LIBRARY
 )
 
 target_sources(UNIT_TEST_LIB
@@ -22,10 +22,7 @@ target_link_libraries(UNITTESTS
     PRIVATE
         UNIT_TEST_LIB
         GREATEST_LIB
-        PROGRAM_LIB
+        PROGRAM_LIBRARY
 )
 
-add_test(
-    NAME UNIT_TEST
-    COMMAND UNITTESTS
-)
+add_test(UNIT_TEST UNITTESTS)

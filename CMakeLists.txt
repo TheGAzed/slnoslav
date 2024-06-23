@@ -6,12 +6,11 @@ project(SLNOSLAV
     LANGUAGES C
 )
 
-if(MSVC)
-    add_compile_options(/std:c17)
-else()
-    set(CMAKE_C_FLAGS "-std=c17 -pg -Wall -Werror -ftest-coverage")
-endif()
+set(CMAKE_C_FLAGS "-std=c17 -pg -Wall -Werror -ftest-coverage")
 
 add_subdirectory(external)
 add_subdirectory(program)
+
+include(CTest)
+enable_testing()
 add_subdirectory(test)

@@ -35,6 +35,8 @@
         "ubench.h": "c",
         "settings.h": "c",
         "bit": "c",
-        "chrono": "c"
+        "chrono": "c",
+        "arc_consistency.h": "c",
+        "statistics.h": "c"
     }
 }

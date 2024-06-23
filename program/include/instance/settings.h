@@ -10,6 +10,7 @@ typedef struct settings {
     bool is_backtrack;
     bool is_forward_check;
     bool is_arc_consistency;
+    bool is_reduce;
 } Settings;
 
 Settings * get_settings_singleton(void);

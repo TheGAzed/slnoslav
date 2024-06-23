@@ -1,12 +1,13 @@
 add_executable(${PROJECT_NAME} main.c)
 
-add_library(PROGRAM_LIB "")
+add_library(PROGRAM_LIBRARY "")
 
-target_sources(PROGRAM_LIB
+target_sources(PROGRAM_LIBRARY
     PRIVATE
         source/algorithms/depth_first_search.c
         source/algorithms/backtrack.c
         source/algorithms/arc_consistency.c
+        source/algorithms/reduce.c
         source/algorithms/forward_checking.c
 
         source/instance/argument.c
@@ -19,6 +20,6 @@ target_sources(PROGRAM_LIB
         source/slnoslav.c
 )
 
-target_include_directories(PROGRAM_LIB PUBLIC include)
+target_include_directories(PROGRAM_LIBRARY PUBLIC include)
 
-target_link_libraries(${PROJECT_NAME} PROGRAM_LIB)
+target_link_libraries(${PROJECT_NAME} PROGRAM_LIBRARY)

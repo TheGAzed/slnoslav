@@ -6,6 +6,7 @@
 #include <algorithms/depth_first_search.h>
 #include <algorithms/backtrack.h>
 #include <algorithms/arc_consistency.h>
+#include <algorithms/reduce.h>
 #include <algorithms/forward_checking.h>
 
 #include <instance/statistics.h>
@@ -18,7 +19,7 @@ SArray depth_first_search(Kakuro board) {
 
     SArray initial = create_state_array(board.game.empty_count);
     set_full_state_array(&initial);
-    reduce_tree(board, &initial);
+    reduce(board, &initial);
     push_stack(&stack, initial);
 
     SArray solution = { 0 };

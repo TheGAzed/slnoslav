@@ -5,7 +5,7 @@ add_library(BLACK_BOX_LIB "")
 target_link_libraries(BLACK_BOX_LIB
     PRIVATE
         GREATEST_LIB
-        PROGRAM_LIB
+        PROGRAM_LIBRARY
 )
 
 target_sources(BLACK_BOX_LIB
@@ -32,10 +32,7 @@ target_link_libraries(BLACKBOX
     PRIVATE
         BLACK_BOX_LIB
         GREATEST_LIB
-        PROGRAM_LIB
+        PROGRAM_LIBRARY
 )
 
-add_test(
-    NAME BLACKBOX_TEST
-    COMMAND BLACKBOX
-)
+add_test(NAME BLACKBOX_TEST COMMAND BLACKBOX WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}")

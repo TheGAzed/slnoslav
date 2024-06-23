@@ -17,6 +17,9 @@
 #define ARC_CONSISTENCY_FLAG_STRING_SHORT "-ac"
 #define ARC_CONSISTENCY_FLAG_STRING_LONG  "--arc-consistency"
 
+#define REDUCE_FLAG_STRING_SHORT "-r"
+#define REDUCE_FLAG_STRING_LONG  "--reduce"
+
 #define INFO_FLAG_STRING_SHORT "-i"
 #define INFO_FLAG_STRING_LONG  "--information"
 

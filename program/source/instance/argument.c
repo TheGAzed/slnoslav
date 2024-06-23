@@ -10,44 +10,48 @@
 #define QUEUE_DATA_TYPE char *
 #include <structures/abstract/queue.h>
 
-#define CONSOLE_ARGUMENT_COUND 6
+#define CONSOLE_ARGUMENT_COUND 7
 #define HASHTABLE_SIZE (1 << 3)
 
-#define FILEPATH_FLAG_HASH_SHORT 0x665d
-#define FILEPATH_FLAG_HASH_LONG  0x2823
+#define FILEPATH_FLAG_HASH_SHORT 0x3b // 3
+#define FILEPATH_FLAG_HASH_LONG  0x0b // 3
 
-#define BACKTRACK_FLAG_HASH_SHORT 0x6259
-#define BACKTRACK_FLAG_HASH_LONG  0x3652
+#define BACKTRACK_FLAG_HASH_SHORT 0x3b // 3
+#define BACKTRACK_FLAG_HASH_LONG  0x64 // 4
 
-#define FORWARD_CHECK_FLAG_HASH_SHORT 0x0e4e
-#define FORWARD_CHECK_FLAG_HASH_LONG  0x6151
+#define FORWARD_CHECK_FLAG_HASH_SHORT 0x40 // 0
+#define FORWARD_CHECK_FLAG_HASH_LONG  0x30 // 0
 
-#define ARC_CONSISTENCY_FLAG_HASH_SHORT 0x614e
-#define ARC_CONSISTENCY_FLAG_HASH_LONG  0x1b28
+#define ARC_CONSISTENCY_FLAG_HASH_SHORT 0x2f // 7
+#define ARC_CONSISTENCY_FLAG_HASH_LONG  0x33 // 3
 
-#define INFO_FLAG_HASH_SHORT 0x692d
-#define INFO_FLAG_HASH_LONG  0x5a36
+#define REDUCE_FLAG_HASH_SHORT 0x5f // 7
+#define REDUCE_FLAG_HASH_LONG  0x00 // 0
 
-#define HELP_FLAG_HASH_SHORT 0x682d
-#define HELP_FLAG_HASH_LONG  0x3829
+#define INFO_FLAG_HASH_SHORT 0x44 // 4
+#define INFO_FLAG_HASH_LONG  0x6c // 4
 
-typedef uint16_t full_hash_t;
-typedef uint8_t  part_hash_t;
+#define HELP_FLAG_HASH_SHORT 0x45 // 5
+#define HELP_FLAG_HASH_LONG  0x11 // 1
+
+typedef uint8_t full_hash_t;
+typedef uint8_t part_hash_t;
 typedef union hash {
     full_hash_t whole;
     part_hash_t slice[sizeof(full_hash_t)];
 } Hash;
 
 typedef enum console_argument_flags {
-    INVALID_F  = 0,
+    FILEPATH_F        = (0 << 1) | 0b1,
+    BACKTRACK_F       = (1 << 1) | 0b1,
+    FORWARD_CHECK_F   = (2 << 1) | 0b1,
+    ARC_CONSISTENCY_F = (3 << 1) | 0b1,
+    REDUCE_F          = (4 << 1) | 0b1,
 
-    FILEPATH_F        = 0b00010 | 0b00001,
-    BACKTRACK_F       = 0b00100 | 0b00001,
-    FORWARD_CHECK_F   = 0b01000 | 0b00001,
-    ARC_CONSISTENCY_F = 0b10000 | 0b00001,
+    INFORMATION_F = (5 << 1) | 0b0,
+    HELP_F        = (6 << 1) | 0b0,
 
-    INFORMATION_F = 0b010,
-    HELP_F        = 0b100,
+    INVALID_F     = -1,
 } Flag;
 
 typedef struct argument {
@@ -71,14 +75,10 @@ typedef struct flag_hashtable {
     FHElement element[HASHTABLE_SIZE];
 } FlagHashtable;
 
-typedef struct settings_hashtable_element {
-    void (*value)(char *);
-    Flag key;
-} SHElement;
-
-typedef struct function_hashtable {
-    SHElement element[HASHTABLE_SIZE];
-} FunctionHashtable;
+typedef void (*setup_fn)(char *);
+typedef struct function_set {
+    setup_fn element[HASHTABLE_SIZE];
+} FunctionSet;
 
 /**
  * @brief
@@ -188,7 +188,7 @@ Hash _get_hash(char * string) {
     Hash hash = { 0 };
     for (size_t i = 0; string[i]; i++) {
         // XOR of char at i position with hash byte at i mod (hash byte size).
-        hash.slice[i & 1] ^= string[i]; 
+        hash.slice[i & (sizeof(full_hash_t) - 1)] ^= string[i]; 
     }
 
     return hash;
@@ -201,35 +201,40 @@ Flag _get_flag(char * flag_string) {
     // hashtable to lookup flag using the hashed flag_string plus comparing 
     // it to its long and short form.
     static FlagHashtable ht = {
-        .element[1] = { 
-            .hash_key[SHORT]   = BACKTRACK_FLAG_HASH_SHORT,   .hash_key[LONG]    = BACKTRACK_FLAG_HASH_LONG, 
-            .string_key[SHORT] = BACKTRACK_FLAG_STRING_SHORT, .string_key[LONG]  = BACKTRACK_FLAG_STRING_LONG,
-            .value             = BACKTRACK_F,
+        .element[0] = { 
+            .hash_key[SHORT]   = FORWARD_CHECK_FLAG_HASH_SHORT,   .hash_key[LONG]    = FORWARD_CHECK_FLAG_HASH_LONG, 
+            .string_key[SHORT] = FORWARD_CHECK_FLAG_STRING_SHORT, .string_key[LONG]  = FORWARD_CHECK_FLAG_STRING_LONG,
+            .value             = FORWARD_CHECK_F,
         },
-        .element[3] = { 
-            .hash_key[SHORT]   = HELP_FLAG_HASH_SHORT,   .hash_key[LONG]    = HELP_FLAG_HASH_LONG, 
-            .string_key[SHORT] = HELP_FLAG_STRING_SHORT, .string_key[LONG]  = HELP_FLAG_STRING_LONG,
-            .value             = HELP_F,
-        },
-        .element[4] = { 
+        .element[2] = { 
             .hash_key[SHORT]   = FILEPATH_FLAG_HASH_SHORT,   .hash_key[LONG]    = FILEPATH_FLAG_HASH_LONG, 
             .string_key[SHORT] = FILEPATH_FLAG_STRING_SHORT, .string_key[LONG]  = FILEPATH_FLAG_STRING_LONG,
             .value             = FILEPATH_F,
         },
-        .element[5] = { 
+        .element[3] = { 
+            .hash_key[SHORT]   = BACKTRACK_FLAG_HASH_SHORT,   .hash_key[LONG]    = BACKTRACK_FLAG_HASH_LONG, 
+            .string_key[SHORT] = BACKTRACK_FLAG_STRING_SHORT, .string_key[LONG]  = BACKTRACK_FLAG_STRING_LONG,
+            .value             = BACKTRACK_F,
+        },
+       .element[4] = { 
             .hash_key[SHORT]   = INFO_FLAG_HASH_SHORT,   .hash_key[LONG]    = INFO_FLAG_HASH_LONG, 
             .string_key[SHORT] = INFO_FLAG_STRING_SHORT, .string_key[LONG]  = INFO_FLAG_STRING_LONG,
             .value             = INFORMATION_F,
         },
-        .element[6] = { 
+        .element[5] = { 
             .hash_key[SHORT]   = ARC_CONSISTENCY_FLAG_HASH_SHORT,   .hash_key[LONG]    = ARC_CONSISTENCY_FLAG_HASH_LONG, 
             .string_key[SHORT] = ARC_CONSISTENCY_FLAG_STRING_SHORT, .string_key[LONG]  = ARC_CONSISTENCY_FLAG_STRING_LONG,
             .value             = ARC_CONSISTENCY_F,
         },
-        .element[7] = { 
-            .hash_key[SHORT]   = FORWARD_CHECK_FLAG_HASH_SHORT,   .hash_key[LONG]    = FORWARD_CHECK_FLAG_HASH_LONG, 
-            .string_key[SHORT] = FORWARD_CHECK_FLAG_STRING_SHORT, .string_key[LONG]  = FORWARD_CHECK_FLAG_STRING_LONG,
-            .value             = FORWARD_CHECK_F,
+        .element[6] = { 
+            .hash_key[SHORT]   = HELP_FLAG_HASH_SHORT,   .hash_key[LONG]    = HELP_FLAG_HASH_LONG, 
+            .string_key[SHORT] = HELP_FLAG_STRING_SHORT, .string_key[LONG]  = HELP_FLAG_STRING_LONG,
+            .value             = HELP_F,
+        },
+       .element[7] = { 
+            .hash_key[SHORT]   = REDUCE_FLAG_HASH_SHORT,   .hash_key[LONG]    = REDUCE_FLAG_HASH_LONG, 
+            .string_key[SHORT] = REDUCE_FLAG_STRING_SHORT, .string_key[LONG]  = REDUCE_FLAG_STRING_LONG,
+            .value             = REDUCE_F,
         },
     };
 
@@ -289,6 +294,17 @@ void _setup_arc_consistency(char * value) {
     get_settings_singleton()->is_arc_consistency = bool_true;
 }
 
+void _setup_reduce(char * value) {
+    assert(value && "ARGUMENT VALUE IS NULL");
+
+    bool bool_true = !strncmp(value, "true",  sizeof("true"));
+    // check if string value is boolean true or false 
+    assert((bool_true || !strncmp(value, "false", sizeof("false"))) && "ARC CONSISTENCY VALUE IS NEITHER TRUE NOR FALSE");
+
+    // if 'bool_true' is true then value == "true", else value == "false"
+    get_settings_singleton()->is_reduce = bool_true;
+}
+
 void _setup_information(char * value) {
     printf("SLNOSLAV IS A CONSTRAIN SATISFACTION PROBLEM SOLVER FOR KAKURO PUZZLES\n");
     exit(EXIT_SUCCESS);
@@ -304,30 +320,19 @@ void _setup_help(char * value) {
     printf("\t--backtrack,-bt       true|false enable/disable backtracking     [true]\n");
     printf("\t--forward-check,-fch  true|false enable/disable forward checking [true]\n");
     printf("\t--arc-consistency,-ac true|false enable/disable arc-consistency  [true]\n");
+    printf("\t--reduce,-r           true|false enable/disable reduced states   [true]\n");
 
     exit(EXIT_SUCCESS);
 }
 
 void _setup_settings(Argument argument) {
-    // hashtable to lookup function pointer based on flag enum
-    static FunctionHashtable ht = {
-        .element[0] = { .value = _setup_arc_consistency, .key = ARC_CONSISTENCY_F, },
-        .element[2] = { .value = _setup_information,     .key = INFORMATION_F,     },
-        .element[1] = { .value = _setup_forward_check,   .key = FORWARD_CHECK_F,   },
-        .element[3] = { .value = _setup_filepath,        .key = FILEPATH_F,        },
-        .element[4] = { .value = _setup_help,            .key = HELP_F,            },
-        .element[5] = { .value = _setup_backtrack,       .key = BACKTRACK_F,       },
+    // Set to lookup function pointer based on flag enum
+    static FunctionSet ht = {
+        .element[FILEPATH_F >> 1     ] = _setup_filepath,      .element[BACKTRACK_F >> 1      ] = _setup_backtrack,
+        .element[FORWARD_CHECK_F >> 1] = _setup_forward_check, .element[ARC_CONSISTENCY_F >> 1] = _setup_arc_consistency,
+        .element[REDUCE_F >> 1       ] = _setup_reduce,        .element[INFORMATION_F >> 1    ] = _setup_information,
+        .element[HELP_F >> 1         ] = _setup_help,
     };
 
-    // hashtable elements are accesed by distance from hash's modulo (hashtable element count).
-    for (size_t i = 0; i < (HASHTABLE_SIZE + 1) >> 1; i++) {
-        size_t first_index  = (argument.type + i)     & (HASHTABLE_SIZE - 1);
-        size_t second_index = (argument.type - i - 1) & (HASHTABLE_SIZE - 1);
-
-        SHElement first  = ht.element[first_index];
-        SHElement second = ht.element[second_index];
-
-        if (first.key  == argument.type) { first.value(argument.value);  break; }
-        if (second.key == argument.type) { second.value(argument.value); break; }
-    }
+    ht.element[argument.type >> 1](argument.value);
 }

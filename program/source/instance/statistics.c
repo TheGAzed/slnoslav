@@ -56,6 +56,7 @@ void print_statistics(void) {
     printf("\t - BACKTRACKING     : %s\n", get_settings_singleton()->is_backtrack ? "true" : "false");
     printf("\t - FORWARD CHECKING : %s\n", get_settings_singleton()->is_forward_check ? "true" : "false");
     printf("\t - ARC CONSISTENCY  : %s\n", get_settings_singleton()->is_arc_consistency ? "true" : "false");
+    printf("\t - REDUCE           : %s\n", get_settings_singleton()->is_reduce ? "true" : "false");
 
     puts("STATISTICS");
     puts("\tDEPTH FIRST SEARCH:");
