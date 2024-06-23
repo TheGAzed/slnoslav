@@ -103,8 +103,10 @@ KGrid _init_grid(FILE * kakuro_file) {
     KGrid g = { 0 };
     assert(fread(&(g.size[ROW]), sizeof(ksize_t), 1, kakuro_file));
     assert(fread(&(g.size[COLUMN]), sizeof(ksize_t), 1, kakuro_file));
-    printf("%02hhd %02hhd\n", g.size[ROW], g.size[COLUMN]);
-    fflush(stdout);
+    if (ferror(kakuro_file)) {
+        perror("Error during fread");
+    }
+
     g.count = g.size[ROW] * g.size[COLUMN];
 
     assert((g.grids[ROW]    = malloc(g.size[ROW] * sizeof(lookup_t*))) && "ALLOCATION TO ROW ARRAY FAILED");
