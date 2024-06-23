@@ -16,7 +16,7 @@ ksize_t _empty_cell_count(KGrid from);
 
 Kakuro init_kakuro(FILE * kakuro_file) {
     assert(kakuro_file && "KAKURO FILE POINTER IS NULL");
-    ksize_t c; 
+    ksize_t c = 0; 
     do {
         assert(fread(&c, sizeof(ksize_t), 1, kakuro_file));
         printf ("%02x ", c);
