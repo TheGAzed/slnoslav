@@ -17,6 +17,7 @@ ksize_t _empty_cell_count(KGrid from);
 Kakuro init_kakuro(FILE * kakuro_file) {
     assert(kakuro_file && "KAKURO FILE POINTER IS NULL");
     rewind(kakuro_file);
+    assert(!feof(kakuro_file) && "KAKURO FILE STREAM IS AT THE END");
 
     Kakuro k = { 0 };
     _kakuro_alloc(&k, kakuro_file);
