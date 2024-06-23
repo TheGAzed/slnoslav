@@ -45,4 +45,5 @@ jobs:
       run: |
         pwd
         xxd ../test/puzzles/easy/1.kkr
+        ls -l ../test/puzzles/easy/
         ctest -C ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure
