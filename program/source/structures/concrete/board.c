@@ -152,8 +152,6 @@ void _kakuro_alloc(Kakuro * board, FILE * kakuro_file) {
 }
 
 void _kakuro_setup(Kakuro * board) {
-    assert(board && "KAKURO POINTER IS NULL");
-
     lookup_t index = 0;
     for (size_t r = 0; r < board->game.size[ROW]; r++) {
         for (size_t c = 0; c < board->game.size[COLUMN]; c++) {
@@ -177,23 +175,11 @@ void _kakuro_setup(Kakuro * board) {
 }
 
 void _setup_coords(Kakuro * board, ksize_t row, ksize_t col, ksize_t index) {
-    assert(row < board->game.size[ROW] && "ROW IS OUT OF BOUNDS");
-    assert(col < board->game.size[COLUMN] && "COLUMN IS OUT OF BOUNDS");
-    assert(index < board->game.empty_count && "INDEX IS OUT OF BOUNDS");
-    assert(board->coords[ROW] && "LOOKUP IS NULL");
-    assert(board->coords[COLUMN] && "LOOKUP IS NULL");
-
     board->coords[ROW][index]    = row;
     board->coords[COLUMN][index] = col;
 }
 
 void _setup_blocks(Kakuro * board, ksize_t row, ksize_t col, ksize_t index) {
-    assert(row < board->game.size[ROW] && "ROW IS OUT OF BOUNDS");
-    assert(col < board->game.size[COLUMN] && "COLUMN IS OUT OF BOUNDS");
-    assert(index < board->game.empty_count && "INDEX IS OUT OF BOUNDS");
-    assert(board->grid && "LOOKUP POINTER IS NULL");
-    assert(board->blocks && "LOOKUP POINTER IS NULL");
-
     ksize_t r = row, c = col;
     if (col && board->grid[row][col - 1] != -1 && board->blocks[ROW][board->grid[row][col - 1]]) {
         board->blocks[ROW][index] = board->blocks[ROW][board->grid[row][col - 1]];
@@ -213,12 +199,6 @@ void _setup_blocks(Kakuro * board, ksize_t row, ksize_t col, ksize_t index) {
 }
 
 void _setup_sums(Kakuro * board, ksize_t row, ksize_t col, ksize_t index) {
-    assert(row < board->game.size[ROW] && "ROW IS OUT OF BOUNDS");
-    assert(col < board->game.size[COLUMN] && "COLUMN IS OUT OF BOUNDS");
-    assert(index < board->game.empty_count && "INDEX IS OUT OF BOUNDS");
-    assert(board->grid && "LOOKUP POINTER IS NULL");
-    assert(board->sums && "LOOKUP POINTER IS NULL");
-
     ksize_t r = row, c = col;
     if (col && board->grid[row][col - 1] != -1 && board->sums[ROW][board->grid[row][col - 1]]) {
         board->sums[ROW][index] = board->sums[ROW][board->grid[row][col - 1]];

@@ -15,6 +15,14 @@ TEST easy_unset_one(void) {
 
     FILE * fp = fopen(get_settings_singleton()->filepath, "rb");
     ASSERTm("COULDN'T OPEN FILE", fp);
+
+    char c; 
+    do {
+        c = fgetc(fp);
+        printf ("%02x\n", c);
+    } while (!feof(fp));
+    fflush(stdout);
+    rewind(fp);
     
     Kakuro board = init_kakuro(fp);
     fclose(fp);
