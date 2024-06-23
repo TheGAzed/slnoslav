@@ -8,9 +8,12 @@ set_target_properties(NUKLEAR_LIB PROPERTIES LINKER_LANGUAGE C)
 
 target_include_directories(NUKLEAR_LIB INTERFACE nuklear/src)
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(WAYLAND REQUIRED wayland-client wayland-cursor wayland-egl xkbcommon)
+find_package(X11 REQUIRED)
+find_package(Doxygen)
+
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(glfw)
-
-add_library(GLFW_LIB SHARED "" glfw/src)
-
-target_include_directories(GLFW_LIB PUBLIC glfw/include)
-set_target_properties(GLFW_LIB PROPERTIES LINKER_LANGUAGE C)
