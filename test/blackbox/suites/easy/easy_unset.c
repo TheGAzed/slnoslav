@@ -17,12 +17,11 @@ TEST easy_unset_one(void) {
     ASSERTm("COULDN'T OPEN FILE", fp);
     
     Kakuro board = init_kakuro(fp);
+    print_board(board);
     fclose(fp);
     
     SArray solution = depth_first_search(board);
     free_kakuro(&board);
-
-    print_board(board);
 
     ASSERTm("NO SOLUTION FOUND", solution.size);
     ASSERTm("LENGTHS DON'T ADD UP", solution.size == (sizeof(expected_solution) / sizeof(ksize_t)));
