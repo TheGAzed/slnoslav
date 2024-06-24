@@ -54,8 +54,8 @@ dkms.conf
 # folders
 build/
 Testing/
-
-# vscode
-.VSCodeCounter
 .vs/
 .vscode/
+
+# cmake
+CMakeSettings.json 
