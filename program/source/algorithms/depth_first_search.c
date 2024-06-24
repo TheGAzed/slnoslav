@@ -1,6 +1,5 @@
 #include <string.h>
 #include <sys/types.h>
-#include <assert.h>
 #include <stdlib.h>
 
 #include <algorithms/depth_first_search.h>
