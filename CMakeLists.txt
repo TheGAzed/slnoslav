@@ -6,7 +6,11 @@ project(SLNOSLAV
     LANGUAGES C
 )
 
-set(CMAKE_C_FLAGS "-std=c17 -pg -Wall -Werror -ftest-coverage")
+if (WIN32)
+    add_compile_options(/W4)
+else()
+    add_compile_options(-std=c17 -pg -Wall -Wextra -Wpedantic)
+endif()
 
 add_subdirectory(external)
 add_subdirectory(program)

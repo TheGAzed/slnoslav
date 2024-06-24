@@ -8,10 +8,12 @@ set_target_properties(NUKLEAR_LIB PROPERTIES LINKER_LANGUAGE C)
 
 target_include_directories(NUKLEAR_LIB INTERFACE nuklear/src)
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(WAYLAND REQUIRED wayland-client wayland-cursor wayland-egl xkbcommon)
-find_package(X11 REQUIRED)
-find_package(Doxygen)
+if (!WIN32)
+	find_package(PkgConfig REQUIRED)
+	pkg_check_modules(WAYLAND REQUIRED wayland-client wayland-cursor wayland-egl xkbcommon)
+	find_package(X11 REQUIRED)
+	find_package(Doxygen)
+endif()
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)

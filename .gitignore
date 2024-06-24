@@ -57,4 +57,5 @@ Testing/
 
 # vscode
 .VSCodeCounter
-.vs
+.vs/
+.vscode/

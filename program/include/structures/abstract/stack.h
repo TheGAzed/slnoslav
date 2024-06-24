@@ -157,7 +157,7 @@ static inline Stack copy_stack(Stack stack, STACK_DATA_TYPE (*copy_element)(STAC
     Stack copy = create_stack();
     
     SLArray * current_array = stack.head;
-    for (size_t i = stack.size - 1; i >= 0 && current_array;) {
+    for (size_t i = stack.size - 1; current_array;) {
         SLArray * temp = malloc(sizeof(SLArray));
 
         assert(temp && "MEMORY ALLOCATION FAILED");
@@ -166,7 +166,7 @@ static inline Stack copy_stack(Stack stack, STACK_DATA_TYPE (*copy_element)(STAC
         temp->next = copy.head;
         copy.head  = temp;
 
-        for (size_t j = i % STACK_LIST_ARRAY_SIZE; j >= 0; i--, j--) {
+        for (size_t j = i % STACK_LIST_ARRAY_SIZE;; i--, j--) {
             copy.head->elements[j] = copy_element ? copy_element(current_array->elements[j]) : current_array->elements[j];
             copy.size++;
         }

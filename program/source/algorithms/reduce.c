@@ -25,8 +25,8 @@ state_t _check_even_two_blocks(ksize_t block, ksize_t sum);
 state_t _check_high_end(ksize_t block, ksize_t sum);
 state_t _check_low_end(ksize_t block, ksize_t sum);
 void  _reduce_multi_values(Kakuro board, SArray * initial_state);
-void  _reduce_row_multi_values(Kakuro board, SArray * initial_state, Check * checks, ksize_t index);
-void  _reduce_col_multi_values(Kakuro board, SArray * initial_state, Check * checks, ksize_t index);
+void  _reduce_row_multi_values(Kakuro board, SArray * initial_state, ksize_t index);
+void  _reduce_col_multi_values(Kakuro board, SArray * initial_state, ksize_t index);
 
 void reduce(Kakuro board, SArray * initial_state) {
     assert(initial_state && "INITIAL STATE ARRAY IS NULL");
@@ -87,13 +87,13 @@ void _reduce_multi_values(Kakuro board, SArray * current_state) {
     Check checks[KAKURO_SIZE_MAX] = { 0 };
 
     for (size_t i = 0; i < board.game.empty_count; i++) {
-        if (!(checks[i] & ROWCHECK)) _reduce_row_multi_values(board, current_state, checks, i);
-        if (!(checks[i] & COLCHECK)) _reduce_col_multi_values(board, current_state, checks, i);
+        if (!(checks[i] & ROWCHECK)) _reduce_row_multi_values(board, current_state, i);
+        if (!(checks[i] & COLCHECK)) _reduce_col_multi_values(board, current_state, i);
         add_check(board, checks, i);
     }
 }
 
-void _reduce_row_multi_values(Kakuro board, SArray * current_state, Check * checks, ksize_t index) {
+void _reduce_row_multi_values(Kakuro board, SArray * current_state, ksize_t index) {
     ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
     ksize_t block = board.blocks[ROW][index], sums = board.sums[ROW][index];
     ksize_t empty_blocks = block, empty_sums = sums;
@@ -118,7 +118,7 @@ void _reduce_row_multi_values(Kakuro board, SArray * current_state, Check * chec
     destroy_stack(&multi, NULL);
 }
 
-void _reduce_col_multi_values(Kakuro board, SArray * current_state, Check * checks, ksize_t index) {
+void _reduce_col_multi_values(Kakuro board, SArray * current_state, ksize_t index) {
     ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
     ksize_t block = board.blocks[COLUMN][index], sums = board.sums[COLUMN][index];
     ksize_t empty_blocks = block, empty_sums = sums;

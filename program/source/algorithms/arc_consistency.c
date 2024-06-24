@@ -23,8 +23,8 @@ void _reduce_col_one_values(Kakuro board, Stack * ones, SArray * current_state, 
 Valid _create_valid(Kakuro board, SArray * current_state, ksize_t index, KGSizes type);
 void  _destroy_valid(Valid * combinations);
 bool  _reduce_no_combination(Kakuro board, SArray * current_state, Check * checks);
-bool  _reduce_no_col_combination(Kakuro board, SArray * current_state, Check * checks, ksize_t index);
-bool  _reduce_no_row_combination(Kakuro board, SArray * current_state, Check * checks, ksize_t index);
+bool  _reduce_no_col_combination(Kakuro board, SArray * current_state, ksize_t index);
+bool  _reduce_no_row_combination(Kakuro board, SArray * current_state, ksize_t index);
 
 bool look_ahead(Kakuro board, SArray * current_state) {
     assert(current_state && "CURRENT STATE ARRAY IS NULL");
@@ -161,15 +161,15 @@ void _destroy_valid(Valid * combinations) {
 bool _reduce_no_combination(Kakuro board, SArray * current_state, Check * checks) {
     bool is_reduced = false;
     for (size_t i = 0; i < board.game.empty_count; i++) {
-        if (!(checks[i] & ROWCHECK)) is_reduced |= _reduce_no_row_combination(board, current_state, checks, i);
-        if (!(checks[i] & COLCHECK)) is_reduced |= _reduce_no_col_combination(board, current_state, checks, i);
+        if (!(checks[i] & ROWCHECK)) is_reduced |= _reduce_no_row_combination(board, current_state, i);
+        if (!(checks[i] & COLCHECK)) is_reduced |= _reduce_no_col_combination(board, current_state, i);
         add_check(board, checks, i);
     }
 
     return is_reduced;
 }
 
-bool _reduce_no_row_combination(Kakuro board, SArray * current_state, Check * checks, ksize_t index) {
+bool _reduce_no_row_combination(Kakuro board, SArray * current_state, ksize_t index) {
     ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
     for (ksize_t i = 0; i < board.blocks[ROW][index]; i++) {
         if (!current_state->elements[board.grid[row][col + i]]) return false;
@@ -192,7 +192,7 @@ bool _reduce_no_row_combination(Kakuro board, SArray * current_state, Check * ch
     return is_reduced;
 }
 
-bool _reduce_no_col_combination(Kakuro board, SArray * current_state, Check * checks, ksize_t index) {
+bool _reduce_no_col_combination(Kakuro board, SArray * current_state, ksize_t index) {
     ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
     for (ksize_t i = 0; i < board.blocks[COLUMN][index]; i++) {
         if (current_state->elements[board.grid[row + i][col]] == INVALID_STATE) return false;
