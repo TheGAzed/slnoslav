@@ -1,11 +1,11 @@
 #include <stdlib.h>
-#include <assert.h>
 #include <string.h>
 
 #include <structures/concrete/state.h>
 #include <algorithms/backtrack.h>
 #include <instance/settings.h>
 #include <instance/statistics.h>
+#include <instance/expect.h>
 
 bool _backtrack_row_sum(Kakuro board, SArray current_state, size_t index);
 bool _backtrack_col_sum(Kakuro board, SArray current_state, size_t index);
@@ -18,7 +18,9 @@ bool _backtrack_row_repeat(Kakuro board, SArray current_state, size_t index);
 bool _backtrack_col_repeat(Kakuro board, SArray current_state, size_t index);
 
 bool backtrack(Kakuro board, SArray current_state) {
-    if (!(get_settings_singleton()->is_backtrack)) return _backtrack_valid_sums(board, current_state);
+    error_mode = DEFAULT_E;
+    expect(get_settings_singleton()->is_backtrack, return _backtrack_valid_sums(board, current_state), "WARNING: backtracking is off");
+
     get_stat_singleton()->backtrack_call_count++;
 
     Check checks[KAKURO_SIZE_MAX] = { 0 };
@@ -74,7 +76,8 @@ bool _backtrack_col_sum(Kakuro board, SArray current_state, size_t index) {
 }
 
 bool _backtrack_valid_sums(Kakuro board, SArray current_state) {
-    if (!is_end_state(current_state)) return false;
+    error_mode = DEFAULT_E;
+    expect(is_end_state(current_state), return false, "current state is not an end state");
 
     Check checks[KAKURO_SIZE_MAX] = { 0 };
 

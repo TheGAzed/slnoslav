@@ -3,17 +3,22 @@
 #include <stdio.h>
 
 #include <structures/concrete/state.h>
+#include <instance/expect.h>
 
 SArray create_state_array(ksize_t size) {
-    assert(size != 0 && "SIZE OF ARRAY CAN'T BE ZERO");
+    error_mode = ASSERT_E;
+    expect(size != 0, NO_ACTION, "state array size can't be zero (%u)", size);
 
-    SArray sa = { .elements = malloc(sizeof(state_t) * size), .size = size, };
-    assert(sa.elements && "MEMORY ALLOCATION FAILED");
+    SArray array = { .elements = calloc(size, sizeof(state_t)), .size = size, };
+    expect(array.elements, NO_ACTION, "memory allocation for array failed/array element is NULL (%p)", (void*)array.elements);
 
-    return sa;
+    return array;
 }
 
 void set_full_state_array(SArray * array) {
+    error_mode = ASSERT_E;
+    expect(array, NO_ACTION, "state array pointer is NULL (%p)", (void*)array);
+
     for (ksize_t i = 0; i < array->size; i++) array->elements[i] = FULL_STATE;
 }
 
@@ -40,6 +45,9 @@ state_t merge_state_array(SArray array) {
 }
 
 void destroy_state_array(SArray * array) {
+    error_mode = ASSERT_E;
+    expect(array, NO_ACTION, "state array pointer is NULL (%p)", (void*)array);
+
     free(array->elements);
     array->elements = NULL;
     array->size = 0;

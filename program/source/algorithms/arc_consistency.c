@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <assert.h>
 #include <string.h>
 #include <stdio.h>
 
@@ -7,6 +6,7 @@
 #include <structures/concrete/board.h>
 #include <instance/settings.h>
 #include <instance/statistics.h>
+#include <instance/expect.h>
 
 #define STACK_DATA_TYPE ksize_t
 #include <structures/abstract/stack.h>
@@ -27,8 +27,12 @@ bool  _reduce_no_col_combination(Kakuro board, SArray * current_state, ksize_t i
 bool  _reduce_no_row_combination(Kakuro board, SArray * current_state, ksize_t index);
 
 bool look_ahead(Kakuro board, SArray * current_state) {
-    assert(current_state && "CURRENT STATE ARRAY IS NULL");
-    if (!(get_settings_singleton()->is_arc_consistency)) return true;
+    error_mode = ASSERT_E;
+    expect(current_state, NO_ACTION, "current state parameter is NULL (%p)", (void*)current_state);
+
+    error_mode = DEFAULT_E;
+    expect(get_settings_singleton()->is_arc_consistency, return true, "WARNING: arc consistency is off");
+
     get_stat_singleton()->look_ahead_call_count++;
 
     Check checks[KAKURO_SIZE_MAX] = { 0 };

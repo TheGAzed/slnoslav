@@ -11,8 +11,8 @@ typedef uint8_t ksize_t;
 
 #define MAX_BLOCK_VALUES 9
 
-#define FULL_STATE    0b111111111
-#define INVALID_STATE 0b000000000
+#define FULL_STATE    0x1FF // 0b111111111
+#define INVALID_STATE 0x000 // 0b000000000
 
 typedef uint16_t state_t;
 
