@@ -6,7 +6,7 @@
 #include <assert.h>
 
 typedef enum error_mode_type {
-    DEFAULT_E, ABORT_E, ASSERT_E,
+    DEFAULT_E, ABORT_E, ASSERT_E, EXIT_E,
 } error_mode_e;
 
 static error_mode_e error_mode = DEFAULT_E;
@@ -41,6 +41,7 @@ static FILE *       error_log  = NULL;
         switch (error_mode) {                                         \
             case ABORT_E  : { error_action; abort();                } \
             case ASSERT_E : { error_action; assert(0 && assertion); } \
+            case EXIT_E   : { error_action; exit(EXIT_FAILURE);     } \
             default       : { error_action;                         } \
         }                                                             \
     }                                                                 \

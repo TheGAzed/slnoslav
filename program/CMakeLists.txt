@@ -4,6 +4,8 @@ add_library(PROGRAM_LIBRARY "")
 
 target_sources(PROGRAM_LIBRARY
     PRIVATE
+        source/gui/graphics.c
+
         source/algorithms/depth_first_search.c
         source/algorithms/backtrack.c
         source/algorithms/arc_consistency.c
@@ -21,5 +23,6 @@ target_sources(PROGRAM_LIBRARY
 )
 
 target_include_directories(PROGRAM_LIBRARY PUBLIC include)
+target_link_libraries(PROGRAM_LIBRARY PRIVATE glfw libglew_shared nuklear)
 
-target_link_libraries(${PROJECT_NAME} PROGRAM_LIBRARY)
+target_link_libraries(${PROJECT_NAME} PRIVATE PROGRAM_LIBRARY)

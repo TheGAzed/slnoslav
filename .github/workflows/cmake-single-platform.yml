@@ -42,8 +42,4 @@ jobs:
       working-directory: ${{github.workspace}}/build
       # Execute tests defined by the CMake configuration.
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      run: |
-        pwd
-        xxd ../test/puzzles/easy/1.kkr
-        ls -l ../test/puzzles/easy/
-        ctest -C ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure
+      run: ctest -C ${{env.BUILD_TYPE}} --rerun-failed --output-on-failure

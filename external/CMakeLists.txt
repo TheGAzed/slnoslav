@@ -2,11 +2,11 @@ add_library(GREATEST_LIB INTERFACE "")
 
 target_include_directories(GREATEST_LIB INTERFACE greatest)
 
-add_library(NUKLEAR_LIB INTERFACE "")
+add_library(nuklear INTERFACE "")
 
-set_target_properties(NUKLEAR_LIB PROPERTIES LINKER_LANGUAGE C)
+target_include_directories(nuklear INTERFACE nuklear nuklear/demo/glfw_opengl3)
 
-target_include_directories(NUKLEAR_LIB INTERFACE nuklear/src)
+find_package(OpenGL REQUIRED)
 
 if (!WIN32)
 	find_package(PkgConfig REQUIRED)
@@ -14,6 +14,8 @@ if (!WIN32)
 	find_package(X11 REQUIRED)
 	find_package(Doxygen)
 endif()
+
+add_subdirectory(glew)
 
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
