@@ -7,7 +7,15 @@
 #include <instance/statistics.h>
 #include <algorithms/depth_first_search.h>
 
+#define TEST
+
+#ifdef TEST
+#include <gui/graphics.h>
+#endif
+
 void run_program(void) {
+
+#ifndef TEST
     FILE * fp = fopen(get_settings_singleton()->filepath, "rb");
     
     assert(fp && "COULDN'T OPEN FILE");
@@ -23,4 +31,8 @@ void run_program(void) {
     print_statistics();
 
     destroy_state_array(&solution);
+#else
+    gui();
+#endif
+
 }

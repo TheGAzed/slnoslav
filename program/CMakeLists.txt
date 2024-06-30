@@ -5,6 +5,9 @@ add_library(PROGRAM_LIBRARY "")
 target_sources(PROGRAM_LIBRARY
     PRIVATE
         source/gui/graphics.c
+        source/gui/input.c
+        source/gui/interface.c
+        source/gui/draw.c
 
         source/algorithms/depth_first_search.c
         source/algorithms/backtrack.c

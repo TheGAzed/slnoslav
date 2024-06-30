@@ -7,6 +7,7 @@ Settings * get_settings_singleton(void) {
         .is_forward_check   = true,
         .is_arc_consistency = true,
         .is_reduce          = true,
+        .state              = STOP_E,
     };
 
     return &setup;

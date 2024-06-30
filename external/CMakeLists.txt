@@ -1,6 +1,6 @@
-add_library(GREATEST_LIB INTERFACE "")
+add_library(greatest INTERFACE "")
 
-target_include_directories(GREATEST_LIB INTERFACE greatest)
+target_include_directories(greatest INTERFACE greatest)
 
 add_library(nuklear INTERFACE "")
 

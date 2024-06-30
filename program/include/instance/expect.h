@@ -16,35 +16,43 @@ static FILE *       error_log  = NULL;
 
 #ifdef ERROR_LOG_FILE_PATH
 
-#define expect(assertion, error_action, ...)                          \
-{                                                                     \
-    if (!(assertion)) {                                               \
-        assert(error_log = fopen(ERROR_LOG_FILE_PATH, "a"));          \
-        fprintf(error_log, __VA_ARGS__);                              \
-        fprintf(error_log, "\n");                                     \
-        fclose(error_log)                                             \
-        switch (error_mode) {                                         \
-            case ABORT_E  : { error_action; abort();                } \
-            case ASSERT_E : { error_action; assert(0 && assertion); } \
-            default       : { error_action;                         } \
-        }                                                             \
-    }                                                                 \
+static FILE *       error_log  = fopen(ERROR_LOG_FILE_PATH, "a");
+
+#define expect(assertion, error_action, ...)                                   \
+{                                                                              \
+    if (!(assertion)) {                                                        \
+        assert(error_log);                                                     \
+        fprintf(error_log, __VA_ARGS__);                                       \
+        fprintf(error_log, "\n");                                              \
+        fclose(error_log)                                                      \
+        switch (error_mode) {                                                  \
+            case ABORT_E  : { error_action; abort(); break;                  } \
+            case ASSERT_E : { error_action; assert(0 && (assertion)); break; } \
+            default       : { error_action; break;                           } \
+        }                                                                      \
+    }                                                                          \
+}
+
+__attribute__((destructor)) static void close_error_log(void) {
+    fclose(error_log);
 }
 
 #else
 
-#define expect(assertion, error_action, ...)                          \
-{                                                                     \
-    if (!(assertion)) {                                               \
-        fprintf(error_log ? error_log : stderr, __VA_ARGS__);         \
-        fprintf(error_log ? error_log : stderr, "\n");                \
-        switch (error_mode) {                                         \
-            case ABORT_E  : { error_action; abort();                } \
-            case ASSERT_E : { error_action; assert(0 && assertion); } \
-            case EXIT_E   : { error_action; exit(EXIT_FAILURE);     } \
-            default       : { error_action;                         } \
-        }                                                             \
-    }                                                                 \
+static FILE *       error_log;
+
+#define expect(assertion, error_action, ...)                                  \
+{                                                                             \
+    if (!(assertion)) {                                                       \
+        fprintf(error_log ? error_log : stderr, __VA_ARGS__);                 \
+        fprintf(error_log ? error_log : stderr, "\n");                        \
+        switch (error_mode) {                                                 \
+            case ABORT_E  : { error_action; abort(); break;                 } \
+            case ASSERT_E : { error_action; assert(0 && (assertion)); break;} \
+            case EXIT_E   : { error_action; exit(EXIT_FAILURE); break;      } \
+            default       : { error_action; break;                          } \
+        }                                                                     \
+    }                                                                         \
 }
 
 #endif /* ERROR_LOG_FILE_PATH */
