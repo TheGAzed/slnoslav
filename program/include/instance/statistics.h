@@ -1,7 +1,6 @@
 #ifndef INSTANCE_DATA_H
 #define INSTANCE_DATA_H
 
-#include <stdlib.h>
 #include <stdbool.h>
 
 typedef struct statistics {

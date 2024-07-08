@@ -1,7 +1,7 @@
 #include <algorithms/reduce.h>
 #include <instance/settings.h>
 
-#define STACK_DATA_TYPE ksize_t
+#define STACK_DATA_TYPE ulookup_t
 #include <structures/abstract/stack.h>
 
 #define MAGIC_TABLE_LENGTH 7
@@ -24,11 +24,11 @@ state_t _check_one_blocks(ulookup_t blocks, ulookup_t sum);
 state_t _check_even_two_blocks(ulookup_t block, ulookup_t sum);
 state_t _check_high_end(ulookup_t block, ulookup_t sum);
 state_t _check_low_end(ulookup_t block, ulookup_t sum);
-void  _reduce_multi_values(board_s board, SArray * initial_state);
-void  _reduce_row_multi_values(board_s board, SArray * initial_state, ulookup_t index);
-void  _reduce_col_multi_values(board_s board, SArray * initial_state, ulookup_t index);
+void  _reduce_multi_values(board_s board, state_array_s * initial_state);
+void  _reduce_row_multi_values(board_s board, state_array_s * initial_state, ulookup_t index);
+void  _reduce_col_multi_values(board_s board, state_array_s * initial_state, ulookup_t index);
 
-void reduce(board_s board, SArray * initial_state) {
+void reduce(board_s board, state_array_s * initial_state) {
     assert(initial_state && "INITIAL STATE ARRAY IS NULL");
     if (!(get_settings_singleton()->is_reduce)) return;
     
@@ -72,32 +72,34 @@ state_t _check_even_two_blocks(ulookup_t block, ulookup_t sum) {
 }
 
 state_t _check_high_end(ulookup_t block, ulookup_t sum) {
-    ulookup_t block_sum = get_sums(block - 1, UPPER_EDGE);
-    state_t s = (LOWER_EDGE + block_sum < sum) ? get_edge_state((MAX_BLOCK_VALUES + 1) - (sum - block_sum), UPPER_EDGE) : FULL_STATE;
+    ulookup_t block_sum = get_sums(block - 1, UPPER_EDGE_E);
+    state_t s = (LOWER_EDGE_E + block_sum < sum) ? get_edge_state((MAX_BLOCK_VALUES + 1) - (sum - block_sum), UPPER_EDGE_E) : FULL_STATE;
     return s;
 }
 
 state_t _check_low_end(ulookup_t block, ulookup_t sum) {
-    ulookup_t block_sum = get_sums(block - 1, LOWER_EDGE);
-    state_t s = (UPPER_EDGE + block_sum > sum) ? get_edge_state(sum - block_sum, LOWER_EDGE) : FULL_STATE;
+    ulookup_t block_sum = get_sums(block - 1, LOWER_EDGE_E);
+    state_t s = (UPPER_EDGE_E + block_sum > sum) ? get_edge_state(sum - block_sum, LOWER_EDGE_E) : FULL_STATE;
     return s;
 }
 
-void _reduce_multi_values(board_s board, SArray * current_state) {
-    check_e checks[KAKURO_SIZE_MAX] = { 0 };
+void _reduce_multi_values(board_s board, state_array_s * current_state) {
+    check_e * checks = calloc(board.game.empty_count, sizeof(check_e));
 
     for (size_t i = 0; i < board.game.empty_count; i++) {
         if (!(checks[i] & ROWCHECK)) _reduce_row_multi_values(board, current_state, i);
         if (!(checks[i] & COLCHECK)) _reduce_col_multi_values(board, current_state, i);
         add_check(board, checks, i);
     }
+
+    free(checks);
 }
 
-void _reduce_row_multi_values(board_s board, SArray * current_state, ulookup_t index) {
+void _reduce_row_multi_values(board_s board, state_array_s * current_state, ulookup_t index) {
     ulookup_t row = board.coords[ROW_E][index], col = board.coords[COLUMN_E][index];
     ulookup_t block = board.blocks[ROW_E][index], sums = board.sums[ROW_E][index];
     ulookup_t empty_blocks = block, empty_sums = sums;
-    Stack multi = create_stack();
+    stack_s multi = create_stack();
 
     for (size_t i = 0; i < block; i++) {
         state_t s = current_state->elements[board.grid[row][col + i]];
@@ -118,11 +120,11 @@ void _reduce_row_multi_values(board_s board, SArray * current_state, ulookup_t i
     destroy_stack(&multi, NULL);
 }
 
-void _reduce_col_multi_values(board_s board, SArray * current_state, ulookup_t index) {
+void _reduce_col_multi_values(board_s board, state_array_s * current_state, ulookup_t index) {
     ulookup_t row = board.coords[ROW_E][index], col = board.coords[COLUMN_E][index];
     ulookup_t block = board.blocks[COLUMN_E][index], sums = board.sums[COLUMN_E][index];
     ulookup_t empty_blocks = block, empty_sums = sums;
-    Stack multi = create_stack();
+    stack_s multi = create_stack();
 
     for (size_t i = 0; i < block; i++) {
         state_t s = current_state->elements[board.grid[row + i][col]];

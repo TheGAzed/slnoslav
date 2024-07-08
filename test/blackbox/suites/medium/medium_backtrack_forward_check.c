@@ -29,7 +29,7 @@ TEST medium_backtrack_forward_check_one(void) {
     board_s board = create_board(fp);
     fclose(fp);
     
-    SArray solution = depth_first_search(board);
+    state_array_s solution = depth_first_search(board);
     destroy_board(&board);
 
     ASSERTm("NO SOLUTION FOUND", solution.size);
@@ -68,7 +68,7 @@ TEST medium_backtrack_forward_check_two(void) {
     board_s board = create_board(fp);
     fclose(fp);
     
-    SArray solution = depth_first_search(board);
+    state_array_s solution = depth_first_search(board);
     destroy_board(&board);
 
     ASSERTm("NO SOLUTION FOUND", solution.size);
@@ -107,7 +107,7 @@ TEST medium_backtrack_forward_check_three(void) {
     board_s board = create_board(fp);
     fclose(fp);
     
-    SArray solution = depth_first_search(board);
+    state_array_s solution = depth_first_search(board);
     destroy_board(&board);
 
     ASSERTm("NO SOLUTION FOUND", solution.size);
@@ -146,7 +146,7 @@ TEST medium_backtrack_forward_check_four(void) {
     board_s board = create_board(fp);
     fclose(fp);
     
-    SArray solution = depth_first_search(board);
+    state_array_s solution = depth_first_search(board);
     destroy_board(&board);
 
     ASSERTm("NO SOLUTION FOUND", solution.size);
@@ -185,7 +185,7 @@ TEST medium_backtrack_forward_check_five(void) {
     board_s board = create_board(fp);
     fclose(fp);
     
-    SArray solution = depth_first_search(board);
+    state_array_s solution = depth_first_search(board);
     destroy_board(&board);
 
     ASSERTm("NO SOLUTION FOUND", solution.size);

@@ -1,9 +1,7 @@
 #ifndef INSTANCE_SETTINGS_H
 #define INSTANCE_SETTINGS_H
 
-#include <stdlib.h>
 #include <stdbool.h>
-#include <time.h>
 #include <stdint.h>
 
 typedef enum playstate {

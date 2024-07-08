@@ -1,28 +1,21 @@
 add_executable(UNITTESTS main.c)
 
-add_library(unit_tests "")
-
-target_link_libraries(unit_tests
-    PRIVATE
-        PROGRAM_LIBRARY
-        greatest
-)
-
-target_sources(unit_tests
+target_sources(UNITTESTS
     PRIVATE
         structures/abstract/stack_test.c
 )
 
-target_include_directories(unit_tests
+target_include_directories(UNITTESTS
     PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}
 )
 
 target_link_libraries(UNITTESTS
     PRIVATE
-        unit_tests
         greatest
-        PROGRAM_LIBRARY
+        program
 )
 
-add_test(UNIT_TEST UNITTESTS)
+target_compile_definitions(program PRIVATE ERROR_LOG_FILE_PATH=\"${CMAKE_BINARY_DIR}/blackbox-debug.txt\")
+
+add_test(NAME UNIT_TEST COMMAND UNITTESTS WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}")

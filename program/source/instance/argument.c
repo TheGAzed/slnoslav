@@ -2,6 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
+#include <stdbool.h>
 
 #include <instance/argument.h>
 #include <instance/settings.h>
@@ -162,7 +164,7 @@ void   _setup_settings(Argument argument);
 
 void setup_program(int argc, char **argv) {
     // argument queue to torn arguemnt value access like a queue (first-in-first-out).
-    Queue arg_queue = { .elements = argv, .max = argc, .size = argc, .current = 0 };
+    queue_s arg_queue = { .elements = argv, .max = argc, .size = argc, .current = 0 };
     dequeue(&arg_queue); // remove invocation name from queue 
 
     while (!is_empty_queue(arg_queue)) {

@@ -6,11 +6,11 @@
 
 #include <structures/concrete/board.h>
 
-#define STACK_DATA_TYPE ksize_t
+#define STACK_DATA_TYPE ulookup_t
 #include <structures/abstract/stack.h>
 
 TEST init_stack_is_empty(void) {
-    Stack stack = create_stack();
+    stack_s stack = create_stack();
     ASSERTm(
         "EXPECTED STACK WITH ZERO ELEMENTS/EMPTY",
         is_empty_stack(stack)
@@ -19,7 +19,7 @@ TEST init_stack_is_empty(void) {
 }
 
 TEST init_stack_top_array_pointer_null(void) {
-    Stack stack = create_stack();
+    stack_s stack = create_stack();
     ASSERT_FALSEm(
         "EXPECTED TOP ARRAY POINTER IN STACK TO BE NULL",
         stack.head
@@ -28,7 +28,7 @@ TEST init_stack_top_array_pointer_null(void) {
 }
 
 TEST push_one_to_empty_stack_expected_count_one(void) {
-    Stack stack = create_stack();
+    stack_s stack = create_stack();
     push_stack(&stack, 42);
     ASSERT_EQm(
         "EXPECTED COUNT TO BE ONE",
@@ -40,7 +40,7 @@ TEST push_one_to_empty_stack_expected_count_one(void) {
 }
 
 TEST push_one_to_stack_is_empty_false(void) {
-    Stack stack = create_stack();
+    stack_s stack = create_stack();
     push_stack(&stack, 42);
     ASSERT_FALSEm(
         "EXPECTED STACK TO NOT BE EMPTY",
@@ -52,7 +52,7 @@ TEST push_one_to_stack_is_empty_false(void) {
 }
 
 TEST push_one_to_stack_top_array_not_null(void) {
-    Stack stack = create_stack();
+    stack_s stack = create_stack();
     push_stack(&stack, 42);
     ASSERTm(
         "EXPECTED TOP ARRAY POINTER TO NOT BE NULL",
@@ -64,7 +64,7 @@ TEST push_one_to_stack_top_array_not_null(void) {
 }
 
 TEST push_and_pop_one_to_empty_stack_expected_count_zero(void) {
-    Stack stack = create_stack();
+    stack_s stack = create_stack();
     push_stack(&stack, 42);
     pop_stack(&stack);
     ASSERT_EQm(
@@ -77,7 +77,7 @@ TEST push_and_pop_one_to_empty_stack_expected_count_zero(void) {
 }
 
 TEST push_and_pop_one_to_empty_stack_expected_value_42(void) {
-    Stack stack = create_stack();
+    stack_s stack = create_stack();
     ulookup_t expected = 42;
     push_stack(&stack, expected);
     ulookup_t actual = pop_stack(&stack);
@@ -92,7 +92,7 @@ TEST push_and_pop_one_to_empty_stack_expected_value_42(void) {
 }
 
 TEST push_and_pop_one_from_stack_expect_top_null(void) {
-    Stack stack = create_stack();
+    stack_s stack = create_stack();
     push_stack(&stack, 42);
     pop_stack(&stack);
 
@@ -106,7 +106,7 @@ TEST push_and_pop_one_from_stack_expect_top_null(void) {
 }
 
 TEST push_42_and_0_and_pop_from_stack_to_get_0(void) {
-    Stack stack = create_stack();
+    stack_s stack = create_stack();
     ulookup_t expected = 0;
 
     push_stack(&stack, 42);
@@ -123,7 +123,7 @@ TEST push_42_and_0_and_pop_from_stack_to_get_0(void) {
 }
 
 TEST push_until_max_array_list_size_bottom_is_null(void) {
-    Stack stack = create_stack();
+    stack_s stack = create_stack();
 
     for (size_t i = 0; i < STACK_LIST_ARRAY_SIZE; i++) push_stack(&stack, 42);
     ASSERT_FALSEm(
@@ -136,7 +136,7 @@ TEST push_until_max_array_list_size_bottom_is_null(void) {
 }
 
 TEST push_until_max_array_list_size_plus_one_bottom_is_not_null(void) {
-    Stack stack = create_stack();
+    stack_s stack = create_stack();
 
     for (size_t i = 0; i < STACK_LIST_ARRAY_SIZE + 1; i++) push_stack(&stack, 42);
     ASSERTm(
@@ -149,7 +149,7 @@ TEST push_until_max_array_list_size_plus_one_bottom_is_not_null(void) {
 }
 
 TEST push_max_array_list_size_plus_one_then_pop_one_bottom_is_null(void) {
-    Stack stack = create_stack();
+    stack_s stack = create_stack();
 
     for (size_t i = 0; i < STACK_LIST_ARRAY_SIZE + 1; i++) push_stack(&stack, 42);
     pop_stack(&stack);
@@ -164,7 +164,7 @@ TEST push_max_array_list_size_plus_one_then_pop_one_bottom_is_null(void) {
 }
 
 TEST push_max_array_list_size_plus_one_then_pop_all_top_is_null(void) {
-    Stack stack = create_stack();
+    stack_s stack = create_stack();
 
     for (size_t i = 0; i < STACK_LIST_ARRAY_SIZE + 1; i++) push_stack(&stack, 42);
     for (size_t i = 0; i < STACK_LIST_ARRAY_SIZE + 1; i++) pop_stack(&stack);
@@ -179,7 +179,7 @@ TEST push_max_array_list_size_plus_one_then_pop_all_top_is_null(void) {
 }
 
 TEST push_one_and_free_stack_top_is_null(void) {
-    Stack stack = create_stack();
+    stack_s stack = create_stack();
     push_stack(&stack, 42);
     ASSERTm(
         "EXPECTED TOP TO NOT BE NULL",
@@ -195,7 +195,7 @@ TEST push_one_and_free_stack_top_is_null(void) {
 }
 
 TEST push_max_arrayes_and_free_stack_top_is_null(void) {
-    Stack stack = create_stack();
+    stack_s stack = create_stack();
     for (size_t i = 0; i < STACK_LIST_ARRAY_SIZE; i++) push_stack(&stack, 42);
 
     ASSERTm(
@@ -212,7 +212,7 @@ TEST push_max_arrayes_and_free_stack_top_is_null(void) {
 }
 
 TEST push_max_array_plus_onees_and_free_stack_top_is_null(void) {
-    Stack stack = create_stack();
+    stack_s stack = create_stack();
     for (size_t i = 0; i < STACK_LIST_ARRAY_SIZE + 1; i++) push_stack(&stack, 42);
 
     ASSERTm(
@@ -229,7 +229,7 @@ TEST push_max_array_plus_onees_and_free_stack_top_is_null(void) {
 }
 
 TEST push_max_array_with_1_plus_one_42_and_pop_back_42(void) {
-    Stack stack = create_stack();
+    stack_s stack = create_stack();
     for (size_t i = 0; i < STACK_LIST_ARRAY_SIZE; i++) push_stack(&stack, 1);
     ulookup_t expected = 42, actual;
     push_stack(&stack, 42);
@@ -244,7 +244,7 @@ TEST push_max_array_with_1_plus_one_42_and_pop_back_42(void) {
 }
 
 TEST push_max_array_minus_one_with_1_plus_one_42_and_pop_back_42(void) {
-    Stack stack = create_stack();
+    stack_s stack = create_stack();
     for (size_t i = 0; i < STACK_LIST_ARRAY_SIZE - 1; i++) push_stack(&stack, 1);
     ulookup_t expected = 42, actual;
     push_stack(&stack, 42);

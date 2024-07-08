@@ -5,11 +5,11 @@
 
 #define EASY_PUZZLE_PATH "./test/puzzles/easy/"
 
-TEST easy_arc_consistency_backtrack_one(void) {
+TEST easy_backtrack_one(void) {
     ulookup_t expected_solution[] = { 9, 7, 5, 7, 6, 8, 9 };
 
     get_settings_singleton()->filepath           = EASY_PUZZLE_PATH"1.kkr";
-    get_settings_singleton()->is_arc_consistency = true;
+    get_settings_singleton()->is_arc_consistency = false;
     get_settings_singleton()->is_backtrack       = true;
     get_settings_singleton()->is_forward_check   = false;
 
@@ -19,7 +19,7 @@ TEST easy_arc_consistency_backtrack_one(void) {
     board_s board = create_board(fp);
     fclose(fp);
     
-    SArray solution = depth_first_search(board);
+    state_array_s solution = depth_first_search(board);
     destroy_board(&board);
 
     ASSERTm("NO SOLUTION FOUND", solution.size);
@@ -34,11 +34,11 @@ TEST easy_arc_consistency_backtrack_one(void) {
     PASS();
 }
 
-TEST easy_arc_consistency_backtrack_two(void) {
+TEST easy_backtrack_two(void) {
     ulookup_t expected_solution[] = { 9, 6, 7, 3, 2, 1, 5 };
 
     get_settings_singleton()->filepath           = EASY_PUZZLE_PATH"2.kkr";
-    get_settings_singleton()->is_arc_consistency = true;
+    get_settings_singleton()->is_arc_consistency = false;
     get_settings_singleton()->is_backtrack       = true;
     get_settings_singleton()->is_forward_check   = false;
 
@@ -48,7 +48,7 @@ TEST easy_arc_consistency_backtrack_two(void) {
     board_s board = create_board(fp);
     fclose(fp);
     
-    SArray solution = depth_first_search(board);
+    state_array_s solution = depth_first_search(board);
     destroy_board(&board);
 
     ASSERTm("NO SOLUTION FOUND", solution.size);
@@ -63,11 +63,11 @@ TEST easy_arc_consistency_backtrack_two(void) {
     PASS();
 }
 
-TEST easy_arc_consistency_backtrack_three(void) {
+TEST easy_backtrack_three(void) {
     ulookup_t expected_solution[] = { 8, 5, 1, 4, 2, 3, 9 };
 
     get_settings_singleton()->filepath           = EASY_PUZZLE_PATH"3.kkr";
-    get_settings_singleton()->is_arc_consistency = true;
+    get_settings_singleton()->is_arc_consistency = false;
     get_settings_singleton()->is_backtrack       = true;
     get_settings_singleton()->is_forward_check   = false;
 
@@ -77,7 +77,7 @@ TEST easy_arc_consistency_backtrack_three(void) {
     board_s board = create_board(fp);
     fclose(fp);
     
-    SArray solution = depth_first_search(board);
+    state_array_s solution = depth_first_search(board);
     destroy_board(&board);
 
     ASSERTm("NO SOLUTION FOUND", solution.size);
@@ -92,11 +92,11 @@ TEST easy_arc_consistency_backtrack_three(void) {
     PASS();
 }
 
-TEST easy_arc_consistency_backtrack_four(void) {
+TEST easy_backtrack_four(void) {
     ulookup_t expected_solution[] = { 1, 4, 2, 3, 9, 1, 2 };
 
     get_settings_singleton()->filepath           = EASY_PUZZLE_PATH"4.kkr";
-    get_settings_singleton()->is_arc_consistency = true;
+    get_settings_singleton()->is_arc_consistency = false;
     get_settings_singleton()->is_backtrack       = true;
     get_settings_singleton()->is_forward_check   = false;
 
@@ -106,7 +106,7 @@ TEST easy_arc_consistency_backtrack_four(void) {
     board_s board = create_board(fp);
     fclose(fp);
     
-    SArray solution = depth_first_search(board);
+    state_array_s solution = depth_first_search(board);
     destroy_board(&board);
 
     ASSERTm("NO SOLUTION FOUND", solution.size);
@@ -121,11 +121,11 @@ TEST easy_arc_consistency_backtrack_four(void) {
     PASS();
 }
 
-TEST easy_arc_consistency_backtrack_five(void) {
+TEST easy_backtrack_five(void) {
     ulookup_t expected_solution[] = { 1, 8, 6, 9, 4, 5, 8 };
 
     get_settings_singleton()->filepath           = EASY_PUZZLE_PATH"5.kkr";
-    get_settings_singleton()->is_arc_consistency = true;
+    get_settings_singleton()->is_arc_consistency = false;
     get_settings_singleton()->is_backtrack       = true;
     get_settings_singleton()->is_forward_check   = false;
 
@@ -135,7 +135,7 @@ TEST easy_arc_consistency_backtrack_five(void) {
     board_s board = create_board(fp);
     fclose(fp);
     
-    SArray solution = depth_first_search(board);
+    state_array_s solution = depth_first_search(board);
     destroy_board(&board);
 
     ASSERTm("NO SOLUTION FOUND", solution.size);
@@ -150,11 +150,11 @@ TEST easy_arc_consistency_backtrack_five(void) {
     PASS();
 }
 
-SUITE (easy_arc_consistency_backtrack) {
+SUITE (easy_bt) {
     // 4x4
-    RUN_TEST(easy_arc_consistency_backtrack_one);
-    RUN_TEST(easy_arc_consistency_backtrack_two);
-    RUN_TEST(easy_arc_consistency_backtrack_three);
-    RUN_TEST(easy_arc_consistency_backtrack_four);
-    RUN_TEST(easy_arc_consistency_backtrack_five);
+    RUN_TEST(easy_backtrack_one);
+    RUN_TEST(easy_backtrack_two);
+    RUN_TEST(easy_backtrack_three);
+    RUN_TEST(easy_backtrack_four);
+    RUN_TEST(easy_backtrack_five);
 }

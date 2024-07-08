@@ -7,17 +7,17 @@
 #include <instance/statistics.h>
 #include <instance/expect.h>
 
-bool _backtrack_row_sum(board_s board, SArray current_state, size_t index);
-bool _backtrack_col_sum(board_s board, SArray current_state, size_t index);
+bool _backtrack_row_sum(board_s board, state_array_s current_state, size_t index);
+bool _backtrack_col_sum(board_s board, state_array_s current_state, size_t index);
 
-bool _backtrack_valid_sums(board_s board, SArray current_state);
-bool _backtrack_valid_row_sums(board_s board, SArray current_state, size_t index);
-bool _backtrack_valid_col_sums(board_s board, SArray current_state, size_t index);
+bool _backtrack_valid_sums(board_s board, state_array_s current_state);
+bool _backtrack_valid_row_sums(board_s board, state_array_s current_state, size_t index);
+bool _backtrack_valid_col_sums(board_s board, state_array_s current_state, size_t index);
 
-bool _backtrack_row_repeat(board_s board, SArray current_state, size_t index);
-bool _backtrack_col_repeat(board_s board, SArray current_state, size_t index);
+bool _backtrack_row_repeat(board_s board, state_array_s current_state, size_t index);
+bool _backtrack_col_repeat(board_s board, state_array_s current_state, size_t index);
 
-bool backtrack(board_s board, SArray current_state) {
+bool backtrack(board_s board, state_array_s current_state) {
     error_mode = DEFAULT_E;
     expect(get_settings_singleton()->is_backtrack, return _backtrack_valid_sums(board, current_state), "WARNING: backtracking is off");
 
@@ -41,7 +41,7 @@ bool backtrack(board_s board, SArray current_state) {
     return invalid_state_backtrack_stat(is_backtrack);
 }
 
-bool _backtrack_row_sum(board_s board, SArray current_state, size_t index) {
+bool _backtrack_row_sum(board_s board, state_array_s current_state, size_t index) {
     ulookup_t row = board.coords[ROW_E][index], col = board.coords[COLUMN_E][index];
     ulookup_t filled_sums   = 0, sums   = board.sums[ROW_E][index];
     ulookup_t filled_blocks = 0, blocks = board.blocks[ROW_E][index];
@@ -54,12 +54,12 @@ bool _backtrack_row_sum(board_s board, SArray current_state, size_t index) {
     return
         (filled_blocks == blocks) ? filled_sums != sums                                                 : false || 
         (filled_sums > sums)                                                                                    || 
-        (blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, UPPER_EDGE) < (sums - filled_sums) : false || 
-        (blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, LOWER_EDGE) > (sums - filled_sums) : false ||
+        (blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, UPPER_EDGE_E) < (sums - filled_sums) : false || 
+        (blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, LOWER_EDGE_E) > (sums - filled_sums) : false ||
         _backtrack_row_repeat(board, current_state, index);
 }
 
-bool _backtrack_col_sum(board_s board, SArray current_state, size_t index) {
+bool _backtrack_col_sum(board_s board, state_array_s current_state, size_t index) {
     ulookup_t row = board.coords[ROW_E][index], col = board.coords[COLUMN_E][index];
     ulookup_t filled_sums   = 0, sums   = board.sums[COLUMN_E][index];
     ulookup_t filled_blocks = 0, blocks = board.blocks[COLUMN_E][index];
@@ -72,12 +72,12 @@ bool _backtrack_col_sum(board_s board, SArray current_state, size_t index) {
     return 
         (blocks == filled_blocks) ? filled_sums != sums                                                 : false || 
         (filled_sums > sums)                                                                                    || 
-        (blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, UPPER_EDGE) < (sums - filled_sums) : false || 
-        (blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, LOWER_EDGE) > (sums - filled_sums) : false ||
+        (blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, UPPER_EDGE_E) < (sums - filled_sums) : false || 
+        (blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, LOWER_EDGE_E) > (sums - filled_sums) : false ||
         _backtrack_col_repeat(board, current_state, index);
 }
 
-bool _backtrack_valid_sums(board_s board, SArray current_state) {
+bool _backtrack_valid_sums(board_s board, state_array_s current_state) {
     error_mode = DEFAULT_E;
     expect(is_end_state(current_state), return false, "current state is not an end state");
 
@@ -99,7 +99,7 @@ bool _backtrack_valid_sums(board_s board, SArray current_state) {
     return is_backtrack;
 }
 
-bool _backtrack_valid_row_sums(board_s board, SArray current_state, size_t index) {
+bool _backtrack_valid_row_sums(board_s board, state_array_s current_state, size_t index) {
     ulookup_t row = board.coords[ROW_E][index], col = board.coords[COLUMN_E][index];
     ulookup_t filled_sums = 0, sums = board.sums[ROW_E][index];
 
@@ -111,7 +111,7 @@ bool _backtrack_valid_row_sums(board_s board, SArray current_state, size_t index
     return filled_sums != sums;
 }
 
-bool _backtrack_valid_col_sums(board_s board, SArray current_state, size_t index) {
+bool _backtrack_valid_col_sums(board_s board, state_array_s current_state, size_t index) {
     ulookup_t row = board.coords[ROW_E][index], col = board.coords[COLUMN_E][index];
     ulookup_t filled_sums = 0, sums = board.sums[COLUMN_E][index];
 
@@ -123,7 +123,7 @@ bool _backtrack_valid_col_sums(board_s board, SArray current_state, size_t index
     return filled_sums != sums;
 }
 
-bool _backtrack_row_repeat(board_s board, SArray current_state, size_t index) {
+bool _backtrack_row_repeat(board_s board, state_array_s current_state, size_t index) {
     ulookup_t row = board.coords[ROW_E][index], col = board.coords[COLUMN_E][index];
     state_t state = INVALID_STATE;
 
@@ -139,7 +139,7 @@ bool _backtrack_row_repeat(board_s board, SArray current_state, size_t index) {
     return false;
 }
 
-bool _backtrack_col_repeat(board_s board, SArray current_state, size_t index) {
+bool _backtrack_col_repeat(board_s board, state_array_s current_state, size_t index) {
     ulookup_t row = board.coords[ROW_E][index], col = board.coords[COLUMN_E][index];
     state_t state = INVALID_STATE;
 

@@ -4,9 +4,9 @@ find_package(GLEW REQUIRED)
 
 add_executable(${PROJECT_NAME} main.c)
 
-add_library(PROGRAM_LIBRARY "")
+add_library(program "")
 
-target_sources(PROGRAM_LIBRARY
+target_sources(program
     PRIVATE
         source/gui/graphics.c
         source/gui/input.c
@@ -22,6 +22,7 @@ target_sources(PROGRAM_LIBRARY
         source/instance/argument.c
         source/instance/settings.c
         source/instance/statistics.c
+        source/instance/expect.c
         
         source/structures/concrete/board.c
         source/structures/concrete/state.c
@@ -29,7 +30,9 @@ target_sources(PROGRAM_LIBRARY
         source/slnoslav.c
 )
 
-target_include_directories(PROGRAM_LIBRARY PUBLIC include)
-target_link_libraries(PROGRAM_LIBRARY PRIVATE glfw GLEW::GLEW OpenGL::GL m nuklear)
+target_include_directories(program PUBLIC include)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE PROGRAM_LIBRARY)
+target_link_libraries(program PRIVATE glfw GLEW::GLEW OpenGL::GL m nuklear)
+target_link_libraries(${PROJECT_NAME} PRIVATE program)
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE ERROR_LOG_FILE_PATH=\"${CMAKE_BINARY_DIR}/slnoslav-debug.txt\")

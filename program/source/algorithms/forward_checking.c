@@ -5,10 +5,10 @@
 #include <instance/statistics.h>
 #include <instance/expect.h>
 
-bool _row_forward_check(board_s board, SArray * current_state, ulookup_t index);
-bool _col_forward_check(board_s board, SArray * current_state, ulookup_t index);
+bool _row_forward_check(board_s board, state_array_s * current_state, ulookup_t index);
+bool _col_forward_check(board_s board, state_array_s * current_state, ulookup_t index);
 
-bool forward_checking(board_s board, SArray * current_state, ulookup_t index) {
+bool forward_checking(board_s board, state_array_s * current_state, ulookup_t index) {
     error_mode = ASSERT_E;
     expect(current_state, NO_ACTION, "current state parameter is NULL (%p)", (void*)current_state);
     expect(is_one_value(current_state->elements[index]), NO_ACTION, "current state element at index %u is not a one value", index);
@@ -25,7 +25,7 @@ bool forward_checking(board_s board, SArray * current_state, ulookup_t index) {
     ));
 }
 
-bool _row_forward_check(board_s board, SArray * current_state, ulookup_t index) {   
+bool _row_forward_check(board_s board, state_array_s * current_state, ulookup_t index) {   
     state_t s = current_state->elements[index];
     ulookup_t row = board.coords[ROW_E][index], col = board.coords[COLUMN_E][index], c;
 
@@ -44,7 +44,7 @@ bool _row_forward_check(board_s board, SArray * current_state, ulookup_t index) 
     return true;
 }
 
-bool _col_forward_check(board_s board, SArray * current_state, ulookup_t index) {
+bool _col_forward_check(board_s board, state_array_s * current_state, ulookup_t index) {
     state_t s = current_state->elements[index];
     ulookup_t row = board.coords[ROW_E][index], col = board.coords[COLUMN_E][index], r;
 

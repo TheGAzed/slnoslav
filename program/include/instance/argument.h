@@ -1,10 +1,6 @@
 #ifndef INSTANCE_ARGUMENT_H
 #define INSTANCE_ARGUMENT_H
 
-#include <stdint.h>
-#include <stddef.h>
-#include <stdbool.h>
-
 #define FILEPATH_FLAG_STRING_SHORT "-fp"
 #define FILEPATH_FLAG_STRING_LONG  "--filepath"
 

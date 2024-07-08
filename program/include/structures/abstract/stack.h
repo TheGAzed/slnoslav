@@ -5,9 +5,6 @@
 #include <stdbool.h>
 #include <assert.h>
 
-//#define FINITE_QUEUE
-//#undef FINITE_QUEUE
-
 #ifndef STACK_DATA_TYPE 
 
 #define STACK_DATA_TYPE void *
@@ -35,57 +32,57 @@ typedef struct stack {
     SLArray * head;
 #endif /* FINITE_STACK */
 
-} Stack;
+} stack_s;
 
 typedef enum stack_index_position {
     SI_POSITION_CURRENT = 1,
     SI_POSITION_NEXT    = 0,
-} SIPosition;
+} sip_e;
 
 #ifdef FINITE_STACK
 
-static Stack create_stack(size_t max);
-static bool  is_full_stack(Stack stack);
+static stack_s create_stack(size_t max);
+static bool  is_full_stack(stack_s stack);
 
 #else
 
-static Stack create_stack(void);
+static stack_s create_stack(void);
 
 #endif /* FINITE_STACK */
 
-static bool            is_empty_stack(Stack stack);
-static void            push_stack(Stack * stack, STACK_DATA_TYPE element);
-static STACK_DATA_TYPE pop_stack(Stack * stack);
-static STACK_DATA_TYPE peek_stack(Stack stack);
-static Stack           copy_stack(Stack stack, STACK_DATA_TYPE (*copy_element)(STACK_DATA_TYPE));
-static void            destroy_stack(Stack * stack, void (*free_element)(STACK_DATA_TYPE *));
-static size_t          _get_index_stack(Stack stack, SIPosition type);
+static bool            is_empty_stack(stack_s stack);
+static void            push_stack(stack_s * stack, STACK_DATA_TYPE element);
+static STACK_DATA_TYPE pop_stack(stack_s * stack);
+static STACK_DATA_TYPE peek_stack(stack_s stack);
+static stack_s           copy_stack(stack_s stack, STACK_DATA_TYPE (*copy_element)(STACK_DATA_TYPE));
+static void            destroy_stack(stack_s * stack, void (*free_element)(STACK_DATA_TYPE *));
+static size_t          _get_index_stack(stack_s stack, sip_e type);
 
 #ifdef FINITE_STACK
 
-static inline Stack create_stack(size_t max) {
-    Stack stack = { .elements = malloc(sizeof(STACK_DATA_TYPE) * max), .max = max, 0, };
+static inline stack_s create_stack(const size_t max) {
+    stack_s stack = { .elements = malloc(sizeof(STACK_DATA_TYPE) * max), .max = max, 0, };
     assert(stack.elements && "MEMORY ALLOCATION FAILED");
     return stack;
 }
 
-static inline bool is_full_stack(Stack stack) {
+static inline bool is_full_stack(const stack_s stack) {
     return stack.size == stack.max;
 }
 
 #else
 
-static inline Stack create_stack(void)  {
-    return (Stack) { 0 };
+static inline stack_s create_stack(void)  {
+    return (stack_s) { 0 };
 }
 
 #endif /* FINITE_STACK */
 
-static inline bool is_empty_stack(Stack stack) {
+static inline bool is_empty_stack(const stack_s stack) {
     return !stack.size;
 }
 
-static inline void push_stack(Stack * stack, STACK_DATA_TYPE element) {
+static inline void push_stack(stack_s * stack, STACK_DATA_TYPE element) {
     assert(stack && "QUEUE POINTER IS NULL");
 
 #ifdef FINITE_STACK
@@ -112,7 +109,7 @@ static inline void push_stack(Stack * stack, STACK_DATA_TYPE element) {
     stack->size++;
 }
 
-static inline STACK_DATA_TYPE pop_stack(Stack * stack) {
+static inline STACK_DATA_TYPE pop_stack(stack_s * stack) {
     assert(stack && "QUEUE POINTER IS NULL");
     assert(!is_empty_stack(*stack) && "CAN'T POP EMPTY QUEUE");
 
@@ -132,7 +129,7 @@ static inline STACK_DATA_TYPE pop_stack(Stack * stack) {
     return e;
 }
 
-static inline STACK_DATA_TYPE peek_stack(Stack stack) {
+static inline STACK_DATA_TYPE peek_stack(stack_s stack) {
     assert(!is_empty_stack(stack) && "CAN'T PEEK EMPTY STACK");
     size_t idx = _get_index_stack(stack, SI_POSITION_CURRENT);
 
@@ -144,17 +141,17 @@ static inline STACK_DATA_TYPE peek_stack(Stack stack) {
 
 }
 
-static inline Stack copy_stack(Stack stack, STACK_DATA_TYPE (*copy_element)(STACK_DATA_TYPE)) {
+static inline stack_s copy_stack(stack_s stack, STACK_DATA_TYPE (*copy_element)(STACK_DATA_TYPE)) {
 
 #ifdef FINITE_STACK
-    Stack copy = stack;
+    stack_s copy = stack;
     assert(copy.elements = malloc(sizeof(STACK_DATA_TYPE) * stack.max) && "MEMORY ALLOCATION FAILED");
 
     for (size_t i = 0; i < stack.size; i++) {
         copy.elements[i] = copy_element ? copy_element(stack.elements[i]) : stack.elements[i];
     }
 #else
-    Stack copy = create_stack();
+    stack_s copy = create_stack();
     
     SLArray * current_array = stack.head;
     for (size_t i = stack.size - 1; current_array;) {
@@ -178,7 +175,7 @@ static inline Stack copy_stack(Stack stack, STACK_DATA_TYPE (*copy_element)(STAC
     return copy;
 }
 
-static inline void destroy_stack(Stack * stack, void (*free_element)(STACK_DATA_TYPE *)) {
+static inline void destroy_stack(stack_s * stack, void (*free_element)(STACK_DATA_TYPE *)) {
     while (!is_empty_stack(*stack)) {
         STACK_DATA_TYPE e = pop_stack(stack);
         if (free_element) free_element(&e);
@@ -191,7 +188,7 @@ static inline void destroy_stack(Stack * stack, void (*free_element)(STACK_DATA_
 
 }
 
-static inline size_t _get_index_stack(Stack stack, SIPosition type) {
+static inline size_t _get_index_stack(stack_s stack, sip_e type) {
     assert((!is_empty_stack(stack) || type != SI_POSITION_CURRENT) && "CAN'T GET CURRENT INDEX IF EMPTY STACK");
 
 #ifdef FINITE_STACK

@@ -2,29 +2,25 @@
 #define INSTANCE_EXPECT_H
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <assert.h>
+#include <stdlib.h>
 
 typedef enum error_mode_type {
     DEFAULT_E, ABORT_E, ASSERT_E, EXIT_E,
 } error_mode_e;
 
-static error_mode_e error_mode = DEFAULT_E;
-static FILE *       error_log  = NULL;
+extern error_mode_e error_mode;
+extern  FILE * error_log;
 
 #define NO_ACTION (void)(0)
 
 #ifdef ERROR_LOG_FILE_PATH
 
-static FILE *       error_log  = fopen(ERROR_LOG_FILE_PATH, "a");
-
 #define expect(assertion, error_action, ...)                                   \
 {                                                                              \
     if (!(assertion)) {                                                        \
-        assert(error_log);                                                     \
         fprintf(error_log, __VA_ARGS__);                                       \
         fprintf(error_log, "\n");                                              \
-        fclose(error_log)                                                      \
         switch (error_mode) {                                                  \
             case ABORT_E  : { error_action; abort(); break;                  } \
             case ASSERT_E : { error_action; assert(0 && (assertion)); break; } \
@@ -33,13 +29,7 @@ static FILE *       error_log  = fopen(ERROR_LOG_FILE_PATH, "a");
     }                                                                          \
 }
 
-__attribute__((destructor)) static void close_error_log(void) {
-    fclose(error_log);
-}
-
 #else
-
-static FILE *       error_log;
 
 #define expect(assertion, error_action, ...)                                  \
 {                                                                             \
