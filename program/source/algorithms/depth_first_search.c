@@ -13,7 +13,7 @@
 #define STACK_DATA_TYPE SArray
 #include <structures/abstract/stack.h>
 
-SArray depth_first_search(Kakuro board) {
+SArray depth_first_search(board_s board) {
     Stack stack = create_stack();
 
     SArray initial = create_state_array(board.game.empty_count);
@@ -38,7 +38,7 @@ SArray depth_first_search(Kakuro board) {
             break;
         }
 
-        ksize_t index = shortest_multi_index(guess);
+        ulookup_t index = shortest_multi_index(guess);
 
         SMatrix next = generate_neighbor(guess, index);
         for (size_t i = 0; i < next.size; i++) {

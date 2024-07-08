@@ -4,6 +4,6 @@
 #include <structures/concrete/state.h>
 #include <structures/concrete/board.h>
 
-SArray depth_first_search(Kakuro board);
+SArray depth_first_search(board_s board);
 
 #endif /* ALGORITHMS_DEPTH_FIRST_SEARCH_H */

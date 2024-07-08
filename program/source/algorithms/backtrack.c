@@ -7,23 +7,23 @@
 #include <instance/statistics.h>
 #include <instance/expect.h>
 
-bool _backtrack_row_sum(Kakuro board, SArray current_state, size_t index);
-bool _backtrack_col_sum(Kakuro board, SArray current_state, size_t index);
+bool _backtrack_row_sum(board_s board, SArray current_state, size_t index);
+bool _backtrack_col_sum(board_s board, SArray current_state, size_t index);
 
-bool _backtrack_valid_sums(Kakuro board, SArray current_state);
-bool _backtrack_valid_row_sums(Kakuro board, SArray current_state, size_t index);
-bool _backtrack_valid_col_sums(Kakuro board, SArray current_state, size_t index);
+bool _backtrack_valid_sums(board_s board, SArray current_state);
+bool _backtrack_valid_row_sums(board_s board, SArray current_state, size_t index);
+bool _backtrack_valid_col_sums(board_s board, SArray current_state, size_t index);
 
-bool _backtrack_row_repeat(Kakuro board, SArray current_state, size_t index);
-bool _backtrack_col_repeat(Kakuro board, SArray current_state, size_t index);
+bool _backtrack_row_repeat(board_s board, SArray current_state, size_t index);
+bool _backtrack_col_repeat(board_s board, SArray current_state, size_t index);
 
-bool backtrack(Kakuro board, SArray current_state) {
+bool backtrack(board_s board, SArray current_state) {
     error_mode = DEFAULT_E;
     expect(get_settings_singleton()->is_backtrack, return _backtrack_valid_sums(board, current_state), "WARNING: backtracking is off");
 
     get_stat_singleton()->backtrack_call_count++;
 
-    Check checks[KAKURO_SIZE_MAX] = { 0 };
+    check_e * checks = calloc(board.game.empty_count, sizeof(check_e));
 
     bool is_backtrack = false;
     for (size_t i = 0; i < board.game.empty_count && !is_backtrack; i++) {
@@ -36,15 +36,17 @@ bool backtrack(Kakuro board, SArray current_state) {
         add_check(board, checks, i);
     }
 
+    free(checks);
+
     return invalid_state_backtrack_stat(is_backtrack);
 }
 
-bool _backtrack_row_sum(Kakuro board, SArray current_state, size_t index) {
-    ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
-    ksize_t filled_sums   = 0, sums   = board.sums[ROW][index];
-    ksize_t filled_blocks = 0, blocks = board.blocks[ROW][index];
+bool _backtrack_row_sum(board_s board, SArray current_state, size_t index) {
+    ulookup_t row = board.coords[ROW_E][index], col = board.coords[COLUMN_E][index];
+    ulookup_t filled_sums   = 0, sums   = board.sums[ROW_E][index];
+    ulookup_t filled_blocks = 0, blocks = board.blocks[ROW_E][index];
 
-    for (ksize_t i = 0; i < blocks; i++) {
+    for (ulookup_t i = 0; i < blocks; i++) {
         state_t s = current_state.elements[board.grid[row][col + i]];
         if (is_one_value(s)) { filled_blocks++; filled_sums += __builtin_ctz(s) + 1; }
     }
@@ -57,12 +59,12 @@ bool _backtrack_row_sum(Kakuro board, SArray current_state, size_t index) {
         _backtrack_row_repeat(board, current_state, index);
 }
 
-bool _backtrack_col_sum(Kakuro board, SArray current_state, size_t index) {
-    ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
-    ksize_t filled_sums   = 0, sums   = board.sums[COLUMN][index];
-    ksize_t filled_blocks = 0, blocks = board.blocks[COLUMN][index];
+bool _backtrack_col_sum(board_s board, SArray current_state, size_t index) {
+    ulookup_t row = board.coords[ROW_E][index], col = board.coords[COLUMN_E][index];
+    ulookup_t filled_sums   = 0, sums   = board.sums[COLUMN_E][index];
+    ulookup_t filled_blocks = 0, blocks = board.blocks[COLUMN_E][index];
 
-    for (ksize_t i = 0; i < blocks; i++) {
+    for (ulookup_t i = 0; i < blocks; i++) {
         state_t s = current_state.elements[board.grid[row + i][col]];
         if (is_one_value(s)) { filled_blocks++; filled_sums += __builtin_ctz(s) + 1; }
     }
@@ -75,11 +77,11 @@ bool _backtrack_col_sum(Kakuro board, SArray current_state, size_t index) {
         _backtrack_col_repeat(board, current_state, index);
 }
 
-bool _backtrack_valid_sums(Kakuro board, SArray current_state) {
+bool _backtrack_valid_sums(board_s board, SArray current_state) {
     error_mode = DEFAULT_E;
     expect(is_end_state(current_state), return false, "current state is not an end state");
 
-    Check checks[KAKURO_SIZE_MAX] = { 0 };
+    check_e * checks = calloc(board.game.empty_count, sizeof(check_e));
 
     bool is_backtrack = false;
     for (size_t i = 0; i < board.game.empty_count && !is_backtrack; i++) {
@@ -91,15 +93,17 @@ bool _backtrack_valid_sums(Kakuro board, SArray current_state) {
 
         add_check(board, checks, i);
     }
+
+    free(checks);
     
     return is_backtrack;
 }
 
-bool _backtrack_valid_row_sums(Kakuro board, SArray current_state, size_t index) {
-    ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
-    ksize_t filled_sums = 0, sums = board.sums[ROW][index];
+bool _backtrack_valid_row_sums(board_s board, SArray current_state, size_t index) {
+    ulookup_t row = board.coords[ROW_E][index], col = board.coords[COLUMN_E][index];
+    ulookup_t filled_sums = 0, sums = board.sums[ROW_E][index];
 
-    for (ksize_t i = 0; i < board.blocks[ROW][index]; i++) {
+    for (ulookup_t i = 0; i < board.blocks[ROW_E][index]; i++) {
         state_t s = current_state.elements[board.grid[row][col + i]];
         filled_sums += __builtin_ctz(s) + 1;
     }
@@ -107,11 +111,11 @@ bool _backtrack_valid_row_sums(Kakuro board, SArray current_state, size_t index)
     return filled_sums != sums;
 }
 
-bool _backtrack_valid_col_sums(Kakuro board, SArray current_state, size_t index) {
-    ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
-    ksize_t filled_sums = 0, sums = board.sums[COLUMN][index];
+bool _backtrack_valid_col_sums(board_s board, SArray current_state, size_t index) {
+    ulookup_t row = board.coords[ROW_E][index], col = board.coords[COLUMN_E][index];
+    ulookup_t filled_sums = 0, sums = board.sums[COLUMN_E][index];
 
-    for (ksize_t i = 0; i < board.blocks[COLUMN][index]; i++) {
+    for (ulookup_t i = 0; i < board.blocks[COLUMN_E][index]; i++) {
         state_t s = current_state.elements[board.grid[row + i][col]];
         filled_sums += __builtin_ctz(s) + 1;
     }
@@ -119,12 +123,12 @@ bool _backtrack_valid_col_sums(Kakuro board, SArray current_state, size_t index)
     return filled_sums != sums;
 }
 
-bool _backtrack_row_repeat(Kakuro board, SArray current_state, size_t index) {
-    ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
+bool _backtrack_row_repeat(board_s board, SArray current_state, size_t index) {
+    ulookup_t row = board.coords[ROW_E][index], col = board.coords[COLUMN_E][index];
     state_t state = INVALID_STATE;
 
-    ksize_t block = board.blocks[ROW][index];
-    for (ksize_t i = 0; i < block; i++) {
+    ulookup_t block = board.blocks[ROW_E][index];
+    for (ulookup_t i = 0; i < block; i++) {
         state_t s = current_state.elements[board.grid[row][col + i]];
         if (!is_one_value(s)) continue;
 
@@ -135,12 +139,12 @@ bool _backtrack_row_repeat(Kakuro board, SArray current_state, size_t index) {
     return false;
 }
 
-bool _backtrack_col_repeat(Kakuro board, SArray current_state, size_t index) {
-    ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
+bool _backtrack_col_repeat(board_s board, SArray current_state, size_t index) {
+    ulookup_t row = board.coords[ROW_E][index], col = board.coords[COLUMN_E][index];
     state_t state = INVALID_STATE;
 
-    ksize_t block = board.blocks[COLUMN][index];
-    for (ksize_t i = 0; i < block; i++) {
+    ulookup_t block = board.blocks[COLUMN_E][index];
+    for (ulookup_t i = 0; i < block; i++) {
         state_t s = current_state.elements[board.grid[row + i][col]];
         if (!is_one_value(s)) continue;
 

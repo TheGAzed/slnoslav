@@ -6,6 +6,6 @@
 #include <structures/concrete/state.h>
 #include <structures/concrete/board.h>
 
-bool look_ahead(Kakuro board, SArray * current_state);
+bool look_ahead(board_s board, SArray * current_state);
 
 #endif /* ALGORITHMS_ARC_CONSISTENCY_H */

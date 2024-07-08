@@ -78,9 +78,9 @@ TEST push_and_pop_one_to_empty_stack_expected_count_zero(void) {
 
 TEST push_and_pop_one_to_empty_stack_expected_value_42(void) {
     Stack stack = create_stack();
-    ksize_t expected = 42;
+    ulookup_t expected = 42;
     push_stack(&stack, expected);
-    ksize_t actual = pop_stack(&stack);
+    ulookup_t actual = pop_stack(&stack);
     
     ASSERT_EQm(
         "EXPECTED VALUE TO BE 42",
@@ -107,12 +107,12 @@ TEST push_and_pop_one_from_stack_expect_top_null(void) {
 
 TEST push_42_and_0_and_pop_from_stack_to_get_0(void) {
     Stack stack = create_stack();
-    ksize_t expected = 0;
+    ulookup_t expected = 0;
 
     push_stack(&stack, 42);
     push_stack(&stack, expected);
 
-    ksize_t actual = pop_stack(&stack);
+    ulookup_t actual = pop_stack(&stack);
     ASSERT_EQm(
         "EXPECTED VALUE TO BE ZERO",
         expected, actual
@@ -231,7 +231,7 @@ TEST push_max_array_plus_onees_and_free_stack_top_is_null(void) {
 TEST push_max_array_with_1_plus_one_42_and_pop_back_42(void) {
     Stack stack = create_stack();
     for (size_t i = 0; i < STACK_LIST_ARRAY_SIZE; i++) push_stack(&stack, 1);
-    ksize_t expected = 42, actual;
+    ulookup_t expected = 42, actual;
     push_stack(&stack, 42);
     actual = pop_stack(&stack);
 
@@ -246,7 +246,7 @@ TEST push_max_array_with_1_plus_one_42_and_pop_back_42(void) {
 TEST push_max_array_minus_one_with_1_plus_one_42_and_pop_back_42(void) {
     Stack stack = create_stack();
     for (size_t i = 0; i < STACK_LIST_ARRAY_SIZE - 1; i++) push_stack(&stack, 1);
-    ksize_t expected = 42, actual;
+    ulookup_t expected = 42, actual;
     push_stack(&stack, 42);
     actual = pop_stack(&stack);
 

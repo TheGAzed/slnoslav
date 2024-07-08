@@ -8,6 +8,7 @@ Settings * get_settings_singleton(void) {
         .is_arc_consistency = true,
         .is_reduce          = true,
         .state              = STOP_E,
+        .time               = 1000,
     };
 
     return &setup;

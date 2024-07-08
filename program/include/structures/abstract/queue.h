@@ -33,7 +33,8 @@ typedef struct queue {
     size_t max;
     QUEUE_DATA_TYPE * elements;
 #else
-    QLArray * head, tail;
+    QLArray * head;
+    QLArray * tail;
 #endif /* FINITE_QUEUE */
 
 } Queue;

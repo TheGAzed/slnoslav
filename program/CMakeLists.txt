@@ -1,3 +1,7 @@
+find_package(OpenGL REQUIRED)
+find_package(glfw3 3.3 REQUIRED)
+find_package(GLEW REQUIRED)
+
 add_executable(${PROJECT_NAME} main.c)
 
 add_library(PROGRAM_LIBRARY "")
@@ -26,6 +30,6 @@ target_sources(PROGRAM_LIBRARY
 )
 
 target_include_directories(PROGRAM_LIBRARY PUBLIC include)
-target_link_libraries(PROGRAM_LIBRARY PRIVATE glfw libglew_shared nuklear)
+target_link_libraries(PROGRAM_LIBRARY PRIVATE glfw GLEW::GLEW OpenGL::GL m nuklear)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE PROGRAM_LIBRARY)

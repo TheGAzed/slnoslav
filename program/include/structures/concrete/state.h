@@ -6,7 +6,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-typedef uint8_t ksize_t;
+typedef uint8_t ulookup_t;
 #define KAKURO_SIZE_MAX (sizeof(ksize_t) << 8)
 
 #define MAX_BLOCK_VALUES 9
@@ -18,12 +18,12 @@ typedef uint16_t state_t;
 
 typedef struct state_array {
     state_t * elements;
-    ksize_t  size;
+    ulookup_t  size;
 } SArray;
 
 typedef struct state_array_array {
     SArray  elements[MAX_BLOCK_VALUES];
-    ksize_t size;
+    ulookup_t size;
 } SMatrix;
 
 typedef enum edge_type {
@@ -31,7 +31,7 @@ typedef enum edge_type {
     LOWER_EDGE = 1
 } EType;
 
-SArray   create_state_array  (ksize_t size);
+SArray   create_state_array  (ulookup_t size);
 void     set_full_state_array(SArray * array);
 void     destroy_state_array (SArray * array);
 
@@ -43,16 +43,16 @@ SArray   split_state      (state_t state);
 state_t  merge_state_array(SArray array);
 
 bool     is_one_value  (state_t state);
-ksize_t  get_sums      (ksize_t start, EType type);
-state_t  get_edge_state(ksize_t count, EType type);
-ksize_t  get_one_value (state_t state);
+ulookup_t  get_sums      (ulookup_t start, EType type);
+state_t  get_edge_state(ulookup_t count, EType type);
+ulookup_t  get_one_value (state_t state);
 
-ksize_t state_to_sums       (state_t state);
-state_t get_one_state       (ksize_t value);
-ksize_t shortest_multi_index(SArray array);
-ksize_t state_count(state_t state);
+ulookup_t state_to_sums       (state_t state);
+state_t get_one_state       (ulookup_t value);
+ulookup_t shortest_multi_index(SArray array);
+ulookup_t state_count(state_t state);
 
-SMatrix generate_neighbor(SArray array, ksize_t index);
+SMatrix generate_neighbor(SArray array, ulookup_t index);
 void    destroy_state_matrix(SMatrix * matrix);
 
 void print_state(state_t s);

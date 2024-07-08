@@ -10,17 +10,15 @@
 
 typedef int8_t   lookup_t;
 typedef uint8_t ulookup_t;
-typedef uint8_t ksize_t;
-typedef enum kakuro_grid_sizes { ROW = 0, COLUMN = 1, } KGSizes;
-typedef struct kakuro_grid {
+typedef enum kakuro_grid_sizes { ROW_E = 0, COLUMN_E = 1, } KGSizes;
+typedef struct board_grid {
     lookup_t **grids[GRID_DIMENTIONS];
-
-    ksize_t size[GRID_DIMENTIONS], count, empty_count;
-} KGrid;
+    ulookup_t size[GRID_DIMENTIONS], count, empty_count;
+} board_grid_s;
 
 #define U_LOOKUP_COUNT 3
-typedef struct kakuro {
-    KGrid game;
+typedef struct board {
+    board_grid_s game;
 
     lookup_t ** grid;
     union {
@@ -29,26 +27,26 @@ typedef struct kakuro {
             ulookup_t * blocks[GRID_DIMENTIONS];
             ulookup_t * sums  [GRID_DIMENTIONS];
         };
-        ulookup_t *u_lookups[U_LOOKUP_COUNT * GRID_DIMENTIONS];
+        ulookup_t * u_lookups[U_LOOKUP_COUNT * GRID_DIMENTIONS];
     };
-} Kakuro;
+} board_s;
 
 typedef enum check {
     UNCHECKED = 0, ROWCHECK  = 1,
     COLCHECK  = 2, CHEKCED   = 3,
-} Check;
+} check_e;
 
-Kakuro init_kakuro(FILE * kakuro_file);
-void   free_kakuro(Kakuro * board);
-bool   is_wall_hit(Kakuro board, ksize_t row, ksize_t col);
-void   print_board(Kakuro board);
+board_s create_board(FILE * kakuro_file);
+void    destroy_board(board_s * board);
+bool    is_wall_hit(board_s board, ulookup_t row, ulookup_t col);
+void    print_board(board_s board);
 
-void   add_check    (Kakuro board, Check * checks, ksize_t index);
-void   add_row_check(Kakuro board, Check * checks, ksize_t index);
-void   add_col_check(Kakuro board, Check * checks, ksize_t index);
+void add_check    (board_s board, check_e * checks, ulookup_t index);
+void add_row_check(board_s board, check_e * checks, ulookup_t index);
+void add_col_check(board_s board, check_e * checks, ulookup_t index);
 
-void   sub_check    (Kakuro board, Check * checks, ksize_t index);
-void   sub_row_check(Kakuro board, Check * checks, ksize_t index);
-void   sub_col_check(Kakuro board, Check * checks, ksize_t index);
+void sub_check    (board_s board, check_e * checks, ulookup_t index);
+void sub_row_check(board_s board, check_e * checks, ulookup_t index);
+void sub_col_check(board_s board, check_e * checks, ulookup_t index);
 
 #endif /* STRUCTURES_CONCRETE_BOARD_H */

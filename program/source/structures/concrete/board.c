@@ -5,47 +5,47 @@
 
 #include <structures/concrete/board.h>
 
-KGrid   _init_grid       (FILE * kakuro_file);
-void    _free_grid       (KGrid * grid);
-void    _kakuro_alloc    (Kakuro * board, FILE * kakuro_file);
-void    _kakuro_setup    (Kakuro * board);
-void    _setup_coords    (Kakuro * board, ksize_t row, ksize_t col, ksize_t index);
-void    _setup_blocks    (Kakuro * board, ksize_t row, ksize_t col, ksize_t index);
-void    _setup_sums      (Kakuro * board, ksize_t row, ksize_t col, ksize_t index);
-ksize_t _empty_cell_count(KGrid from);
+board_grid_s   _init_grid       (FILE * kakuro_file);
+void    _free_grid       (board_grid_s * grid);
+void    _kakuro_alloc    (board_s * board, FILE * kakuro_file);
+void    _kakuro_setup    (board_s * board);
+void    _setup_coords    (board_s * board, ulookup_t row, ulookup_t col, ulookup_t index);
+void    _setup_blocks    (board_s * board, ulookup_t row, ulookup_t col, ulookup_t index);
+void    _setup_sums      (board_s * board, ulookup_t row, ulookup_t col, ulookup_t index);
+ulookup_t _empty_cell_count(board_grid_s from);
 
-Kakuro init_kakuro(FILE * kakuro_file) {
+board_s create_board(FILE * kakuro_file) {
     assert(kakuro_file && "KAKURO FILE POINTER IS NULL");
 
-    Kakuro k = { 0 };
+    board_s k = { 0 };
     _kakuro_alloc(&k, kakuro_file);
     _kakuro_setup(&k);
 
     return k;
 }
 
-void free_kakuro(Kakuro * board) {
+void destroy_board(board_s * board) {
     for (size_t i = 0; i < GRID_DIMENTIONS * U_LOOKUP_COUNT; i++) {
         free(board->u_lookups[i]);
         board->u_lookups[i] = NULL;
     }
 
-    for (size_t i = 0; i < board->game.size[ROW]; i++) free(board->grid[i]);
+    for (size_t i = 0; i < board->game.size[ROW_E]; i++) free(board->grid[i]);
     free(board->grid);
 
     _free_grid(&(board->game));
 }
 
-bool is_wall_hit(Kakuro board, ksize_t row, ksize_t col) {
+bool is_wall_hit(board_s board, ulookup_t row, ulookup_t col) {
     return
-        (row >= board.game.size[ROW] || col >= board.game.size[COLUMN]) ||
+        (row >= board.game.size[ROW_E] || col >= board.game.size[COLUMN_E]) ||
         board.grid[row][col] == -1;
 }
 
-void print_board(Kakuro board) {
+void print_board(board_s board) {
     for (size_t i = 0; i < GRID_DIMENTIONS; i++) {
-        for (size_t j = 0; j < board.game.size[ROW]; j++) {
-            for (size_t k = 0; k < board.game.size[COLUMN]; k++) {
+        for (size_t j = 0; j < board.game.size[ROW_E]; j++) {
+            for (size_t k = 0; k < board.game.size[COLUMN_E]; k++) {
                 printf("%02hhd ", board.game.grids[i][j][k]);
             }
             putchar('\n');
@@ -55,69 +55,72 @@ void print_board(Kakuro board) {
     fflush(stdout);
 }
 
-void add_check(Kakuro board, Check * checks, ksize_t index) {
+void add_check(board_s board, check_e * checks, ulookup_t index) {
     add_row_check(board, checks, index);
     add_col_check(board, checks, index);
 }
 
-void sub_check(Kakuro board, Check * checks, ksize_t index) {
+void sub_check(board_s board, check_e * checks, ulookup_t index) {
     sub_row_check(board, checks, index);
     sub_col_check(board, checks, index);
 }
 
-void add_row_check(Kakuro board, Check * checks, ksize_t index) {
+void add_row_check(board_s board, check_e * checks, ulookup_t index) {
     if (checks[index] & ROWCHECK) return;
 
-    ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
+    ulookup_t row = board.coords[ROW_E][index], col = board.coords[COLUMN_E][index];
     while (!is_wall_hit(board, row, col - 1)) col--;
-    for (ksize_t i = 0; i < board.blocks[ROW][index]; i++) checks[board.grid[row][col + i]] |= ROWCHECK;
+    for (ulookup_t i = 0; i < board.blocks[ROW_E][index]; i++) checks[board.grid[row][col + i]] |= ROWCHECK;
 }
 
-void add_col_check(Kakuro board, Check * checks, ksize_t index) {
+void add_col_check(board_s board, check_e * checks, ulookup_t index) {
     if (checks[index] & COLCHECK) return;
 
-    ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
+    ulookup_t row = board.coords[ROW_E][index], col = board.coords[COLUMN_E][index];
     while (!is_wall_hit(board, row - 1, col)) row--;
-    for (ksize_t i = 0; i < board.blocks[COLUMN][index]; i++) checks[board.grid[row + i][col]] |= COLCHECK;
+    for (ulookup_t i = 0; i < board.blocks[COLUMN_E][index]; i++) checks[board.grid[row + i][col]] |= COLCHECK;
 }
 
-void sub_row_check(Kakuro board, Check * checks, ksize_t index) {
+void sub_row_check(board_s board, check_e * checks, ulookup_t index) {
     if (!(checks[index] & ROWCHECK)) return;
 
-    ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
+    ulookup_t row = board.coords[ROW_E][index], col = board.coords[COLUMN_E][index];
     while (!is_wall_hit(board, row, col - 1)) col--;
-    for (ksize_t i = 0; i < board.blocks[ROW][index]; i++) checks[board.grid[row][col + i]] &= ~(ROWCHECK);
+    for (ulookup_t i = 0; i < board.blocks[ROW_E][index]; i++) checks[board.grid[row][col + i]] &= ~(ROWCHECK);
 }
 
-void sub_col_check(Kakuro board, Check * checks, ksize_t index) {
+void sub_col_check(board_s board, check_e * checks, ulookup_t index) {
     if (!(checks[index] & ROWCHECK)) return;
 
-    ksize_t row = board.coords[ROW][index], col = board.coords[COLUMN][index];
+    ulookup_t row = board.coords[ROW_E][index], col = board.coords[COLUMN_E][index];
     while (!is_wall_hit(board, row - 1, col)) row--;
-    for (ksize_t i = 0; i < board.blocks[COLUMN][index]; i++) checks[board.grid[row + i][col]] &= ~(COLCHECK);
+    for (ulookup_t i = 0; i < board.blocks[COLUMN_E][index]; i++) checks[board.grid[row + i][col]] &= ~(COLCHECK);
 }
 
-KGrid _init_grid(FILE * kakuro_file) {
+board_grid_s _init_grid(FILE * kakuro_file) {
     assert(kakuro_file && "KAKURO FILE POINTER IS NULL");
 
-    KGrid g = { 0 };
-    assert(fread(&(g.size[ROW]), sizeof(ksize_t), 1, kakuro_file));
-    assert(fread(&(g.size[COLUMN]), sizeof(ksize_t), 1, kakuro_file));
+    board_grid_s g = { 0 };
+    assert(fread(g.size, sizeof(ulookup_t), GRID_DIMENTIONS, kakuro_file) == 2);
 
-    g.count = g.size[ROW] * g.size[COLUMN];
+    g.count = g.size[ROW_E] * g.size[COLUMN_E];
 
-    assert((g.grids[ROW]    = malloc(g.size[ROW] * sizeof(lookup_t*))) && "ALLOCATION TO ROW ARRAY FAILED");
-    assert((g.grids[COLUMN] = malloc(g.size[ROW] * sizeof(lookup_t*))) && "ALLOCATION TO COLUMN ARRAY FAILED");
+    assert((g.grids[ROW_E]    = malloc(g.size[ROW_E] * sizeof(lookup_t*))) && "ALLOCATION TO ROW ARRAY FAILED");
+    assert((g.grids[COLUMN_E] = malloc(g.size[ROW_E] * sizeof(lookup_t*))) && "ALLOCATION TO COLUMN ARRAY FAILED");
 
-    for (size_t i = 0; i < g.size[ROW]; i++) {
-        assert((g.grids[ROW][i]    = malloc(g.size[COLUMN] * sizeof(lookup_t))) && "ALLOCATION TO ROW ARRAY FAILED");
-        assert((g.grids[COLUMN][i] = malloc(g.size[COLUMN] * sizeof(lookup_t))) && "ALLOCATION TO COLUMN ARRAY FAILED");
+    for (size_t i = 0; i < g.size[ROW_E]; i++) {
+        assert((g.grids[ROW_E][i]    = malloc(g.size[COLUMN_E] * sizeof(lookup_t))) && "ALLOCATION TO ROW ARRAY FAILED");
+        assert((g.grids[COLUMN_E][i] = malloc(g.size[COLUMN_E] * sizeof(lookup_t))) && "ALLOCATION TO COLUMN ARRAY FAILED");
     }
 
-    for (ksize_t i = 0; i < GRID_DIMENTIONS; i++) {
-        for (ksize_t j = 0; j < g.size[ROW]; j++) {
-            for (ksize_t k = 0; k < g.size[COLUMN]; k++) {
-                assert((fread(&(g.grids[i][j][k]), sizeof(lookup_t), 1, kakuro_file)) == sizeof(lookup_t) * 1 && "READ FAILED");
+    ulookup_t buffer[GRID_DIMENTIONS * (sizeof(ulookup_t) << 8) * (sizeof(ulookup_t) << 8)];
+    size_t read_number = GRID_DIMENTIONS * g.size[ROW_E] * g.size[COLUMN_E], index = 0;
+    assert(fread(buffer, sizeof(lookup_t), read_number, kakuro_file) == sizeof(lookup_t) * read_number && "READ FAILED");
+    for (ulookup_t i = 0; i < GRID_DIMENTIONS; i++) {
+        for (ulookup_t j = 0; j < g.size[ROW_E]; j++) {
+            for (ulookup_t k = 0; k < g.size[COLUMN_E]; k++) {
+                g.grids[i][j][k] = buffer[index];
+                index++;
             }
         }
     }
@@ -127,25 +130,25 @@ KGrid _init_grid(FILE * kakuro_file) {
     return g;
 }
 
-void _free_grid(KGrid * grid) {
-    for (size_t i = 0; i < grid->size[ROW]; i++) {
-        free(grid->grids[ROW][i]);
-        free(grid->grids[COLUMN][i]);
+void _free_grid(board_grid_s * grid) {
+    for (size_t i = 0; i < grid->size[ROW_E]; i++) {
+        free(grid->grids[ROW_E][i]);
+        free(grid->grids[COLUMN_E][i]);
     }
 
-    free(grid->grids[ROW]);
-    free(grid->grids[COLUMN]);
+    free(grid->grids[ROW_E]);
+    free(grid->grids[COLUMN_E]);
 
-    grid->grids[ROW] = NULL;
-    grid->grids[COLUMN] = NULL;
+    grid->grids[ROW_E] = NULL;
+    grid->grids[COLUMN_E] = NULL;
 }
 
-void _kakuro_alloc(Kakuro * board, FILE * kakuro_file) {
+void _kakuro_alloc(board_s * board, FILE * kakuro_file) {
     board->game = _init_grid(kakuro_file);
 
-    assert((board->grid = malloc(board->game.size[ROW] * sizeof(lookup_t*))) && "ALLOCATION TO ROW ARRAY FAILED");
-    for (size_t i = 0; i < board->game.size[ROW]; i++) {
-        assert((board->grid[i] = malloc(board->game.size[COLUMN] * sizeof(lookup_t))) && "ALLOCATION TO ROW ARRAY FAILED");
+    assert((board->grid = malloc(board->game.size[ROW_E] * sizeof(lookup_t*))) && "ALLOCATION TO ROW ARRAY FAILED");
+    for (size_t i = 0; i < board->game.size[ROW_E]; i++) {
+        assert((board->grid[i] = malloc(board->game.size[COLUMN_E] * sizeof(lookup_t))) && "ALLOCATION TO ROW ARRAY FAILED");
     }
 
     for (size_t i = 0; i < U_LOOKUP_COUNT * GRID_DIMENTIONS; i++) {
@@ -153,18 +156,18 @@ void _kakuro_alloc(Kakuro * board, FILE * kakuro_file) {
     }
 }
 
-void _kakuro_setup(Kakuro * board) {
+void _kakuro_setup(board_s * board) {
     lookup_t index = 0;
-    for (size_t r = 0; r < board->game.size[ROW]; r++) {
-        for (size_t c = 0; c < board->game.size[COLUMN]; c++) {
-            board->grid[r][c] = (board->game.grids[ROW][r][c] == 0) ? index++ : -1;
+    for (size_t r = 0; r < board->game.size[ROW_E]; r++) {
+        for (size_t c = 0; c < board->game.size[COLUMN_E]; c++) {
+            board->grid[r][c] = (board->game.grids[ROW_E][r][c] == 0) ? index++ : -1;
         }
     }
 
     index = 0;
-    for (size_t r = 0; r < board->game.size[ROW]; r++) {
-        for (size_t c = 0; c < board->game.size[COLUMN]; c++) {
-            board->grid[r][c] = (board->game.grids[ROW][r][c] == 0) ? index : -1;
+    for (size_t r = 0; r < board->game.size[ROW_E]; r++) {
+        for (size_t c = 0; c < board->game.size[COLUMN_E]; c++) {
+            board->grid[r][c] = (board->game.grids[ROW_E][r][c] == 0) ? index : -1;
             if (board->grid[r][c] == -1) continue;
 
             _setup_coords(board, r, c, index);
@@ -176,54 +179,54 @@ void _kakuro_setup(Kakuro * board) {
     }
 }
 
-void _setup_coords(Kakuro * board, ksize_t row, ksize_t col, ksize_t index) {
-    board->coords[ROW][index]    = row;
-    board->coords[COLUMN][index] = col;
+void _setup_coords(board_s * board, ulookup_t row, ulookup_t col, ulookup_t index) {
+    board->coords[ROW_E][index]    = row;
+    board->coords[COLUMN_E][index] = col;
 }
 
-void _setup_blocks(Kakuro * board, ksize_t row, ksize_t col, ksize_t index) {
-    ksize_t r = row, c = col;
-    if (col && board->grid[row][col - 1] != -1 && board->blocks[ROW][board->grid[row][col - 1]]) {
-        board->blocks[ROW][index] = board->blocks[ROW][board->grid[row][col - 1]];
+void _setup_blocks(board_s * board, ulookup_t row, ulookup_t col, ulookup_t index) {
+    ulookup_t r = row, c = col;
+    if (col && board->grid[row][col - 1] != -1 && board->blocks[ROW_E][board->grid[row][col - 1]]) {
+        board->blocks[ROW_E][index] = board->blocks[ROW_E][board->grid[row][col - 1]];
     } else {
-        ksize_t c_blocks = 0;
-        while (c != board->game.size[COLUMN] && (board->grid[row][c++] >= 0)) c_blocks++;
-        board->blocks[ROW][index] = c_blocks;
+        ulookup_t c_blocks = 0;
+        while (c != board->game.size[COLUMN_E] && (board->grid[row][c++] >= 0)) c_blocks++;
+        board->blocks[ROW_E][index] = c_blocks;
     }
 
-    if (row && board->grid[row - 1][col] != -1 && board->blocks[COLUMN][board->grid[row - 1][col]]) {
-        board->blocks[COLUMN][index] = board->blocks[COLUMN][board->grid[row - 1][col]];
+    if (row && board->grid[row - 1][col] != -1 && board->blocks[COLUMN_E][board->grid[row - 1][col]]) {
+        board->blocks[COLUMN_E][index] = board->blocks[COLUMN_E][board->grid[row - 1][col]];
     } else {
-        ksize_t r_blocks = 0;
-        while (r != board->game.size[ROW] && (board->grid[r++][col]) >= 0) r_blocks++;
-        board->blocks[COLUMN][index] = r_blocks;
-    }
-}
-
-void _setup_sums(Kakuro * board, ksize_t row, ksize_t col, ksize_t index) {
-    ksize_t r = row, c = col;
-    if (col && board->grid[row][col - 1] != -1 && board->sums[ROW][board->grid[row][col - 1]]) {
-        board->sums[ROW][index] = board->sums[ROW][board->grid[row][col - 1]];
-    } else {
-        while (~c && !(board->game.grids[ROW][row][c])) c--;
-        assert(~c && (board->sums[ROW][index] = board->game.grids[ROW][row][c]) > 0 && "NO SUMS FOUND");
-    }
-
-    if (row && board->grid[row - 1][col] != -1 && board->sums[COLUMN][board->grid[row - 1][col]]) {
-        board->sums[COLUMN][index] = board->sums[COLUMN][board->grid[row - 1][col]];
-    } else {
-        while (~r && !(board->game.grids[COLUMN][r][col])) r--;
-        assert(~r && (board->sums[COLUMN][index] = board->game.grids[COLUMN][r][col]) > 0 && "NO SUMS FOUND");
+        ulookup_t r_blocks = 0;
+        while (r != board->game.size[ROW_E] && (board->grid[r++][col]) >= 0) r_blocks++;
+        board->blocks[COLUMN_E][index] = r_blocks;
     }
 }
 
-ksize_t _empty_cell_count(KGrid from) {
+void _setup_sums(board_s * board, ulookup_t row, ulookup_t col, ulookup_t index) {
+    ulookup_t r = row, c = col;
+    if (col && board->grid[row][col - 1] != -1 && board->sums[ROW_E][board->grid[row][col - 1]]) {
+        board->sums[ROW_E][index] = board->sums[ROW_E][board->grid[row][col - 1]];
+    } else {
+        while (~c && !(board->game.grids[ROW_E][row][c])) c--;
+        assert(~c && (board->sums[ROW_E][index] = board->game.grids[ROW_E][row][c]) > 0 && "NO SUMS FOUND");
+    }
+
+    if (row && board->grid[row - 1][col] != -1 && board->sums[COLUMN_E][board->grid[row - 1][col]]) {
+        board->sums[COLUMN_E][index] = board->sums[COLUMN_E][board->grid[row - 1][col]];
+    } else {
+        while (~r && !(board->game.grids[COLUMN_E][r][col])) r--;
+        assert(~r && (board->sums[COLUMN_E][index] = board->game.grids[COLUMN_E][r][col]) > 0 && "NO SUMS FOUND");
+    }
+}
+
+ulookup_t _empty_cell_count(board_grid_s from) {
     assert(from.grids && "GRID POINTER IS NULL");
 
-    ksize_t count = 0;
-    for (size_t i = 0; i < from.size[ROW]; i++) {
-        for (size_t j = 0; j < from.size[COLUMN]; j++) {
-            count += from.grids[ROW][i][j] == 0;
+    ulookup_t count = 0;
+    for (size_t i = 0; i < from.size[ROW_E]; i++) {
+        for (size_t j = 0; j < from.size[COLUMN_E]; j++) {
+            count += from.grids[ROW_E][i][j] == 0;
         }
     }
 

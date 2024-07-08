@@ -6,7 +6,7 @@
 #define MEDIUM_PUZZLE_PATH "./test/puzzles/medium/"
 
 TEST medium_backtrack_forward_check_one(void) {
-    ksize_t expected_solution[] = {
+    ulookup_t expected_solution[] = {
         7, 9,    3, 1, 8,          9, 8, 6,
         2, 5,    1, 2, 4,    3, 8, 7, 9, 5,
         3, 7, 9,    3, 7, 8, 1, 9,    5, 1,
@@ -26,16 +26,16 @@ TEST medium_backtrack_forward_check_one(void) {
     FILE * fp = fopen(get_settings_singleton()->filepath, "rb");
     ASSERTm("COULDN'T OPEN FILE", fp);
     
-    Kakuro board = init_kakuro(fp);
+    board_s board = create_board(fp);
     fclose(fp);
     
     SArray solution = depth_first_search(board);
-    free_kakuro(&board);
+    destroy_board(&board);
 
     ASSERTm("NO SOLUTION FOUND", solution.size);
-    ASSERTm("LENGTHS DON'T ADD UP", solution.size == (sizeof(expected_solution) / sizeof(ksize_t)));
+    ASSERTm("LENGTHS DON'T ADD UP", solution.size == (sizeof(expected_solution) / sizeof(ulookup_t)));
 
-    for (ksize_t i = 0; i < solution.size; i++) {
+    for (ulookup_t i = 0; i < solution.size; i++) {
         ASSERTm("INVALID SOLUTION", get_one_value(solution.elements[i]) == expected_solution[i]);
     }
 
@@ -45,7 +45,7 @@ TEST medium_backtrack_forward_check_one(void) {
 }
 
 TEST medium_backtrack_forward_check_two(void) {
-    ksize_t expected_solution[] = {
+    ulookup_t expected_solution[] = {
            9, 8, 4, 3,          6, 8, 3, 9,
            7, 4, 2, 1, 9,       2, 3, 1, 5,
               9, 7,    7, 2, 8, 4, 1,
@@ -65,16 +65,16 @@ TEST medium_backtrack_forward_check_two(void) {
     FILE * fp = fopen(get_settings_singleton()->filepath, "rb");
     ASSERTm("COULDN'T OPEN FILE", fp);
     
-    Kakuro board = init_kakuro(fp);
+    board_s board = create_board(fp);
     fclose(fp);
     
     SArray solution = depth_first_search(board);
-    free_kakuro(&board);
+    destroy_board(&board);
 
     ASSERTm("NO SOLUTION FOUND", solution.size);
-    ASSERTm("LENGTHS DON'T ADD UP", solution.size == (sizeof(expected_solution) / sizeof(ksize_t)));
+    ASSERTm("LENGTHS DON'T ADD UP", solution.size == (sizeof(expected_solution) / sizeof(ulookup_t)));
 
-    for (ksize_t i = 0; i < solution.size; i++) {
+    for (ulookup_t i = 0; i < solution.size; i++) {
         ASSERTm("INVALID SOLUTION", get_one_value(solution.elements[i]) == expected_solution[i]);
     }
 
@@ -84,7 +84,7 @@ TEST medium_backtrack_forward_check_two(void) {
 }
 
 TEST medium_backtrack_forward_check_three(void) {
-    ksize_t expected_solution[] = {
+    ulookup_t expected_solution[] = {
               2, 4, 1,          2, 4, 1, 7,
         8, 6, 5, 7, 3,       7, 6, 8, 3, 9,
         5, 1, 3, 2,          3, 1, 6,
@@ -104,16 +104,16 @@ TEST medium_backtrack_forward_check_three(void) {
     FILE * fp = fopen(get_settings_singleton()->filepath, "rb");
     ASSERTm("COULDN'T OPEN FILE", fp);
     
-    Kakuro board = init_kakuro(fp);
+    board_s board = create_board(fp);
     fclose(fp);
     
     SArray solution = depth_first_search(board);
-    free_kakuro(&board);
+    destroy_board(&board);
 
     ASSERTm("NO SOLUTION FOUND", solution.size);
-    ASSERTm("LENGTHS DON'T ADD UP", solution.size == (sizeof(expected_solution) / sizeof(ksize_t)));
+    ASSERTm("LENGTHS DON'T ADD UP", solution.size == (sizeof(expected_solution) / sizeof(ulookup_t)));
 
-    for (ksize_t i = 0; i < solution.size; i++) {
+    for (ulookup_t i = 0; i < solution.size; i++) {
         ASSERTm("INVALID SOLUTION", get_one_value(solution.elements[i]) == expected_solution[i]);
     }
 
@@ -123,7 +123,7 @@ TEST medium_backtrack_forward_check_three(void) {
 }
 
 TEST medium_backtrack_forward_check_four(void) {
-    ksize_t expected_solution[] = {
+    ulookup_t expected_solution[] = {
         5, 9,    7, 8, 9,       4, 2, 3, 1,
         1, 3,    1, 2, 8,    8, 7, 9, 6, 2,
         3, 5, 1, 2, 4,       9, 8, 6,
@@ -143,16 +143,16 @@ TEST medium_backtrack_forward_check_four(void) {
     FILE * fp = fopen(get_settings_singleton()->filepath, "rb");
     ASSERTm("COULDN'T OPEN FILE", fp);
     
-    Kakuro board = init_kakuro(fp);
+    board_s board = create_board(fp);
     fclose(fp);
     
     SArray solution = depth_first_search(board);
-    free_kakuro(&board);
+    destroy_board(&board);
 
     ASSERTm("NO SOLUTION FOUND", solution.size);
-    ASSERTm("LENGTHS DON'T ADD UP", solution.size == (sizeof(expected_solution) / sizeof(ksize_t)));
+    ASSERTm("LENGTHS DON'T ADD UP", solution.size == (sizeof(expected_solution) / sizeof(ulookup_t)));
 
-    for (ksize_t i = 0; i < solution.size; i++) {
+    for (ulookup_t i = 0; i < solution.size; i++) {
         ASSERTm("INVALID SOLUTION", get_one_value(solution.elements[i]) == expected_solution[i]);
     }
 
@@ -162,7 +162,7 @@ TEST medium_backtrack_forward_check_four(void) {
 }
 
 TEST medium_backtrack_forward_check_five(void) {
-    ksize_t expected_solution[] = {
+    ulookup_t expected_solution[] = {
         6, 8, 9,       2, 1, 4,    9, 4, 7,
         2, 4, 3,    7, 8, 5, 9,    8, 6, 9,
            1, 2, 9, 3, 5,       4, 1, 2,
@@ -182,16 +182,16 @@ TEST medium_backtrack_forward_check_five(void) {
     FILE * fp = fopen(get_settings_singleton()->filepath, "rb");
     ASSERTm("COULDN'T OPEN FILE", fp);
     
-    Kakuro board = init_kakuro(fp);
+    board_s board = create_board(fp);
     fclose(fp);
     
     SArray solution = depth_first_search(board);
-    free_kakuro(&board);
+    destroy_board(&board);
 
     ASSERTm("NO SOLUTION FOUND", solution.size);
-    ASSERTm("LENGTHS DON'T ADD UP", solution.size == (sizeof(expected_solution) / sizeof(ksize_t)));
+    ASSERTm("LENGTHS DON'T ADD UP", solution.size == (sizeof(expected_solution) / sizeof(ulookup_t)));
 
-    for (ksize_t i = 0; i < solution.size; i++) {
+    for (ulookup_t i = 0; i < solution.size; i++) {
         ASSERTm("INVALID SOLUTION", get_one_value(solution.elements[i]) == expected_solution[i]);
     }
 
