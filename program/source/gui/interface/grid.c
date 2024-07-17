@@ -233,6 +233,7 @@ void _draw_value(struct nk_context * context, struct nk_rect position, struct nk
     float temp_height = context->style.font->height;
     struct nk_user_font * font = context->style.font;
     font->height = position.h;
+    position.x += (position.w / 2) - (font->width(font->userdata, font->height, string_num, strnlen(string_num, sizeof("-2147483647"))) / 2);
     nk_draw_text(&context->current->buffer, position, string_num, strnlen(string_num, sizeof("-2147483647")), font, bg, fg);
     font->height = temp_height;
 }

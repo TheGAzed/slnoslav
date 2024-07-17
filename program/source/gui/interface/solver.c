@@ -91,6 +91,8 @@ state_array_s state_provider(const ds_action_e action) {
 }
 
 thrd_start_t _solver(void * data) {
+    get_player_singleton()->solve_state = SOLVE_RUNNING_E;
+
     struct nk_solver * input = data;
 
     stack_s stack = create_stack();
@@ -100,11 +102,15 @@ thrd_start_t _solver(void * data) {
     reduce(input->board, &initial);
     push_stack(&stack, initial);
 
-    get_player_singleton()->solve_state = SOLVE_RUNNING_E;
     while (!is_empty_stack(stack)) {
         get_stat_singleton()->dfs_iteration_count++;
 
         state_array_s guess = pop_stack(&stack);
+        {
+            state_array_s temp = copy_state_array(guess);
+            expect(-1 != write(pipefd[WRITE_PIPE_E], &temp, sizeof(state_array_s)),
+                NO_ACTION, "[ERROR] Write to pipe failed: %s", strerror(errno));
+        }
 
         if (!look_ahead(input->board, &guess) || backtrack(input->board, guess)) {
             destroy_state_array(&guess);
@@ -112,7 +118,7 @@ thrd_start_t _solver(void * data) {
         }
 
         if (is_end_state(guess)) {
-            expect(-1 != write(pipefd[WRITE_PIPE_E], &guess, sizeof(state_array_s)), NO_ACTION, "Write to pipe failed: %s", strerror(errno));
+            destroy_state_array(&guess);
             break;
         }
 
@@ -124,14 +130,14 @@ thrd_start_t _solver(void * data) {
             else destroy_state_array(&next.elements[i]);
         }
 
+        destroy_state_array(&guess);
         set_dfs_stack_max_size(stack.size);
-LOOP_END:
-        expect(-1 != write(pipefd[WRITE_PIPE_E], &guess, sizeof(state_array_s)), NO_ACTION, "[ERROR] Write to pipe failed: %s", strerror(errno));
     }
+
     destroy_stack(&stack, destroy_state_array);
     expect(0 == close(pipefd[WRITE_PIPE_E]), NO_ACTION, "[ERROR] Write pipe failed to close with error: %s", strerror(errno));
-    get_player_singleton()->solve_state = SOLVE_FINISHED_E;
 
+    get_player_singleton()->solve_state = SOLVE_FINISHED_E;
     return 0;
 }
 

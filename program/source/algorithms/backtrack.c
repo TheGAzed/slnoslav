@@ -38,7 +38,7 @@ bool backtrack(board_s board, state_array_s current_state) {
 
     free(checks);
 
-    return invalid_state_backtrack_stat(is_backtrack);
+    return (is_backtrack);
 }
 
 bool _backtrack_row_sum(board_s board, state_array_s current_state, size_t index) {
@@ -52,11 +52,10 @@ bool _backtrack_row_sum(board_s board, state_array_s current_state, size_t index
     }
 
     return
-        (filled_blocks == blocks) ? filled_sums != sums                                                 : false || 
+        ((filled_blocks == blocks) ? filled_sums != sums                                                 : false) ||
         (filled_sums > sums)                                                                                    || 
-        (blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, UPPER_EDGE_E) < (sums - filled_sums) : false || 
-        (blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, LOWER_EDGE_E) > (sums - filled_sums) : false ||
-        _backtrack_row_repeat(board, current_state, index);
+        ((blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, UPPER_EDGE_E) < (sums - filled_sums) : false) ||
+        ((blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, LOWER_EDGE_E) > (sums - filled_sums) : false);
 }
 
 bool _backtrack_col_sum(board_s board, state_array_s current_state, size_t index) {
@@ -70,11 +69,10 @@ bool _backtrack_col_sum(board_s board, state_array_s current_state, size_t index
     }
 
     return 
-        (blocks == filled_blocks) ? filled_sums != sums                                                 : false || 
-        (filled_sums > sums)                                                                                    || 
-        (blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, UPPER_EDGE_E) < (sums - filled_sums) : false || 
-        (blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, LOWER_EDGE_E) > (sums - filled_sums) : false ||
-        _backtrack_col_repeat(board, current_state, index);
+        ((blocks == filled_blocks) ? filled_sums != sums                                                 : false) ||
+        (filled_sums > sums)                                                                                      ||
+        ((blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, UPPER_EDGE_E) < (sums - filled_sums) : false) ||
+        ((blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, LOWER_EDGE_E) > (sums - filled_sums) : false);
 }
 
 bool _backtrack_valid_sums(board_s board, state_array_s current_state) {
