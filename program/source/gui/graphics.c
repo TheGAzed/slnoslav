@@ -18,8 +18,9 @@
 #undef NK_GLFW_GL3_IMPLEMENTATION
 #include <gui/graphics.h>
 #include <gui/input.h>
-#include <gui/interface.h>
 #include <gui/draw.h>
+#include <gui/interface/interface.h>
+#include <gui/interface/solver.h>
 
 #include <instance/expect.h>
 #include <instance/settings.h>
@@ -32,31 +33,19 @@ static void error_callback(int number, const char * description) {
 
 void _glew_initialize(void);
 void _glfw_initialize(GLFWwindow ** window, int * width, int * height);
+struct nk_super _create_super(struct nk_glfw * glfw, GLFWwindow * window);
+void _destroy_super(struct nk_super * super);
 
 void gui(void) {
     struct nk_glfw glfw = { 0 };
     int width = 0, height = 0;
-    struct nk_super super = { 0 };
     static GLFWwindow * window;
 
     _glfw_initialize(&window, &width, &height);
     _glew_initialize();
+    struct nk_super super = _create_super(&glfw, window);
 
-    struct nk_context * context = nk_glfw3_init(&glfw, window, NK_GLFW3_INSTALL_CALLBACKS);
-    struct nk_font_atlas atlas;
-    struct nk_font_atlas * atlas_ptr = &atlas;
-    nk_glfw3_font_stash_begin(&glfw, &atlas_ptr);
-    nk_glfw3_font_stash_end(&glfw);
-
-    get_settings_singleton()->filepath = "test/puzzles/medium/5.kkr";
-    FILE * fp = fopen(get_settings_singleton()->filepath, "rb");
-    expect(fp, NO_ACTION, "file pointer variable (fp) is NULL (%p): %s", (void*)fp, strerror(errno));
-    board_s board = create_board(fp);
-
-    super.board   = &board;
-    super.context = context;
-    super.atlas   = &glfw.atlas;
-
+    solve(&super.solver);
     while (!glfwWindowShouldClose(window)) {
         input(&glfw);
         interface(&super);
@@ -71,7 +60,7 @@ void _glfw_initialize(GLFWwindow ** window, int * width, int * height) {
     glfwSetErrorCallback(error_callback);
 
     error_mode = ASSERT_E;
-    expect(glfwInit(), NO_ACTION, "GLFW failed to initialize");
+    expect(glfwInit(), NO_ACTION, "[ERROR] GLFW failed to initialize");
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -85,5 +74,29 @@ void _glew_initialize(void) {
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
     glewExperimental = GL_TRUE;
     error_mode = ASSERT_E;
-    expect(glewInit() == GLEW_OK, NO_ACTION, "Failed to setup GLEW");
+    expect(glewInit() == GLEW_OK, NO_ACTION, "[ERROR] Failed to setup GLEW");
+}
+
+struct nk_super _create_super(struct nk_glfw * glfw, GLFWwindow * window) {
+    struct nk_context * context = nk_glfw3_init(glfw, window, NK_GLFW3_INSTALL_CALLBACKS);
+    struct nk_font_atlas atlas;
+    struct nk_font_atlas * atlas_ptr = &atlas;
+    nk_glfw3_font_stash_begin(glfw, &atlas_ptr);
+    nk_glfw3_font_stash_end(glfw);
+
+    FILE * fp = fopen(get_settings_singleton()->filepath, "rb");
+    expect(fp, NO_ACTION, "[ERROR] File pointer variable (fp) is NULL (%p): %s", (void*)fp, strerror(errno));
+    board_s board = create_board(fp);
+    fclose(fp);
+
+    return (struct nk_super) {
+        .context = context,
+        .solver = {
+            .board = board,
+        },
+    };
+}
+
+void _destroy_super(struct nk_super * super) {
+    destroy_board(&super->solver.board);
 }

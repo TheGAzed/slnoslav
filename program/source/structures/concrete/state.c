@@ -101,7 +101,7 @@ state_t get_edge_state(ulookup_t count, edge_type_e type) {
 }
 
 bool is_one_value(state_t state) {
-    return state && !(state & (state - 1));
+    return __builtin_popcount(state) == 1;
 }
 
 ulookup_t get_one_value(state_t state) {

@@ -2,11 +2,7 @@
 #define INSTANCE_SETTINGS_H
 
 #include <stdbool.h>
-#include <stdint.h>
-
-typedef enum playstate {
-    STOP_E, PLAY_E, PAUSE_E, 
-} playstate_e;
+#include <time.h>
 
 typedef struct settings {
     char * filepath;
@@ -16,8 +12,7 @@ typedef struct settings {
     bool is_arc_consistency;
     bool is_reduce;
 
-    playstate_e state;
-    uint16_t time;
+    clock_t time_ms;
 } Settings;
 
 Settings * get_settings_singleton(void);

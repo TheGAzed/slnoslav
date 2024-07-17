@@ -45,10 +45,10 @@ typedef union hash {
 
 typedef enum console_argument_flags {
     FILEPATH_F        = (0 << 1) | 0b1,
-    BACKTRACK_F       = (1 << 1) | 0b1,
-    FORWARD_CHECK_F   = (2 << 1) | 0b1,
-    ARC_CONSISTENCY_F = (3 << 1) | 0b1,
-    REDUCE_F          = (4 << 1) | 0b1,
+    BACKTRACK_F       = (1 << 1),
+    FORWARD_CHECK_F   = (2 << 1),
+    ARC_CONSISTENCY_F = (3 << 1),
+    REDUCE_F          = (4 << 1),
 
     INFORMATION_F = (5 << 1) | 0b0,
     HELP_F        = (6 << 1) | 0b0,
@@ -264,47 +264,23 @@ void _setup_filepath(char * value) {
 }
 
 void _setup_backtrack(char * value) {
-    assert(value && "ARGUMENT VALUE IS NULL");
-
-    bool bool_true= !strncmp(value, "true",  sizeof("true"));
-    // check if string value is boolean true or false 
-    assert((bool_true|| !strncmp(value, "false", sizeof("false"))) && "BACKTRACK VALUE IS NEITHER TRUE NOR FALSE");
-
-    // if 't' is true then value == "true", else value == "false"
-    get_settings_singleton()->is_backtrack = bool_true;
+    // set backtracking to true
+    get_settings_singleton()->is_backtrack = true;
 }
 
 void _setup_forward_check(char * value) {
-    assert(value && "ARGUMENT VALUE IS NULL");
-
-    bool bool_true = !strncmp(value, "true",  sizeof("true"));
-    // check if string value is boolean true or false 
-    assert((bool_true || !strncmp(value, "false", sizeof("false"))) && "FORWARD CHECK VALUE IS NEITHER TRUE NOR FALSE");
-
-    // if 't' is true then value == "true", else value == "false"
-    get_settings_singleton()->is_forward_check = bool_true;
+    // set forward checking to true
+    get_settings_singleton()->is_forward_check = true;
 }
 
 void _setup_arc_consistency(char * value) {
-    assert(value && "ARGUMENT VALUE IS NULL");
-
-    bool bool_true = !strncmp(value, "true",  sizeof("true"));
-    // check if string value is boolean true or false 
-    assert((bool_true || !strncmp(value, "false", sizeof("false"))) && "ARC CONSISTENCY VALUE IS NEITHER TRUE NOR FALSE");
-
-    // if 'bool_true' is true then value == "true", else value == "false"
-    get_settings_singleton()->is_arc_consistency = bool_true;
+    // set arc consistency to true
+    get_settings_singleton()->is_arc_consistency = true;
 }
 
 void _setup_reduce(char * value) {
-    assert(value && "ARGUMENT VALUE IS NULL");
-
-    bool bool_true = !strncmp(value, "true",  sizeof("true"));
-    // check if string value is boolean true or false 
-    assert((bool_true || !strncmp(value, "false", sizeof("false"))) && "ARC CONSISTENCY VALUE IS NEITHER TRUE NOR FALSE");
-
-    // if 'bool_true' is true then value == "true", else value == "false"
-    get_settings_singleton()->is_reduce = bool_true;
+    // set reduce to true
+    get_settings_singleton()->is_reduce = true;
 }
 
 void _setup_information(char * value) {
@@ -314,15 +290,15 @@ void _setup_information(char * value) {
 
 void _setup_help(char * value) {
     printf("Information helpful for the user:\n");
-    printf("\t--help,-h                        show this message\n");
-    printf("\t--information,-i                 show information about SLNOSLAV\n");
+    printf("\t--help,-h             show this message\n");
+    printf("\t--information,-i      show information about SLNOSLAV\n");
 
     printf("\nProgram settings:\n");
-    printf("\t--filepath,-fp        <filepath> filepath to .kkr file           [\"program/0.kkr\"]\n");
-    printf("\t--backtrack,-bt       true|false enable/disable backtracking     [true]\n");
-    printf("\t--forward-check,-fch  true|false enable/disable forward checking [true]\n");
-    printf("\t--arc-consistency,-ac true|false enable/disable arc-consistency  [true]\n");
-    printf("\t--reduce,-r           true|false enable/disable reduced states   [true]\n");
+    printf("\t--filepath,-fp        <filepath> filepath to .kkr file [\"program/0.kkr\"]\n");
+    printf("\t--backtrack,-bt       enable backtracking              [disabled]\n");
+    printf("\t--forward-check,-fch  enable forward checking          [disabled]\n");
+    printf("\t--arc-consistency,-ac enable arc-consistency           [disabled]\n");
+    printf("\t--reduce,-r           enable reduced states            [disabled]\n");
 
     exit(EXIT_SUCCESS);
 }
