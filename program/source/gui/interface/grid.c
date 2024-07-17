@@ -228,10 +228,10 @@ void _multi_value(struct nk_context * context, struct nk_rect background, struct
 
 void _draw_value(struct nk_context * context, struct nk_rect position, struct nk_color bg, struct nk_color fg, int value) {
     char string_num[sizeof("-2147483647")] = { 0 };
-    sprintf(string_num, "%d", value);
-
     float temp_height = context->style.font->height;
     struct nk_user_font * font = context->style.font;
+
+    sprintf(string_num, "%d", value);
     font->height = position.h;
     position.x += (position.w / 2) - (font->width(font->userdata, font->height, string_num, strnlen(string_num, sizeof("-2147483647"))) / 2);
     nk_draw_text(&context->current->buffer, position, string_num, strnlen(string_num, sizeof("-2147483647")), font, bg, fg);

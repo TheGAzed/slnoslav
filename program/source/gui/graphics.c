@@ -73,8 +73,10 @@ void _glfw_initialize(GLFWwindow ** window, int * width, int * height) {
 void _glew_initialize(void) {
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
     glewExperimental = GL_TRUE;
+    GLenum error = glewInit();
+
     error_mode = ASSERT_E;
-    expect(glewInit() == GLEW_OK, NO_ACTION, "[ERROR] Failed to setup GLEW");
+    expect(error == GLEW_OK, NO_ACTION, "[ERROR] Failed to setup GLEW: %s", glewGetErrorString(error));
 }
 
 struct nk_super _create_super(struct nk_glfw * glfw, GLFWwindow * window) {

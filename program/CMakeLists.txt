@@ -1,11 +1,8 @@
 find_package(OpenGL REQUIRED)
-find_package(glfw3 3.3 REQUIRED)
-find_package(GLEW REQUIRED)
 
 add_executable(${PROJECT_NAME} main.c)
 
 add_library(program
-
         source/gui/graphics.c
         source/gui/input.c
         source/gui/draw.c
@@ -31,9 +28,15 @@ add_library(program
         source/slnoslav.c
 )
 
+#target_compile_definitions(program PRIVATE ERROR_LOG_FILE_PATH=\"${CMAKE_BINARY_DIR}/debug_log.txt\")
+
 target_include_directories(program PUBLIC include)
 
-target_link_libraries(program PRIVATE glfw GLEW::GLEW OpenGL::GL m nuklear)
-target_link_libraries(${PROJECT_NAME} PRIVATE program)
+target_link_libraries(program
+        PRIVATE glfw
+        PRIVATE libglew_static
+        PRIVATE glm
+        nuklear
+)
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE ERROR_LOG_FILE_PATH=\"${CMAKE_BINARY_DIR}/slnoslav-debug.txt\")
+target_link_libraries(${PROJECT_NAME} PRIVATE program)

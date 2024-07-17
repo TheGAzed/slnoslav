@@ -1,6 +1,6 @@
 #include <gui/interface/solver.h>
 
-#include <threads.h>
+#include <pthread.h>
 #include <string.h>
 #include <errno.h>
 
@@ -20,10 +20,10 @@
 #ifdef WIN32
     #include <io.h>
     #include <fcntl.h>
-
+    
     int pipe(int pipefd[2])                              { return _pipe(pipefd, 65536, _O_BINARY); }
-    int read(int __fd,  const void * __buf, size_t __n)  { return _read(__fd, __buf, __n);         }
-    int write(int __fd,  const void * __buf, size_t __n) { return _write(__fd, __buf, __n);        }
+    //int read(int __fd,  const void * __buf, size_t __n)  { return _read(__fd, __buf, __n);         }
+    //int write(int __fd,  const void * __buf, size_t __n) { return _write(__fd, __buf, __n);        }
 #else
     #include <unistd.h>
 #endif
@@ -42,7 +42,7 @@ typedef enum pipe_type {
 
 int pipefd[2];
 
-thrd_start_t _solver(void * solution);
+void * _solver(void * data);
 
 void _create_ds(stack_s * prev, stack_s * next);
 void _destroy_ds(stack_s * prev, stack_s * next);
@@ -65,8 +65,9 @@ player_s * get_player_singleton(void) {
 }
 
 void solve(struct nk_solver * data) {
-    thrd_t tid = { 0 };
-    thrd_create(&tid, (thrd_start_t)_solver, (void*)data);
+    pthread_t tid = { 0 };
+    pthread_create(&tid, NULL, &_solver, data);
+    //thrd_create(&tid, (thrd_start_t)_solver, (void*)data);
 }
 
 state_array_s state_provider(const ds_action_e action) {
@@ -90,7 +91,7 @@ state_array_s state_provider(const ds_action_e action) {
     return  (state_array_s) { 0 };
 }
 
-thrd_start_t _solver(void * data) {
+void * _solver(void * data) {
     get_player_singleton()->solve_state = SOLVE_RUNNING_E;
 
     struct nk_solver * input = data;

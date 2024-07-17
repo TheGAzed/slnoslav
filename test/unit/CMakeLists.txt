@@ -16,6 +16,4 @@ target_link_libraries(UNITTESTS
         program
 )
 
-target_compile_definitions(program PRIVATE ERROR_LOG_FILE_PATH=\"${CMAKE_BINARY_DIR}/blackbox-debug.txt\")
-
 add_test(NAME UNIT_TEST COMMAND UNITTESTS WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}")

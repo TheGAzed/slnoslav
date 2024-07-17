@@ -21,6 +21,7 @@ extern  FILE * error_log;
     if (!(assertion)) {                                                        \
         fprintf(error_log, __VA_ARGS__);                                       \
         fprintf(error_log, "\n");                                              \
+        fflush(error_log ? error_log : stderr);                                \
         switch (error_mode) {                                                  \
             case ABORT_E  : { error_action; abort(); break;                  } \
             case ASSERT_E : { error_action; assert(0 && (assertion)); break; } \
@@ -36,6 +37,7 @@ extern  FILE * error_log;
     if (!(assertion)) {                                                       \
         fprintf(error_log ? error_log : stderr, __VA_ARGS__);                 \
         fprintf(error_log ? error_log : stderr, "\n");                        \
+        fflush(error_log ? error_log : stderr);                               \
         switch (error_mode) {                                                 \
             case ABORT_E  : { error_action; abort(); break;                 } \
             case ASSERT_E : { error_action; assert(0 && (assertion)); break;} \
