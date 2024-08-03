@@ -18,8 +18,7 @@ bool _backtrack_row_repeat(board_s board, state_array_s current_state, size_t in
 bool _backtrack_col_repeat(board_s board, state_array_s current_state, size_t index);
 
 bool backtrack(board_s board, state_array_s current_state) {
-    error_mode = DEFAULT_E;
-    expect(get_settings_singleton()->is_backtrack, return _backtrack_valid_sums(board, current_state), "WARNING: backtracking is off");
+    if (!get_settings_singleton()->is_backtrack) return _backtrack_valid_sums(board, current_state);
 
     get_stat_singleton()->backtrack_call_count++;
 

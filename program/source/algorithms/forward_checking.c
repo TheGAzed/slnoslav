@@ -14,8 +14,7 @@ bool forward_checking(board_s board, state_array_s * current_state, ulookup_t in
     expect(is_one_value(current_state->elements[index]), NO_ACTION, "current state element at index %u is not a one value", index);
     expect(index < current_state->size, NO_ACTION, "index '%u' is out of bounds of current state size '%u'", index, current_state->size);
 
-    error_mode = DEFAULT_E;
-    expect(get_settings_singleton()->is_forward_check, return true, "WARNING: forward checking is off");
+    if (!get_settings_singleton()->is_forward_check) return true;
 
     get_stat_singleton()->forward_check_call_count++;
 

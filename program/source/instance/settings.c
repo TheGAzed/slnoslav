@@ -7,7 +7,7 @@ Settings * get_settings_singleton(void) {
         .is_forward_check   = false,
         .is_arc_consistency = false,
         .is_reduce          = false,
-        .time_ms            = 100,
+        .time_ms            = MAX_DELAY_MS / 2,
     };
 
     return &setup;

@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <time.h>
 
+#define MAX_DELAY_MS 500
 typedef struct settings {
     char * filepath;
 

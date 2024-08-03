@@ -14,7 +14,7 @@
 #include <structures/concrete/board.h>
 
 #define WINDOW_WIDTH  500
-#define WINDOW_HEIGHT 560
+#define WINDOW_HEIGHT 500
 
 #define MAX_VERTEX_BUFFER 512 * 1024
 #define MAX_ELEMENT_BUFFER 128 * 1024
@@ -23,9 +23,20 @@ struct nk_solver {
     board_s board;
 };
 
+struct nk_media {
+    struct nk_image play;
+    struct nk_image pause;
+    struct nk_image previous;
+    struct nk_image next;
+    struct nk_image begin;
+    struct nk_image end;
+    struct nk_image reverse;
+};
+
 struct nk_super {
     struct nk_context * context;
     struct nk_solver    solver;
+    struct nk_media     media;
 };
 
 #endif /* GUI_DEFAULT_H */

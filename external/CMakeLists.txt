@@ -2,7 +2,7 @@ add_library(greatest INTERFACE "")
 target_include_directories(greatest INTERFACE greatest)
 
 add_library(nuklear INTERFACE "")
-target_include_directories(nuklear INTERFACE nuklear nuklear/demo/glfw_opengl3)
+target_include_directories(nuklear INTERFACE nuklear nuklear/demo/glfw_opengl3 nuklear/example)
 
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)

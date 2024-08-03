@@ -28,9 +28,9 @@ add_library(program
         source/slnoslav.c
 )
 
-#target_compile_definitions(program PRIVATE ERROR_LOG_FILE_PATH=\"${CMAKE_BINARY_DIR}/debug_log.txt\")
-
 target_include_directories(program PUBLIC include)
+
+target_compile_definitions(program PRIVATE ERROR_LOG_FILE_PATH=\"${CMAKE_BINARY_DIR}/debug_log.txt\")
 
 target_link_libraries(program
         PRIVATE glfw

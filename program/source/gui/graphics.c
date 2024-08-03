@@ -26,6 +26,9 @@
 #include <instance/settings.h>
 #include <errno.h>
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 static void error_callback(int number, const char * description) {
     error_mode = ASSERT_E;
     expect(NULL, NO_ACTION, "Error %d: %s\n", number, description);
@@ -35,6 +38,8 @@ void _glew_initialize(void);
 void _glfw_initialize(GLFWwindow ** window, int * width, int * height);
 struct nk_super _create_super(struct nk_glfw * glfw, GLFWwindow * window);
 void _destroy_super(struct nk_super * super);
+struct nk_media _create_media(void);
+struct nk_image icon_load(const char *filename);
 
 void gui(void) {
     struct nk_glfw glfw = { 0 };
@@ -51,6 +56,7 @@ void gui(void) {
         interface(&super);
         draw(&glfw);
     }
+    _destroy_super(&super);
 
     nk_glfw3_shutdown(&glfw);
     glfwTerminate();
@@ -91,14 +97,52 @@ struct nk_super _create_super(struct nk_glfw * glfw, GLFWwindow * window) {
     board_s board = create_board(fp);
     fclose(fp);
 
+    struct nk_media media = _create_media();
+
     return (struct nk_super) {
         .context = context,
         .solver = {
             .board = board,
         },
+        .media = media,
     };
 }
 
 void _destroy_super(struct nk_super * super) {
     destroy_board(&super->solver.board);
+}
+
+struct nk_media _create_media(void) {
+    glEnable(GL_TEXTURE_2D);
+
+    struct nk_media media = { 0 };
+    media.play = icon_load("./program/assets/icons/forwards.png");
+    media.pause = icon_load("./program/assets/icons/stop.png");
+    media.begin = icon_load("./program/assets/icons/start.png");
+    media.end = icon_load("./program/assets/icons/end.png");
+    media.reverse = icon_load("./program/assets/icons/backwards.png");
+    media.next = icon_load("./program/assets/icons/next.png");
+    media.previous = icon_load("./program/assets/icons/previous.png");
+
+    return media;
+}
+
+struct nk_image icon_load(const char *filename) {
+    int x,y,n;
+    GLuint tex;
+    unsigned char *data = stbi_load(filename, &x, &y, &n, 0);
+
+    error_mode = ASSERT_E;
+    expect(data, NO_ACTION, "[ERROR]: failed to load image: %s", filename);
+
+    glGenTextures(1, &tex);
+    glBindTexture(GL_TEXTURE_2D, tex);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, x, y, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    stbi_image_free(data);
+    return nk_image_id((int)tex);
 }

@@ -163,8 +163,8 @@ void _destroy_ds(stack_s * prev, stack_s * next) {
         read_return = read(pipefd[READ_PIPE_E], &state, sizeof(state_array_s));
         expect(-1 != read_return, NO_ACTION, "[ERROR] Read from pipe failed: %s", strerror(errno));
     }
-    expect(0 == close(pipefd[READ_PIPE_E]), NO_ACTION, "[ERROR] Read pipe failed to close with error: %s", strerror(errno));
-    expect(0 == close(pipefd[WRITE_PIPE_E]), NO_ACTION, "[ERROR] Write pipe failed to close with error: %s", strerror(errno));
+    close(pipefd[READ_PIPE_E]);
+    close(pipefd[WRITE_PIPE_E]);
 }
 
 void _reset_ds(stack_s * prev, stack_s * next) {

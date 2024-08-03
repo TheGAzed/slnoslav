@@ -30,8 +30,7 @@ bool look_ahead(const board_s board, state_array_s * current_state) {
     error_mode = ASSERT_E;
     expect(current_state, NO_ACTION, "ERROR: current state parameter is NULL (%p)", (void*)current_state);
 
-    error_mode = DEFAULT_E;
-    expect(get_settings_singleton()->is_arc_consistency, return true, "WARNING: arc consistency is off");
+    if (!get_settings_singleton()->is_arc_consistency) return true;
 
     get_stat_singleton()->look_ahead_call_count++;
 
