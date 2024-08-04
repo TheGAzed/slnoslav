@@ -109,6 +109,7 @@ void * _solver(void * data) {
         state_array_s guess = pop_stack(&stack);
         {
             state_array_s temp = copy_state_array(guess);
+            error_mode = ASSERT_E;
             expect(-1 != write(pipefd[WRITE_PIPE_E], &temp, sizeof(state_array_s)),
                 NO_ACTION, "[ERROR] Write to pipe failed: %s", strerror(errno));
         }

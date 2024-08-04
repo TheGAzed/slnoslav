@@ -5,7 +5,6 @@
 #include <algorithms/backtrack.h>
 #include <instance/settings.h>
 #include <instance/statistics.h>
-#include <instance/expect.h>
 
 bool _backtrack_row_sum(board_s board, state_array_s current_state, size_t index);
 bool _backtrack_col_sum(board_s board, state_array_s current_state, size_t index);
@@ -51,8 +50,8 @@ bool _backtrack_row_sum(board_s board, state_array_s current_state, size_t index
     }
 
     return
-        ((filled_blocks == blocks) ? filled_sums != sums                                                 : false) ||
-        (filled_sums > sums)                                                                                    || 
+        ((filled_blocks == blocks) ? filled_sums != sums                                                            : false) ||
+        (filled_sums > sums)                                                                                                 ||
         ((blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, UPPER_EDGE_E) < (sums - filled_sums) : false) ||
         ((blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, LOWER_EDGE_E) > (sums - filled_sums) : false);
 }
@@ -68,15 +67,14 @@ bool _backtrack_col_sum(board_s board, state_array_s current_state, size_t index
     }
 
     return 
-        ((blocks == filled_blocks) ? filled_sums != sums                                                 : false) ||
-        (filled_sums > sums)                                                                                      ||
+        ((blocks == filled_blocks) ? filled_sums != sums                                                            : false) ||
+        (filled_sums > sums)                                                                                                 ||
         ((blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, UPPER_EDGE_E) < (sums - filled_sums) : false) ||
         ((blocks  - filled_blocks) ? get_sums(blocks - filled_blocks, LOWER_EDGE_E) > (sums - filled_sums) : false);
 }
 
 bool _backtrack_valid_sums(board_s board, state_array_s current_state) {
-    error_mode = DEFAULT_E;
-    expect(is_end_state(current_state), return false, "current state is not an end state");
+    if (!is_end_state(current_state)) return false;
 
     check_e * checks = calloc(board.game.empty_count, sizeof(check_e));
 

@@ -181,8 +181,6 @@ void setup_program(int argc, char **argv) {
         // call to settings setup to set program settings
         _setup_settings(argument); 
     }
-
-
 }
 
 Hash _get_hash(char * string) {
@@ -294,7 +292,7 @@ void _setup_help(char * value) {
     printf("\t--information,-i      show information about SLNOSLAV\n");
 
     printf("\nProgram settings:\n");
-    printf("\t--filepath,-fp        <filepath> filepath to .kkr file [\"program/0.kkr\"]\n");
+    printf("\t--filepath,-fp        <filepath> filepath to .kkr file [\"puzzles/0.kkr\"]\n");
     printf("\t--backtrack,-bt       enable backtracking              [disabled]\n");
     printf("\t--forward-check,-fch  enable forward checking          [disabled]\n");
     printf("\t--arc-consistency,-ac enable arc-consistency           [disabled]\n");

@@ -1,5 +1,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <style.h>
 
 #define NK_INCLUDE_FIXED_TYPES
 #define NK_INCLUDE_STANDARD_IO
@@ -71,9 +72,20 @@ void _glfw_initialize(GLFWwindow ** window, int * width, int * height) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
     *window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "SLNOSLAV", NULL, NULL);
     glfwMakeContextCurrent(*window);
     glfwGetWindowSize(*window, width, height);
+
+    GLFWimage favicon;
+
+    favicon.pixels = stbi_load("./assets/favicon.png", &favicon.width, &favicon.height, 0, 4);
+    error_mode = ASSERT_E;
+    expect(favicon.pixels, NO_ACTION, "[ERROR] Failed to load favicon image");
+
+    glfwSetWindowIcon(*window, 1, &favicon);
+    stbi_image_free(favicon.pixels);
 }
 
 void _glew_initialize(void) {
@@ -82,15 +94,22 @@ void _glew_initialize(void) {
     GLenum error = glewInit();
 
     error_mode = ASSERT_E;
-    expect(error == GLEW_OK, NO_ACTION, "[ERROR] Failed to setup GLEW: %s", glewGetErrorString(error));
+    expect(error == GLEW_OK, NO_ACTION, "[ERROR] Failed to setup GLEW: %s", (char*)glewGetErrorString(error));
 }
 
 struct nk_super _create_super(struct nk_glfw * glfw, GLFWwindow * window) {
     struct nk_context * context = nk_glfw3_init(glfw, window, NK_GLFW3_INSTALL_CALLBACKS);
-    struct nk_font_atlas atlas;
-    struct nk_font_atlas * atlas_ptr = &atlas;
-    nk_glfw3_font_stash_begin(glfw, &atlas_ptr);
+    struct nk_font_config cfg = nk_font_config(0);
+    cfg.oversample_h = 3;
+    cfg.oversample_v = 2;
+    struct nk_font_atlas * atlas;
+
+    nk_glfw3_font_stash_begin(glfw, &atlas);
+    struct nk_font * roboto = nk_font_atlas_add_from_file(atlas, "./assets/font/Roboto-Regular.ttf", 20.0f, &cfg);
     nk_glfw3_font_stash_end(glfw);
+    nk_init_default(context, &roboto->handle);
+
+    set_style(context, LIGHT_MODE);
 
     FILE * fp = fopen(get_settings_singleton()->filepath, "rb");
     expect(fp, NO_ACTION, "[ERROR] File pointer variable (fp) is NULL (%p): %s", (void*)fp, strerror(errno));
@@ -116,13 +135,13 @@ struct nk_media _create_media(void) {
     glEnable(GL_TEXTURE_2D);
 
     struct nk_media media = { 0 };
-    media.play = icon_load("./program/assets/icons/forwards.png");
-    media.pause = icon_load("./program/assets/icons/stop.png");
-    media.begin = icon_load("./program/assets/icons/start.png");
-    media.end = icon_load("./program/assets/icons/end.png");
-    media.reverse = icon_load("./program/assets/icons/backwards.png");
-    media.next = icon_load("./program/assets/icons/next.png");
-    media.previous = icon_load("./program/assets/icons/previous.png");
+    media.play = icon_load("./assets/icons/forwards.png");
+    media.pause = icon_load("./assets/icons/stop.png");
+    media.begin = icon_load("./assets/icons/start.png");
+    media.end = icon_load("./assets/icons/end.png");
+    media.reverse = icon_load("./assets/icons/backwards.png");
+    media.next = icon_load("./assets/icons/next.png");
+    media.previous = icon_load("./assets/icons/previous.png");
 
     return media;
 }

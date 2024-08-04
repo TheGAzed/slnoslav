@@ -14,8 +14,8 @@ typedef struct settings {
     bool is_reduce;
 
     clock_t time_ms;
-} Settings;
+} settings_s;
 
-Settings * get_settings_singleton(void);
+settings_s * get_settings_singleton(void);
 
 #endif /* INSTANCE_SETTINGS_H */

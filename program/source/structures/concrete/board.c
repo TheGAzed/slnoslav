@@ -100,22 +100,30 @@ void sub_col_check(board_s board, check_e * checks, ulookup_t index) {
 board_grid_s _init_grid(FILE * kakuro_file) {
     assert(kakuro_file && "KAKURO FILE POINTER IS NULL");
 
+    size_t read_size = 0;
     board_grid_s g = { 0 };
-    assert(fread(g.size, sizeof(ulookup_t), GRID_DIMENTIONS, kakuro_file) == 2);
+
+    read_size = fread(g.size, sizeof(ulookup_t), GRID_DIMENTIONS, kakuro_file);
+    assert(read_size == 2);
 
     g.count = g.size[ROW_E] * g.size[COLUMN_E];
-
-    assert((g.grids[ROW_E]    = malloc(g.size[ROW_E] * sizeof(lookup_t*))) && "ALLOCATION TO ROW ARRAY FAILED");
-    assert((g.grids[COLUMN_E] = malloc(g.size[ROW_E] * sizeof(lookup_t*))) && "ALLOCATION TO COLUMN ARRAY FAILED");
+    g.grids[ROW_E] = malloc(g.size[ROW_E] * sizeof(lookup_t*));
+    assert(g.grids[ROW_E] && "ALLOCATION TO ROW ARRAY FAILED");
+    g.grids[COLUMN_E] = malloc(g.size[ROW_E] * sizeof(lookup_t*));
+    assert(g.grids[COLUMN_E] && "ALLOCATION TO COLUMN ARRAY FAILED");
 
     for (size_t i = 0; i < g.size[ROW_E]; i++) {
-        assert((g.grids[ROW_E][i]    = malloc(g.size[COLUMN_E] * sizeof(lookup_t))) && "ALLOCATION TO ROW ARRAY FAILED");
-        assert((g.grids[COLUMN_E][i] = malloc(g.size[COLUMN_E] * sizeof(lookup_t))) && "ALLOCATION TO COLUMN ARRAY FAILED");
+        g.grids[ROW_E][i]    = malloc(g.size[COLUMN_E] * sizeof(lookup_t));
+        g.grids[COLUMN_E][i] = malloc(g.size[COLUMN_E] * sizeof(lookup_t));
+
+        assert(g.grids[ROW_E][i] && "ALLOCATION TO ROW ARRAY FAILED");
+        assert(g.grids[COLUMN_E][i] && "ALLOCATION TO COLUMN ARRAY FAILED");
     }
 
-    ulookup_t buffer[GRID_DIMENTIONS * (sizeof(ulookup_t) << 8) * (sizeof(ulookup_t) << 8)];
+    ulookup_t buffer[GRID_DIMENTIONS * (sizeof(ulookup_t) << 8) * (sizeof(ulookup_t) << 8)] = { 0 };
     size_t read_number = GRID_DIMENTIONS * g.size[ROW_E] * g.size[COLUMN_E], index = 0;
-    assert(fread(buffer, sizeof(lookup_t), read_number, kakuro_file) == sizeof(lookup_t) * read_number && "READ FAILED");
+    read_size = fread(buffer, sizeof(lookup_t), read_number, kakuro_file);
+    assert((read_size == (sizeof(lookup_t) * read_number)) && "READ FAILED");
     for (ulookup_t i = 0; i < GRID_DIMENTIONS; i++) {
         for (ulookup_t j = 0; j < g.size[ROW_E]; j++) {
             for (ulookup_t k = 0; k < g.size[COLUMN_E]; k++) {
@@ -146,13 +154,17 @@ void _free_grid(board_grid_s * grid) {
 void _kakuro_alloc(board_s * board, FILE * kakuro_file) {
     board->game = _init_grid(kakuro_file);
 
-    assert((board->grid = malloc(board->game.size[ROW_E] * sizeof(lookup_t*))) && "ALLOCATION TO ROW ARRAY FAILED");
+    board->grid = malloc(board->game.size[ROW_E] * sizeof(lookup_t*));
+    assert(board->grid && "ALLOCATION TO ROW ARRAY FAILED");
+
     for (size_t i = 0; i < board->game.size[ROW_E]; i++) {
-        assert((board->grid[i] = malloc(board->game.size[COLUMN_E] * sizeof(lookup_t))) && "ALLOCATION TO ROW ARRAY FAILED");
+        board->grid[i] = malloc(board->game.size[COLUMN_E] * sizeof(lookup_t));
+        assert(board->grid[i] && "ALLOCATION TO ROW ARRAY FAILED");
     }
 
     for (size_t i = 0; i < U_LOOKUP_COUNT * GRID_DIMENTIONS; i++) {
-        assert((board->u_lookups[i] = malloc(board->game.empty_count)) && "ALLOCATION TO UNSIGNED LOOKUP FAILED");
+        board->u_lookups[i] = malloc(board->game.empty_count);
+        assert(board->u_lookups[i] && "ALLOCATION TO UNSIGNED LOOKUP FAILED");
     }
 }
 
@@ -209,14 +221,18 @@ void _setup_sums(board_s * board, ulookup_t row, ulookup_t col, ulookup_t index)
         board->sums[ROW_E][index] = board->sums[ROW_E][board->grid[row][col - 1]];
     } else {
         while (~c && !(board->game.grids[ROW_E][row][c])) c--;
-        assert(~c && (board->sums[ROW_E][index] = board->game.grids[ROW_E][row][c]) > 0 && "NO SUMS FOUND");
+
+        assert(~c && board->game.grids[ROW_E][row][c] > 0 && "NO SUMS FOUND");
+        board->sums[ROW_E][index] = board->game.grids[ROW_E][row][c];
     }
 
     if (row && board->grid[row - 1][col] != -1 && board->sums[COLUMN_E][board->grid[row - 1][col]]) {
         board->sums[COLUMN_E][index] = board->sums[COLUMN_E][board->grid[row - 1][col]];
     } else {
         while (~r && !(board->game.grids[COLUMN_E][r][col])) r--;
-        assert(~r && (board->sums[COLUMN_E][index] = board->game.grids[COLUMN_E][r][col]) > 0 && "NO SUMS FOUND");
+
+        assert(~r && board->game.grids[COLUMN_E][r][col] > 0 && "NO SUMS FOUND");
+        board->sums[COLUMN_E][index] = board->game.grids[COLUMN_E][r][col];
     }
 }
 

@@ -14,7 +14,7 @@
 #include <structures/concrete/board.h>
 
 #define WINDOW_WIDTH  500
-#define WINDOW_HEIGHT 500
+#define WINDOW_HEIGHT 550
 
 #define MAX_VERTEX_BUFFER 512 * 1024
 #define MAX_ELEMENT_BUFFER 128 * 1024

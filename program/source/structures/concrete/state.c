@@ -7,7 +7,7 @@
 
 state_array_s create_state_array(ulookup_t size) {
     error_mode = ASSERT_E;
-    expect(size != 0, NO_ACTION, "state array size can't be zero (%u)", size);
+    expect(size != 0, NO_ACTION, "[ERROR] state array size can't be zero (%u)", size);
 
     state_array_s array = { .elements = calloc(size, sizeof(state_t)), .size = size, };
     expect(array.elements, NO_ACTION, "memory allocation for array failed/array element is NULL (%p)", (void*)array.elements);

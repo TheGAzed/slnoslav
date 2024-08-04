@@ -1,8 +1,8 @@
 #include <instance/settings.h>
 
-Settings * get_settings_singleton(void) {
-    static Settings setup = {
-        .filepath           = "program/0.kkr",
+settings_s * get_settings_singleton(void) {
+    static settings_s setup = {
+        .filepath           = "assets/puzzles/0.kkr",
         .is_backtrack       = false,
         .is_forward_check   = false,
         .is_arc_consistency = false,

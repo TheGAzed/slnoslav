@@ -26,9 +26,10 @@ add_library(program
         source/structures/concrete/board.c
         source/structures/concrete/state.c
         source/slnoslav.c
+        include/style.h
 )
 
-target_include_directories(program PUBLIC include)
+target_include_directories(program PUBLIC include assets)
 
 target_compile_definitions(program PRIVATE ERROR_LOG_FILE_PATH=\"${CMAKE_BINARY_DIR}/debug_log.txt\")
 

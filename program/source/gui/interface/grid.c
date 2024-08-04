@@ -13,10 +13,10 @@
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
-#define RGB_WHITE      (nk_rgb(255, 255, 255))
-#define RGB_BLACK      (nk_rgb(0, 0, 0))
-#define RGB_DARK_GRAY  (nk_rgb(64, 64, 64))
-#define RGB_LIGHT_GRAY (nk_rgb(192, 192, 192))
+#define RGB_WHITE (nk_rgb(0xD9, 0xD9, 0xD9))
+#define RGB_BLACK (nk_rgb(0x1B, 0x1B, 0x1B))
+#define RGB_GRAY  (nk_rgb(0x82, 0x82, 0x82))
+#define RGB_GRAY (nk_rgb(192, 192, 192))
 
 #define SUM_SQUARE(block_size) {                                     \
     .x = 0.15 * ((block_size) / 2),  .y = 0.15 * ((block_size) / 2), \
@@ -33,9 +33,6 @@ struct nk_rect _background(struct nk_context * context, board_s board);
 void _lines(struct nk_context * context, board_s board, struct nk_rect background);
 
 void _unset_blocks(struct nk_context * context, board_s board, struct nk_rect background);
-void _sum_triangles(struct nk_context * context, board_s board, struct nk_rect background);
-void _upper_sum_triangle(struct nk_context * context, struct nk_rect background, ulookup_t row, ulookup_t col, float block_size);
-void _lower_sum_triangle(struct nk_context * context, struct nk_rect background, ulookup_t row, ulookup_t col, float block_size);
 void _sum_values(struct nk_context * context, board_s board, struct nk_rect background);
 void _upper_sum_value(struct nk_context * context, struct nk_rect background, struct nk_rect sum_square, ulookup_t row, ulookup_t col, float block_size, lookup_t value);
 void _lower_sum_value(struct nk_context * context, struct nk_rect background, struct nk_rect sum_square, ulookup_t row, ulookup_t col, float block_size, lookup_t value);
@@ -50,7 +47,7 @@ void grid(struct nk_context * context, board_s board) {
     struct nk_rect background = _background(context, board);
     _lines(context, board, background);
     _unset_blocks(context, board, background);
-    _sum_triangles(context, board, background);
+    //_sum_triangles(context, board, background);
     _sum_values(context, board, background);
     _empty_values(context, board, background);
 }
@@ -74,15 +71,15 @@ void _lines(struct nk_context * context, board_s board, struct nk_rect backgroun
     ulookup_t row_size = board.game.size[ROW_E], col_size = board.game.size[COLUMN_E];
     float block_size = background.w / board.game.size[COLUMN_E];
 
-    for(ulookup_t i = 1; i < col_size; i++) {
+    for(ulookup_t i = 0; i <= col_size; i++) {
         float x0 = background.x + (block_size * i), y0 = background.y;
         float x1 = background.x + (block_size * i), y1 = background.y + background.h;
-        nk_stroke_line(&context->current->buffer, x0, y0, x1, y1, 0.5f, RGB_DARK_GRAY);
+        nk_stroke_line(&context->current->buffer, x0, y0, x1, y1, 0.5f, RGB_GRAY);
     }
-    for(ulookup_t j = 1; j < row_size; j++) {
+    for(ulookup_t j = 0; j <= row_size; j++) {
         float x0 = background.x,                y0 = background.y + (block_size * j);
         float x1 = background.x + background.w, y1 = background.y + (block_size * j);
-        nk_stroke_line(&context->current->buffer, x0, y0, x1, y1, 0.5f, RGB_DARK_GRAY);
+        nk_stroke_line(&context->current->buffer, x0, y0, x1, y1, 0.5f, RGB_GRAY);
     }
 }
 
@@ -100,41 +97,6 @@ void _unset_blocks(struct nk_context * context, board_s board, struct nk_rect ba
         nk_fill_rect(&context->current->buffer, trans, 0, RGB_BLACK);
     }
     destroy_max_overlap_rectangles(&array);
-}
-
-void _sum_triangles(struct nk_context * context, board_s board, struct nk_rect background) {
-    ulookup_t row_size = board.game.size[ROW_E];
-    ulookup_t col_size = board.game.size[COLUMN_E];
-    float block_size = (background.w / col_size);
-
-    for (ulookup_t r = 0; r < row_size; r++) {
-        for (ulookup_t c = 0; c < col_size; c++) {
-            if (board.game.grids[ROW_E][r][c] > 0)    _upper_sum_triangle(context, background, r, c, block_size);
-            if (board.game.grids[COLUMN_E][r][c] > 0) _lower_sum_triangle(context, background, r, c, block_size);
-        }
-    }
-}
-
-void _upper_sum_triangle(struct nk_context * context, struct nk_rect background, ulookup_t row, ulookup_t col, float block_size) {
-    float x0 = background.x + (col * block_size), y0 = background.y + (row * block_size);
-    float x1 = x0 + block_size, y1 = y0;
-    float x2 = x0 + block_size, y2 = y0 + block_size;
-
-    nk_fill_triangle(&context->current->buffer, x0, y0, x1, y1, x2, y2, RGB_DARK_GRAY);
-    nk_stroke_line(&context->current->buffer, x0, y0, x1, y1, 0.5f, RGB_LIGHT_GRAY);
-    nk_stroke_line(&context->current->buffer, x0, y0, x2, y2, 0.5f, RGB_LIGHT_GRAY);
-    nk_stroke_line(&context->current->buffer, x1, y1, x2, y2, 0.5f, RGB_LIGHT_GRAY);
-}
-
-void _lower_sum_triangle(struct nk_context * context, struct nk_rect background, ulookup_t row, ulookup_t col, float block_size) {
-    float x0 = background.x + (col * block_size), y0 = background.y + (row * block_size);
-    float x1 = x0, y1 = y0 + block_size;
-    float x2 = x0 + block_size, y2 = y0 + block_size;
-
-    nk_fill_triangle(&context->current->buffer, x0, y0, x1, y1, x2, y2, RGB_DARK_GRAY);
-    nk_stroke_line(&context->current->buffer, x0, y0, x1, y1, 0.5f, RGB_LIGHT_GRAY);
-    nk_stroke_line(&context->current->buffer, x0, y0, x2, y2, 0.5f, RGB_LIGHT_GRAY);
-    nk_stroke_line(&context->current->buffer, x1, y1, x2, y2, 0.5f, RGB_LIGHT_GRAY);
 }
 
 void _sum_values(struct nk_context * context, board_s board, struct nk_rect background) {
@@ -162,7 +124,7 @@ void _upper_sum_value(struct nk_context * context, struct nk_rect background, st
         .h = sum_square.h,
     };
 
-    _draw_value(context, upper_sum, RGB_DARK_GRAY, RGB_WHITE, value);
+    _draw_value(context, upper_sum, RGB_GRAY, RGB_WHITE, value);
 }
 
 void _lower_sum_value(struct nk_context * context, struct nk_rect background, struct nk_rect sum_square, ulookup_t row, ulookup_t col, float block_size, lookup_t value) {
@@ -173,7 +135,7 @@ void _lower_sum_value(struct nk_context * context, struct nk_rect background, st
         .h = sum_square.h,
     };
 
-    _draw_value(context, lower_sum, RGB_DARK_GRAY, RGB_WHITE, value);
+    _draw_value(context, lower_sum, RGB_GRAY, RGB_WHITE, value);
 }
 
 void _empty_values(struct nk_context * context, board_s board, struct nk_rect background) {
