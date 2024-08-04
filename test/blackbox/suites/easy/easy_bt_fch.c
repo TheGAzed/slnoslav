@@ -3,7 +3,7 @@
 #include <instance/settings.h>
 #include <algorithms/depth_first_search.h>
 
-#define EASY_PUZZLE_PATH "./puzzles/easy/"
+#define EASY_PUZZLE_PATH "./assets/puzzles/easy/"
 
 TEST easy_backtrack_forward_check_one(void) {
     ulookup_t expected_solution[] = { 9, 7, 5, 7, 6, 8, 9 };

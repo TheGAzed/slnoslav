@@ -3,7 +3,7 @@
 #include <instance/settings.h>
 #include <algorithms/depth_first_search.h>
 
-#define MEDIUM_PUZZLE_PATH "./puzzles/medium/"
+#define MEDIUM_PUZZLE_PATH "./assets/puzzles/medium/"
 
 TEST medium_arc_consistency_backtrack_forward_check_one(void) {
     ulookup_t expected_solution[] = {
