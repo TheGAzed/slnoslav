@@ -4,16 +4,12 @@
 #include <stdbool.h>
 
 typedef struct statistics {
-    size_t backtrack_call_count;
-    size_t forward_check_call_count;
-    size_t look_ahead_call_count;
+    double backtrack_count;
+    double bad_forward_check_count;
+    double bad_arc_consistency_count;
 
-    size_t invalid_state_backtrack_count;
-    size_t invalid_state_forward_check_count;
-    size_t invalid_state_look_ahead_count;
-
-    size_t dfs_iteration_count;
-    size_t dfs_stack_max_size;
+    double dfs_iteration_count;
+    double dfs_stack_max_size;
 } Statistics;
 
 Statistics * get_stat_singleton(void);

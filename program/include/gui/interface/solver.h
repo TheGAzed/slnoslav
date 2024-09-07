@@ -5,6 +5,8 @@
 
 #include <structures/concrete/state.h>
 
+#include <pthread.h>
+
 typedef enum ds_action {
     CREATE_DS, DESTROY_DS, NEXT_VALUE_DS, NEXT_VALUE_TIMED_DS,
     PREV_VALUE_DS, RESET_DS, CURRENT_VALUE_DS, PREV_VALUE_TIMED_DS,
@@ -24,7 +26,7 @@ typedef enum player_state {
 } player_state_e;
 
 typedef enum solver_state {
-    SOLVE_UNSET_E, SOLVE_RUNNING_E, SOLVE_FINISHED_E,
+    SOLVE_UNSET_E, SOLVE_RUNNING_E, SOLVE_FINISHED_E, SOLVE_STOPPED_E,
 } solver_state_e;
 
 typedef struct player {
@@ -33,7 +35,7 @@ typedef struct player {
 } player_s;
 
 player_s *    get_player_singleton(void);
-void          solve(struct nk_solver * data);
+pthread_t     solve(void);
 state_array_s state_provider(const ds_action_e action);
 
 #endif /* GUI_INTERFACE_SOLVER_H */

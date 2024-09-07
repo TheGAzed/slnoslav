@@ -6,18 +6,18 @@
 #include <instance/expect.h>
 
 state_array_s create_state_array(ulookup_t size) {
-    error_mode = ASSERT_E;
-    expect(size != 0, NO_ACTION, "[ERROR] state array size can't be zero (%u)", size);
+    error_mode = EXIT_E;
+    expect(size != 0, DEBUG_ACTION, "[ERROR] state array size can't be zero (%u)", size);
 
     state_array_s array = { .elements = calloc(size, sizeof(state_t)), .size = size, };
-    expect(array.elements, NO_ACTION, "memory allocation for array failed/array element is NULL (%p)", (void*)array.elements);
+    expect(array.elements, DEBUG_ACTION, "memory allocation for array failed/array element is NULL (%p)", (void*)array.elements);
 
     return array;
 }
 
 void set_full_state_array(state_array_s * array) {
-    error_mode = ASSERT_E;
-    expect(array, NO_ACTION, "state array pointer is NULL (%p)", (void*)array);
+    error_mode = EXIT_E;
+    expect(array, DEBUG_ACTION, "state array pointer is NULL (%p)", (void*)array);
 
     for (ulookup_t i = 0; i < array->size; i++) array->elements[i] = FULL_STATE;
 }
@@ -45,8 +45,8 @@ state_t merge_state_array(state_array_s array) {
 }
 
 void destroy_state_array(state_array_s * array) {
-    error_mode = ASSERT_E;
-    expect(array, NO_ACTION, "state array pointer is NULL (%p)", (void*)array);
+    error_mode = EXIT_E;
+    expect(array, DEBUG_ACTION, "state array pointer is NULL (%p)", (void*)array);
 
     free(array->elements);
     array->elements = NULL;
@@ -101,6 +101,7 @@ state_t get_edge_state(ulookup_t count, edge_type_e type) {
 }
 
 bool is_one_value(state_t state) {
+    assert((state != INVALID_STATE && state <= FULL_STATE) && "[ERROR] State is not in validk range");
     return __builtin_popcount(state) == 1;
 }
 

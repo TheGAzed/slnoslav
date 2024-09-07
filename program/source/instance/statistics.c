@@ -5,13 +5,9 @@
 
 Statistics * get_stat_singleton(void) {
     static Statistics setup = {
-        .backtrack_call_count     = 0,
-        .forward_check_call_count = 0,
-        .look_ahead_call_count    = 0,
-
-        .invalid_state_backtrack_count     = 0,
-        .invalid_state_forward_check_count = 0,
-        .invalid_state_look_ahead_count    = 0,
+        .backtrack_count     = 0,
+        .bad_forward_check_count = 0,
+        .bad_arc_consistency_count    = 0,
 
         .dfs_iteration_count = 0,
         .dfs_stack_max_size  = 0,
@@ -21,17 +17,17 @@ Statistics * get_stat_singleton(void) {
 }
 
 bool invalid_state_backtrack_stat(bool is_invalid_state) {
-    get_stat_singleton()->invalid_state_backtrack_count += is_invalid_state;
+    get_stat_singleton()->backtrack_count += is_invalid_state ? 1 : 0;
     return is_invalid_state;
 }
 
 bool invalid_state_forward_check_stat(bool is_invalid_state) {
-    get_stat_singleton()->invalid_state_forward_check_count += is_invalid_state;
+    get_stat_singleton()->bad_forward_check_count += is_invalid_state ? 1 : 0;
     return is_invalid_state;
 }
 
 bool invalid_state_look_ahead_stat(bool is_invalid_state) {
-    get_stat_singleton()->invalid_state_look_ahead_count += is_invalid_state;
+    get_stat_singleton()->bad_arc_consistency_count += is_invalid_state ? 1 : 0;
     return is_invalid_state;
 }
 
@@ -39,16 +35,6 @@ void set_dfs_stack_max_size(size_t size) {
     size_t max = get_stat_singleton()->dfs_stack_max_size;
     if (size > max) get_stat_singleton()->dfs_stack_max_size = size;
 }
-
-#ifdef _MSC_VER
-
-#define SIZE_T_FORMAT "%Iu"
-
-#else
-
-#define SIZE_T_FORMAT "%lu"
-
-#endif /* _MSC_VER */
 
 void print_statistics(void) {
     puts("SETTINGS");
@@ -60,18 +46,15 @@ void print_statistics(void) {
 
     puts("STATISTICS");
     puts("\tDEPTH FIRST SEARCH:");
-    printf("\t\t - DFS ITERATIONS : "SIZE_T_FORMAT"\n", get_stat_singleton()->dfs_iteration_count);
-    printf("\t\t - MAX STACK SIZE : "SIZE_T_FORMAT"\n", get_stat_singleton()->dfs_stack_max_size);
+    printf("\t\t - DFS ITERATIONS : %g\n", get_stat_singleton()->dfs_iteration_count);
+    printf("\t\t - MAX STACK SIZE : %g\n", get_stat_singleton()->dfs_stack_max_size);
 
     puts("\tBACKTRACK:");
-    printf("\t\t - CALLS            : "SIZE_T_FORMAT"\n", get_stat_singleton()->backtrack_call_count);
-    printf("\t\t - VALID BACKTRACKS : "SIZE_T_FORMAT"\n", get_stat_singleton()->invalid_state_backtrack_count);
+    printf("\t\t - VALID BACKTRACKS : %g\n", get_stat_singleton()->backtrack_count);
 
     puts("\tFORWARD CHECK:");
-    printf("\t\t - CALLS                  : "SIZE_T_FORMAT"\n", get_stat_singleton()->forward_check_call_count);
-    printf("\t\t - INVALID FORWARD CHECKS : "SIZE_T_FORMAT"\n", get_stat_singleton()->invalid_state_forward_check_count);
+    printf("\t\t - INVALID FORWARD CHECKS : %g\n", get_stat_singleton()->bad_forward_check_count);
 
     puts("\tARC CONSISTENCY (LOOK AHEAD):");
-    printf("\t\t - CALLS              : "SIZE_T_FORMAT"\n", get_stat_singleton()->look_ahead_call_count);
-    printf("\t\t - INVALID LOOK AHEAD : "SIZE_T_FORMAT"\n", get_stat_singleton()->invalid_state_look_ahead_count);
+    printf("\t\t - INVALID LOOK AHEAD : %g\n", get_stat_singleton()->bad_arc_consistency_count);
 }

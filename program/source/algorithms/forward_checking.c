@@ -9,19 +9,16 @@ bool _row_forward_check(board_s board, state_array_s * current_state, ulookup_t 
 bool _col_forward_check(board_s board, state_array_s * current_state, ulookup_t index);
 
 bool forward_checking(board_s board, state_array_s * current_state, ulookup_t index) {
-    error_mode = ASSERT_E;
-    expect(current_state, NO_ACTION, "current state parameter is NULL (%p)", (void*)current_state);
-    expect(is_one_value(current_state->elements[index]), NO_ACTION, "current state element at index %u is not a one value", index);
-    expect(index < current_state->size, NO_ACTION, "index '%u' is out of bounds of current state size '%u'", index, current_state->size);
+    error_mode = EXIT_E;
+    expect(current_state, DEBUG_ACTION, "current state parameter is NULL (%p)", (void*)current_state);
+    expect(is_one_value(current_state->elements[index]), DEBUG_ACTION, "current state element at index %u is not a one value", index);
+    expect(index < current_state->size, DEBUG_ACTION, "index '%u' is out of bounds of current state size '%u'", index, current_state->size);
 
     if (!get_settings_singleton()->is_forward_check) return true;
 
-    get_stat_singleton()->forward_check_call_count++;
-
-    return !invalid_state_forward_check_stat(!(
-        _row_forward_check(board, current_state, index) && 
-        _col_forward_check(board, current_state, index)
-    ));
+    bool valid_forward_check = _row_forward_check(board, current_state, index) && _col_forward_check(board, current_state, index);
+    if (!valid_forward_check) get_stat_singleton()->bad_forward_check_count++;
+    return valid_forward_check;
 }
 
 bool _row_forward_check(board_s board, state_array_s * current_state, ulookup_t index) {   

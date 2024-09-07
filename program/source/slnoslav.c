@@ -1,38 +1,39 @@
-#include <assert.h>
-#include <stdio.h>
-
 #include <slnoslav.h>
 
-#include <instance/settings.h>
-#include <instance/statistics.h>
-#include <algorithms/depth_first_search.h>
-
-#define TEST
-
-#ifdef TEST
+#include <instance/expect.h>
 #include <gui/graphics.h>
-#endif
+
+#include <stdio.h>
+
+FILE * error_log;
+
+void _open_error_log(void);
+void _close_error_log(void);
 
 void run_program(void) {
-
-#ifndef TEST
-    FILE * fp = fopen(get_settings_singleton()->filepath, "rb");
-    
-    assert(fp && "COULDN'T OPEN FILE");
-    board_s board = create_board(fp);
-    fclose(fp);
-    
-    SArray solution = depth_first_search(board);
-    destroy_board(&board);
-
-    if (solution.elements) print_solution(solution);
-    else printf("NO SOLUTION FOUND\n");
-
-    print_statistics();
-
-    destroy_state_array(&solution);
-#else
+    _open_error_log();
     gui();
+    _close_error_log();
+}
+
+#ifdef ERROR_LOG_FILE_PATH
+
+void _open_error_log(void) {
+    remove(ERROR_LOG_FILE_PATH);
+    error_log = fopen(ERROR_LOG_FILE_PATH, "a");
+    assert(error_log && "Failed to open error_log");
+}
+
+#else
+
+void _open_error_log(void) {
+    remove("debug_log.txt");
+    error_log = fopen("debug_log.txt", "a");
+    assert(error_log && "Failed to open error_log");
+}
+
 #endif
 
+void _close_error_log(void) {
+    fclose(error_log);
 }

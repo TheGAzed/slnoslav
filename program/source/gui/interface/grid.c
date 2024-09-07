@@ -16,7 +16,6 @@
 #define RGB_WHITE (nk_rgb(0xD9, 0xD9, 0xD9))
 #define RGB_BLACK (nk_rgb(0x1B, 0x1B, 0x1B))
 #define RGB_GRAY  (nk_rgb(0x82, 0x82, 0x82))
-#define RGB_GRAY (nk_rgb(192, 192, 192))
 
 #define SUM_SQUARE(block_size) {                                     \
     .x = 0.15 * ((block_size) / 2),  .y = 0.15 * ((block_size) / 2), \
@@ -47,7 +46,6 @@ void grid(struct nk_context * context, board_s board) {
     struct nk_rect background = _background(context, board);
     _lines(context, board, background);
     _unset_blocks(context, board, background);
-    //_sum_triangles(context, board, background);
     _sum_values(context, board, background);
     _empty_values(context, board, background);
 }
@@ -55,13 +53,17 @@ void grid(struct nk_context * context, board_s board) {
 struct nk_rect _background(struct nk_context * context, board_s board) {
     ulookup_t row_size = board.game.size[ROW_E], col_size = board.game.size[COLUMN_E];
     struct nk_panel * layout = context->current->layout;
-    float height = (layout->clip.w / MAX(row_size, col_size)) * MIN(row_size, col_size);
 
-    nk_layout_row_dynamic(context, height, 1);
+    float block_size = MIN((layout->clip.w / col_size), ((WINDOW_HEIGHT - 120) / row_size));
+
+    nk_layout_row_dynamic(context, block_size * row_size, 1);
     struct nk_command_buffer * canvas = &context->current->buffer;
-    struct nk_rect background;
 
+    struct nk_rect background = { 0 };
     nk_widget(&background, context);
+    background.w = block_size * col_size;
+    background.h = block_size * row_size;
+    background.x += (layout->clip.w / 2) - (background.w / 2);
     nk_fill_rect(canvas, background, 0, RGB_WHITE);
 
     return background;

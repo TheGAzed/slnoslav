@@ -9,7 +9,8 @@
 #define GRID_DIMENTIONS 2
 
 typedef int8_t   lookup_t;
-typedef uint8_t ulookup_t;
+typedef int16_t  llookup_t;
+typedef uint8_t  ulookup_t;
 typedef enum kakuro_grid_sizes { ROW_E = 0, COLUMN_E = 1, } KGSizes;
 typedef struct board_grid {
     lookup_t **grids[GRID_DIMENTIONS];
@@ -20,7 +21,7 @@ typedef struct board_grid {
 typedef struct board {
     board_grid_s game;
 
-    lookup_t ** grid;
+    llookup_t ** grid;
     union {
         struct {
             ulookup_t * coords[GRID_DIMENTIONS];
@@ -36,7 +37,7 @@ typedef enum check {
     COLCHECK  = 2, CHEKCED   = 3,
 } check_e;
 
-board_s create_board(FILE * kakuro_file);
+board_s create_board(char * kakuro_filepath);
 void    destroy_board(board_s * board);
 bool    is_wall_hit(board_s board, ulookup_t row, ulookup_t col);
 void    print_board(board_s board);

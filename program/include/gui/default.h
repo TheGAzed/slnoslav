@@ -13,8 +13,8 @@
 
 #include <structures/concrete/board.h>
 
-#define WINDOW_WIDTH  500
-#define WINDOW_HEIGHT 550
+#define WINDOW_WIDTH  750
+#define WINDOW_HEIGHT 800
 
 #define MAX_VERTEX_BUFFER 512 * 1024
 #define MAX_ELEMENT_BUFFER 128 * 1024
@@ -37,6 +37,7 @@ struct nk_super {
     struct nk_context * context;
     struct nk_solver    solver;
     struct nk_media     media;
+    int width, height;
 };
 
 #endif /* GUI_DEFAULT_H */

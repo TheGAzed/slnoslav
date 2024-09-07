@@ -2,8 +2,11 @@
 #include <assert.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
+#include <errno.h>
 
 #include <structures/concrete/board.h>
+#include <instance/expect.h>
 
 board_grid_s   _init_grid       (FILE * kakuro_file);
 void    _free_grid       (board_grid_s * grid);
@@ -14,13 +17,16 @@ void    _setup_blocks    (board_s * board, ulookup_t row, ulookup_t col, ulookup
 void    _setup_sums      (board_s * board, ulookup_t row, ulookup_t col, ulookup_t index);
 ulookup_t _empty_cell_count(board_grid_s from);
 
-board_s create_board(FILE * kakuro_file) {
-    assert(kakuro_file && "KAKURO FILE POINTER IS NULL");
+board_s create_board(char * kakuro_filepath) {
+    FILE * fp = fopen(kakuro_filepath, "rb");
+    error_mode = EXIT_E;
+    expect(fp, DEBUG_ACTION, "[ERROR] File pointer variable (fp) is NULL (%p): %s", (void*)fp, strerror(errno));
 
     board_s k = { 0 };
-    _kakuro_alloc(&k, kakuro_file);
+    _kakuro_alloc(&k, fp);
     _kakuro_setup(&k);
 
+    fclose(fp);
     return k;
 }
 
@@ -154,11 +160,11 @@ void _free_grid(board_grid_s * grid) {
 void _kakuro_alloc(board_s * board, FILE * kakuro_file) {
     board->game = _init_grid(kakuro_file);
 
-    board->grid = malloc(board->game.size[ROW_E] * sizeof(lookup_t*));
+    board->grid = malloc(board->game.size[ROW_E] * sizeof(llookup_t*));
     assert(board->grid && "ALLOCATION TO ROW ARRAY FAILED");
 
     for (size_t i = 0; i < board->game.size[ROW_E]; i++) {
-        board->grid[i] = malloc(board->game.size[COLUMN_E] * sizeof(lookup_t));
+        board->grid[i] = malloc(board->game.size[COLUMN_E] * sizeof(llookup_t));
         assert(board->grid[i] && "ALLOCATION TO ROW ARRAY FAILED");
     }
 
@@ -169,7 +175,7 @@ void _kakuro_alloc(board_s * board, FILE * kakuro_file) {
 }
 
 void _kakuro_setup(board_s * board) {
-    lookup_t index = 0;
+    ulookup_t index = 0;
     for (size_t r = 0; r < board->game.size[ROW_E]; r++) {
         for (size_t c = 0; c < board->game.size[COLUMN_E]; c++) {
             board->grid[r][c] = (board->game.grids[ROW_E][r][c] == 0) ? index++ : -1;

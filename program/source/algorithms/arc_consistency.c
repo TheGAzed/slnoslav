@@ -27,22 +27,22 @@ bool  _reduce_no_col_combination(board_s board, state_array_s * current_state, u
 bool  _reduce_no_row_combination(board_s board, state_array_s * current_state, ulookup_t index);
 
 bool look_ahead(const board_s board, state_array_s * current_state) {
-    error_mode = ASSERT_E;
-    expect(current_state, NO_ACTION, "ERROR: current state parameter is NULL (%p)", (void*)current_state);
+    error_mode = EXIT_E;
+    expect(current_state, DEBUG_ACTION, "ERROR: current state parameter is NULL (%p)", (void*)current_state);
 
     if (!get_settings_singleton()->is_arc_consistency) return true;
 
-    get_stat_singleton()->look_ahead_call_count++;
-
     check_e * checks = calloc(board.game.empty_count, sizeof(check_e));
-    error_mode = ASSERT_E;
-    expect(checks, NO_ACTION, "ERROR: 'checks' variable allocation failed (%p)", (void*)checks);
+    error_mode = EXIT_E;
+    expect(checks, DEBUG_ACTION, "ERROR: 'checks' variable allocation failed (%p)", (void*)checks);
     do {
         _reduce_one_values(board, current_state, checks);
     } while (valid_states(*current_state) && _reduce_no_combination(board, current_state, checks));
     free(checks);
 
-    return !invalid_state_look_ahead_stat(!valid_states(*current_state));
+    bool valid_arc_consistency = valid_states(*current_state);
+    if (!valid_arc_consistency) get_stat_singleton()->bad_arc_consistency_count++;
+    return valid_arc_consistency;
 }
 
 void _reduce_one_values(board_s board, state_array_s * current_state, check_e * checks) {

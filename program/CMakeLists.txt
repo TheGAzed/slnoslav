@@ -21,7 +21,6 @@ add_library(program
         source/instance/argument.c
         source/instance/settings.c
         source/instance/statistics.c
-        source/instance/expect.c
 
         source/structures/concrete/board.c
         source/structures/concrete/state.c

@@ -1,6 +1,5 @@
 #include <gui/interface/solver.h>
 
-#include <pthread.h>
 #include <string.h>
 #include <errno.h>
 
@@ -13,20 +12,16 @@
 #include <algorithms/reduce.h>
 #include <algorithms/forward_checking.h>
 
-#define STACK_DATA_TYPE state_array_s
 #include <gui/default.h>
+
+#define STACK_DATA_TYPE state_array_s
+#define
 #include <structures/abstract/stack.h>
 
-#ifdef WIN32
-    #include <io.h>
-    #include <fcntl.h>
-    
-    int pipe(int pipefd[2])                              { return _pipe(pipefd, 65536, _O_BINARY); }
-    //int read(int __fd,  const void * __buf, size_t __n)  { return _read(__fd, __buf, __n);         }
-    //int write(int __fd,  const void * __buf, size_t __n) { return _write(__fd, __buf, __n);        }
-#else
-    #include <unistd.h>
-#endif
+#include <io.h>
+#include <fcntl.h>
+
+int pipe(int pipefd[2]) { return _pipe(pipefd, sizeof(stack_s), _O_BINARY); }
 
 __attribute__((constructor)) static void create_state_queue(void) {
     state_provider(CREATE_DS);
@@ -64,10 +59,11 @@ player_s * get_player_singleton(void) {
     return &player;
 }
 
-void solve(struct nk_solver * data) {
+pthread_t solve(void) {
     pthread_t tid = { 0 };
-    pthread_create(&tid, NULL, &_solver, data);
-    //thrd_create(&tid, (thrd_start_t)_solver, (void*)data);
+    pthread_create(&tid, NULL, &_solver, NULL);
+
+    return tid;
 }
 
 state_array_s state_provider(const ds_action_e action) {
@@ -88,39 +84,38 @@ state_array_s state_provider(const ds_action_e action) {
         default                   : { return (state_array_s) { 0 };              }
     }
 
-    return  (state_array_s) { 0 };
+    return (state_array_s) { 0 };
 }
 
 void * _solver(void * data) {
     get_player_singleton()->solve_state = SOLVE_RUNNING_E;
 
-    struct nk_solver * input = data;
-
+    board_s board = create_board(get_settings_singleton()->filepath);
     stack_s stack = create_stack();
 
-    state_array_s initial = create_state_array(input->board.game.empty_count);
+    state_array_s initial = create_state_array(board.game.empty_count);
     set_full_state_array(&initial);
-    reduce(input->board, &initial);
+    reduce(board, &initial);
     push_stack(&stack, initial);
 
-    while (!is_empty_stack(stack)) {
+    while (!is_empty_stack(stack) && get_player_singleton()->solve_state != SOLVE_STOPPED_E) {
         get_stat_singleton()->dfs_iteration_count++;
 
         state_array_s guess = pop_stack(&stack);
-        {
-            state_array_s temp = copy_state_array(guess);
-            error_mode = ASSERT_E;
-            expect(-1 != write(pipefd[WRITE_PIPE_E], &temp, sizeof(state_array_s)),
-                NO_ACTION, "[ERROR] Write to pipe failed: %s", strerror(errno));
-        }
 
-        if (!look_ahead(input->board, &guess) || backtrack(input->board, guess)) {
+        state_array_s temp = copy_state_array(guess);
+        error_mode = EXIT_E;
+        expect(-1 != write(pipefd[WRITE_PIPE_E], &temp, sizeof(state_array_s)), DEBUG_ACTION, "[ERROR] Write to pipe failed: %s", strerror(errno));
+
+        if (!look_ahead(board, &guess) || backtrack(board, guess)) {
             destroy_state_array(&guess);
             continue;
         }
 
         if (is_end_state(guess)) {
-            destroy_state_array(&guess);
+            error_mode = EXIT_E;
+            expect(-1 != write(pipefd[WRITE_PIPE_E], &guess, sizeof(state_array_s)), DEBUG_ACTION, "[ERROR] Write to pipe failed: %s", strerror(errno));
+
             break;
         }
 
@@ -128,7 +123,7 @@ void * _solver(void * data) {
 
         state_matrix_s next = create_neighbors_state_matrix(guess, index);
         for (size_t i = 0; i < next.size; i++) {
-            if (forward_checking(input->board, &next.elements[i], index)) push_stack(&stack, next.elements[i]);
+            if (forward_checking(board, &next.elements[i], index)) push_stack(&stack, next.elements[i]);
             else destroy_state_array(&next.elements[i]);
         }
 
@@ -137,8 +132,8 @@ void * _solver(void * data) {
     }
 
     destroy_stack(&stack, destroy_state_array);
-    expect(0 == close(pipefd[WRITE_PIPE_E]), NO_ACTION, "[ERROR] Write pipe failed to close with error: %s", strerror(errno));
-
+    expect(0 == close(pipefd[WRITE_PIPE_E]), DEBUG_ACTION, "[ERROR] Write pipe failed to close with error: %s", strerror(errno));
+    destroy_board(&board);
     get_player_singleton()->solve_state = SOLVE_FINISHED_E;
     return 0;
 }
@@ -147,22 +142,22 @@ void _create_ds(stack_s * prev, stack_s * next) {
     *prev   = create_stack();
     *next   = create_stack();
 
-    error_mode = ASSERT_E;
-    expect(0 == pipe(pipefd), NO_ACTION, "[ERROR] Pipe initialization failed with error: %s", strerror(errno));
+    error_mode = EXIT_E;
+    expect(0 == pipe(pipefd), DEBUG_ACTION, "[ERROR] Pipe initialization failed with error: %s", strerror(errno));
 }
 
 void _destroy_ds(stack_s * prev, stack_s * next) {
     destroy_stack(prev, destroy_state_array);
     destroy_stack(next, destroy_state_array);
 
-    error_mode = ASSERT_E;
+    error_mode = EXIT_E;
     state_array_s state = { 0 };
     int read_return = read(pipefd[READ_PIPE_E], &state, sizeof(state_array_s));
-    expect(-1 != read_return, NO_ACTION, "[ERROR] Read from pipe failed: %s", strerror(errno));
+    expect(-1 != read_return, DEBUG_ACTION, "[ERROR] Read from pipe failed: %s", strerror(errno));
     while (read_return) {
         push_stack(prev, state);
         read_return = read(pipefd[READ_PIPE_E], &state, sizeof(state_array_s));
-        expect(-1 != read_return, NO_ACTION, "[ERROR] Read from pipe failed: %s", strerror(errno));
+        expect(-1 != read_return, DEBUG_ACTION, "[ERROR] Read from pipe failed: %s", strerror(errno));
     }
     close(pipefd[READ_PIPE_E]);
     close(pipefd[WRITE_PIPE_E]);
@@ -181,8 +176,8 @@ state_array_s _next_value_ds(stack_s * prev, stack_s * next) {
 
         int read_return = read(pipefd[READ_PIPE_E], &state, sizeof(state_array_s));
 
-        error_mode = ASSERT_E;
-        expect(-1 != read_return, NO_ACTION, "[ERROR] Read from pipe failed: %s", strerror(errno));
+        error_mode = EXIT_E;
+        expect(-1 != read_return, DEBUG_ACTION, "[ERROR] Read from pipe failed: %s", strerror(errno));
 
         if (read_return > 0) push_stack(prev, state);
         else get_player_singleton()->play_state = STOP_END_E;
@@ -243,14 +238,14 @@ void _end_value_ds(stack_s * prev, stack_s * next) {
         push_stack(prev, pop_stack(next));
     }
 
-    error_mode = ASSERT_E;
+    error_mode = EXIT_E;
     state_array_s state = { 0 };
     int read_return = read(pipefd[READ_PIPE_E], &state, sizeof(state_array_s));
-    expect(-1 != read_return, NO_ACTION, "[ERROR] Read from pipe failed: %s", strerror(errno));
+    expect(-1 != read_return, DEBUG_ACTION, "[ERROR] Read from pipe failed: %s", strerror(errno));
     while (read_return) {
         push_stack(prev, state);
         read_return = read(pipefd[READ_PIPE_E], &state, sizeof(state_array_s));
-        expect(-1 != read_return, NO_ACTION, "[ERROR] Read from pipe failed: %s", strerror(errno));
+        expect(-1 != read_return, DEBUG_ACTION, "[ERROR] Read from pipe failed: %s", strerror(errno));
     }
 
     get_player_singleton()->play_state = STOP_END_E;

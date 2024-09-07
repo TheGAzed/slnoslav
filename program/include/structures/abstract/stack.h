@@ -13,7 +13,7 @@
 
 #ifndef FINITE_STACK
 
-#define STACK_LIST_ARRAY_SIZE (1 << 8)
+#define STACK_LIST_ARRAY_SIZE (1 << 10)
 
 typedef struct stack_list_array {
     STACK_DATA_TYPE           elements[STACK_LIST_ARRAY_SIZE];

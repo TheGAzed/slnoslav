@@ -30,9 +30,9 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 
-static void error_callback(int number, const char * description) {
-    error_mode = ASSERT_E;
-    expect(NULL, NO_ACTION, "Error %d: %s\n", number, description);
+static void error_callback(const int number, const char * description) {
+    error_mode = EXIT_E;
+    expect(NULL, DEBUG_ACTION, "[Error][%d] %s\n", number, description);
 }
 
 void _glew_initialize(void);
@@ -44,19 +44,22 @@ struct nk_image icon_load(const char *filename);
 
 void gui(void) {
     struct nk_glfw glfw = { 0 };
-    int width = 0, height = 0;
     static GLFWwindow * window;
+    struct nk_super super = { 0 };
 
-    _glfw_initialize(&window, &width, &height);
+    _glfw_initialize(&window, &super.width, &super.height);
     _glew_initialize();
-    struct nk_super super = _create_super(&glfw, window);
+    super = _create_super(&glfw, window);
 
-    solve(&super.solver);
+    solve();
     while (!glfwWindowShouldClose(window)) {
         input(&glfw);
         interface(&super);
         draw(&glfw);
     }
+
+    get_player_singleton()->solve_state = SOLVE_STOPPED_E;
+
     _destroy_super(&super);
 
     nk_glfw3_shutdown(&glfw);
@@ -66,8 +69,8 @@ void gui(void) {
 void _glfw_initialize(GLFWwindow ** window, int * width, int * height) {
     glfwSetErrorCallback(error_callback);
 
-    error_mode = ASSERT_E;
-    expect(glfwInit(), NO_ACTION, "[ERROR] GLFW failed to initialize");
+    error_mode = EXIT_E;
+    expect(glfwInit(), DEBUG_ACTION, "[ERROR] GLFW failed to initialize");
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -81,8 +84,8 @@ void _glfw_initialize(GLFWwindow ** window, int * width, int * height) {
     GLFWimage favicon;
 
     favicon.pixels = stbi_load("./assets/favicon.png", &favicon.width, &favicon.height, 0, 4);
-    error_mode = ASSERT_E;
-    expect(favicon.pixels, NO_ACTION, "[ERROR] Failed to load favicon image");
+    error_mode = EXIT_E;
+    expect(favicon.pixels, DEBUG_ACTION, "[ERROR] Failed to load favicon image");
 
     glfwSetWindowIcon(*window, 1, &favicon);
     stbi_image_free(favicon.pixels);
@@ -93,8 +96,8 @@ void _glew_initialize(void) {
     glewExperimental = GL_TRUE;
     GLenum error = glewInit();
 
-    error_mode = ASSERT_E;
-    expect(error == GLEW_OK, NO_ACTION, "[ERROR] Failed to setup GLEW: %s", (char*)glewGetErrorString(error));
+    error_mode = EXIT_E;
+    expect(error == GLEW_OK, DEBUG_ACTION, "[ERROR] Failed to setup GLEW: %s", (char*)glewGetErrorString(error));
 }
 
 struct nk_super _create_super(struct nk_glfw * glfw, GLFWwindow * window) {
@@ -105,16 +108,13 @@ struct nk_super _create_super(struct nk_glfw * glfw, GLFWwindow * window) {
     struct nk_font_atlas * atlas;
 
     nk_glfw3_font_stash_begin(glfw, &atlas);
-    struct nk_font * roboto = nk_font_atlas_add_from_file(atlas, "./assets/font/Roboto-Regular.ttf", 20.0f, &cfg);
+    struct nk_font * roboto = nk_font_atlas_add_from_file(atlas, "./assets/font/Roboto-Regular.ttf", 80.0f, &cfg);
     nk_glfw3_font_stash_end(glfw);
     nk_init_default(context, &roboto->handle);
 
     set_style(context, LIGHT_MODE);
 
-    FILE * fp = fopen(get_settings_singleton()->filepath, "rb");
-    expect(fp, NO_ACTION, "[ERROR] File pointer variable (fp) is NULL (%p): %s", (void*)fp, strerror(errno));
-    board_s board = create_board(fp);
-    fclose(fp);
+    board_s board = create_board(get_settings_singleton()->filepath);
 
     struct nk_media media = _create_media();
 
@@ -151,8 +151,8 @@ struct nk_image icon_load(const char *filename) {
     GLuint tex;
     unsigned char *data = stbi_load(filename, &x, &y, &n, 0);
 
-    error_mode = ASSERT_E;
-    expect(data, NO_ACTION, "[ERROR]: failed to load image: %s", filename);
+    error_mode = EXIT_E;
+    expect(data, DEBUG_ACTION, "[ERROR] failed to load image: %s", filename);
 
     glGenTextures(1, &tex);
     glBindTexture(GL_TEXTURE_2D, tex);

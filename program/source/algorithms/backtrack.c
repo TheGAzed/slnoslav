@@ -19,8 +19,6 @@ bool _backtrack_col_repeat(board_s board, state_array_s current_state, size_t in
 bool backtrack(board_s board, state_array_s current_state) {
     if (!get_settings_singleton()->is_backtrack) return _backtrack_valid_sums(board, current_state);
 
-    get_stat_singleton()->backtrack_call_count++;
-
     check_e * checks = calloc(board.game.empty_count, sizeof(check_e));
 
     bool is_backtrack = false;
@@ -36,7 +34,8 @@ bool backtrack(board_s board, state_array_s current_state) {
 
     free(checks);
 
-    return (is_backtrack);
+    if (is_backtrack) get_stat_singleton()->backtrack_count++;
+    return is_backtrack;
 }
 
 bool _backtrack_row_sum(board_s board, state_array_s current_state, size_t index) {

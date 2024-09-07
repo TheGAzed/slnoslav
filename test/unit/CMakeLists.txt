@@ -1,4 +1,5 @@
-add_executable(UNITTESTS main.c)
+add_executable(UNITTESTS main.c
+        structures/concrete/state_test.c)
 
 target_sources(UNITTESTS
     PRIVATE
