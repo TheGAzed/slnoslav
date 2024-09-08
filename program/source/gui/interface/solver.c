@@ -15,13 +15,21 @@
 #include <gui/default.h>
 
 #define STACK_DATA_TYPE state_array_s
-#define
+
 #include <structures/abstract/stack.h>
+
+#ifdef WIN32
 
 #include <io.h>
 #include <fcntl.h>
 
 int pipe(int pipefd[2]) { return _pipe(pipefd, sizeof(stack_s), _O_BINARY); }
+
+#else
+
+#include <unistd.h>
+
+#endif
 
 __attribute__((constructor)) static void create_state_queue(void) {
     state_provider(CREATE_DS);
